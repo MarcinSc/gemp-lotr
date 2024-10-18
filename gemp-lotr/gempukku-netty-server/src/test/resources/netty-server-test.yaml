@@ -1,0 +1,5 @@
+server:
+  netty:
+    port: 8080
+update:
+  frequency: 100

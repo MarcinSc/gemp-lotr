@@ -1,0 +1,10 @@
+priority:
+  prefix:
+    a: 1
+    b: 0
+  default:
+    a: 1
+    b: 0
+  override:
+    a: 1
+    b: 0

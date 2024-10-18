@@ -1,0 +1,13 @@
+server:
+  netty:
+    port: 8080
+  polling:
+    timeout: 10000
+    channelTimeout: 60000
+roles:
+  admin: a
+update:
+  frequency: 100
+parameterNames:
+  actAsParameter: participantId
+  pollId: pollId
