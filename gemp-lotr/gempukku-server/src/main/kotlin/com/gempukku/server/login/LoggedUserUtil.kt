@@ -3,23 +3,23 @@ package com.gempukku.server.login
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpRequest
 
-fun findLoggedUser(loggedUserSystem: LoggedUserSystem, request: HttpRequest): LoggedUser? {
+fun findLoggedUser(loggedUserInterface: LoggedUserInterface, request: HttpRequest): LoggedUser? {
     return request.getCookie("loggedUser")?.let {
-        loggedUserSystem.findLoggedUser(it)
+        loggedUserInterface.findLoggedUser(it)
     }
 }
 
-fun getLoggedUser(loggedUserSystem: LoggedUserSystem, request: HttpRequest): LoggedUser {
-    return findLoggedUser(loggedUserSystem, request) ?: throw HttpProcessingException(401)
+fun getLoggedUser(loggedUserInterface: LoggedUserInterface, request: HttpRequest): LoggedUser {
+    return findLoggedUser(loggedUserInterface, request) ?: throw HttpProcessingException(401)
 }
 
 fun getActingAsUser(
-    loggedUserSystem: LoggedUserSystem,
+    loggedUserInterface: LoggedUserInterface,
     request: HttpRequest,
     adminRole: String,
     otherUser: String?,
 ): LoggedUser {
-    val loggedUser = getLoggedUser(loggedUserSystem, request)
+    val loggedUser = getLoggedUser(loggedUserInterface, request)
     return if (otherUser != null && loggedUser.roles.contains(adminRole)) {
         LoggedUser(otherUser, loggedUser.roles, loggedUser.lastAccess)
     } else {

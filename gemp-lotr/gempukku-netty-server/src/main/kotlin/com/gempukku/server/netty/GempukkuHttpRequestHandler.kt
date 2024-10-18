@@ -208,56 +208,44 @@ class GempukkuHttpRequestHandler(
 
     private inner class ResponseSender(private val ctx: ChannelHandlerContext, private val request: HttpRequest) :
         ResponseWriter {
-        override fun writeError(status: Int) {
+        override fun writeError(status: Int, headersMap: Map<String, String>?) {
             val content = ByteArray(0)
             // Build the response object.
             val response: FullHttpResponse = DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1,
                 HttpResponseStatus.valueOf(status),
                 Unpooled.wrappedBuffer(content),
-                convertToHeaders(null),
+                convertToHeaders(headersMap),
                 EmptyHttpHeaders.INSTANCE
             )
             sendResponse(ctx, request, response)
         }
 
-        override fun writeError(status: Int, headers: Map<String, String>?) {
-            val content = ByteArray(0)
-            // Build the response object.
-            val response: FullHttpResponse = DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1,
-                HttpResponseStatus.valueOf(status),
-                Unpooled.wrappedBuffer(content),
-                convertToHeaders(headers),
-                EmptyHttpHeaders.INSTANCE
-            )
-            sendResponse(ctx, request, response)
-        }
-
-        override fun writeXmlResponse(document: Document) {
-            writeXmlResponse(document, null)
-        }
-
-        override fun writeXmlResponse(document: Document, headers: Map<String, String>?) {
+        override fun writeXmlResponse(document: Document?, headersMap: Map<String, String>?) {
             try {
-                val domSource = DOMSource(document)
-                val writer = StringWriter()
-                val result = StreamResult(writer)
-                val tf = TransformerFactory.newInstance()
-                val transformer = tf.newTransformer()
-                transformer.transform(domSource, result)
+                val textResponse = if (document != null) {
+                    val domSource = DOMSource(document)
+                    val writer = StringWriter()
+                    val result = StreamResult(writer)
+                    val tf = TransformerFactory.newInstance()
+                    val transformer = tf.newTransformer()
+                    transformer.transform(domSource, result)
+
+                    writer.toString()
+                } else {
+                    "<result>OK</result>"
+                }
 
                 val contentType = "application/xml; charset=UTF-8"
-                val response1 = writer.toString()
 
-                val headers1 = convertToHeaders(headers)
+                val headers1 = convertToHeaders(headersMap)
                 headers1[HttpHeaderNames.CONTENT_TYPE] = contentType
 
                 // Build the response object.
                 val response: FullHttpResponse = DefaultFullHttpResponse(
                     HttpVersion.HTTP_1_1,
                     HttpResponseStatus.OK,
-                    Unpooled.wrappedBuffer(response1.toByteArray(CharsetUtil.UTF_8)),
+                    Unpooled.wrappedBuffer(textResponse.toByteArray(CharsetUtil.UTF_8)),
                     headers1,
                     EmptyHttpHeaders.INSTANCE
                 )
@@ -277,8 +265,8 @@ class GempukkuHttpRequestHandler(
             }
         }
 
-        override fun writeHtmlResponse(html: String) {
-            val headers: HttpHeaders = DefaultHttpHeaders()
+        override fun writeHtmlResponse(html: String, headersMap: Map<String, String>?) {
+            val headers: HttpHeaders = convertToHeaders(headersMap)
             headers[HttpHeaderNames.CONTENT_TYPE] = "text/html; charset=UTF-8"
 
             // Build the response object.
@@ -292,8 +280,8 @@ class GempukkuHttpRequestHandler(
             sendResponse(ctx, request, response)
         }
 
-        override fun writeJsonResponse(json: String) {
-            val headers: HttpHeaders = DefaultHttpHeaders()
+        override fun writeJsonResponse(json: String, headersMap: Map<String, String>?) {
+            val headers: HttpHeaders = convertToHeaders(headersMap)
             headers[HttpHeaderNames.CONTENT_TYPE] = "application/json; charset=UTF-8"
 
             // Build the response object.
@@ -307,8 +295,8 @@ class GempukkuHttpRequestHandler(
             sendResponse(ctx, request, response)
         }
 
-        override fun writeByteResponse(bytes: ByteArray, headers: Map<String, String>?) {
-            val headers1 = convertToHeaders(headers)
+        override fun writeByteResponse(bytes: ByteArray, headersMap: Map<String, String>?) {
+            val headers1 = convertToHeaders(headersMap)
 
             // Build the response object.
             val response: FullHttpResponse = DefaultFullHttpResponse(
@@ -321,7 +309,7 @@ class GempukkuHttpRequestHandler(
             sendResponse(ctx, request, response)
         }
 
-        override fun writeFile(file: File, headers: Map<String, String>?) {
+        override fun writeFile(file: File, headersMap: Map<String, String>?) {
             try {
                 val canonicalPath = file.canonicalPath
                 var fileBytes = fileCache[canonicalPath]
@@ -355,7 +343,7 @@ class GempukkuHttpRequestHandler(
                     }
                 }
 
-                val headers1 = convertToHeaders(getHeadersForFile(headers, file))
+                val headers1 = convertToHeaders(getHeadersForFile(headersMap, file))
 
                 // Build the response object.
                 val response: FullHttpResponse = DefaultFullHttpResponse(

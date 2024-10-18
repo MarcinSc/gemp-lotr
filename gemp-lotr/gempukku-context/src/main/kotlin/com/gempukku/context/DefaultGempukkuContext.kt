@@ -13,7 +13,8 @@ class DefaultGempukkuContext(
         return systemResolver.resolveValues(systems.asList(), clazz)
     }
 
-    fun initialize() {
+    fun initialize(): GempukkuContext {
         systemProcessor.processSystems(this, *systems)
+        return this
     }
 }

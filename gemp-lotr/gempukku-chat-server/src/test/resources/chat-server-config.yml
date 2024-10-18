@@ -4,6 +4,11 @@ server:
   polling:
     timeout: 10000
     channelTimeout: 60000
+  session:
+    # 5 minutes = 5 * 60 * 1000
+    timeout: 300000
+  chat:
+    urlPrefix: /chat
 roles:
   admin: a
 update:

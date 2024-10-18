@@ -10,14 +10,14 @@ import com.gempukku.server.HttpRequest
 import com.gempukku.server.HttpServerSystem
 import com.gempukku.server.ResponseWriter
 import com.gempukku.server.chat.long.GatheringXmlChatStream
-import com.gempukku.server.login.LoggedUserSystem
+import com.gempukku.server.login.LoggedUserInterface
 import com.gempukku.server.login.getActingAsUser
 import com.gempukku.server.polling.LongPolling
 import com.gempukku.server.polling.XmlEventSink
 import com.gempukku.server.polling.createRootElement
 
 @Exposes(LifecycleObserver::class)
-class ChatApiSystem(private val urlPrefix: String) : LifecycleObserver {
+class ChatApiSystem : LifecycleObserver {
     @Inject
     private lateinit var chat: ChatInterface
 
@@ -25,10 +25,13 @@ class ChatApiSystem(private val urlPrefix: String) : LifecycleObserver {
     private lateinit var server: HttpServerSystem
 
     @Inject
-    private lateinit var loggedUserSystem: LoggedUserSystem
+    private lateinit var loggedUserInterface: LoggedUserInterface
 
     @Inject
     private lateinit var longPolling: LongPolling
+
+    @InjectProperty("server.chat.urlPrefix")
+    private lateinit var urlPrefix: String
 
     @InjectProperty("roles.admin")
     private lateinit var adminRole: String
@@ -60,7 +63,7 @@ class ChatApiSystem(private val urlPrefix: String) : LifecycleObserver {
         { uri, request, _, responseWriter ->
             val roomName = uri.substring(urlPrefix.length + 1)
             val actAsUser =
-                getActingAsUser(loggedUserSystem, request, adminRole, request.getQueryParameter(actAsParameter))
+                getActingAsUser(loggedUserInterface, request, adminRole, request.getQueryParameter(actAsParameter))
             val gatheringChatStream = GatheringXmlChatStream()
             val added = chat.joinUser(
                 roomName,
@@ -84,7 +87,7 @@ class ChatApiSystem(private val urlPrefix: String) : LifecycleObserver {
         { uri, request, _, responseWriter ->
             val roomName = uri.substring(urlPrefix.length + 1)
             val actAsUserSystem =
-                getActingAsUser(loggedUserSystem, request, adminRole, request.getFormParameter(actAsParameter))
+                getActingAsUser(loggedUserInterface, request, adminRole, request.getFormParameter(actAsParameter))
             val message = request.getFormParameter("message")
 
             if (message != null && message.trim().isNotEmpty()) {

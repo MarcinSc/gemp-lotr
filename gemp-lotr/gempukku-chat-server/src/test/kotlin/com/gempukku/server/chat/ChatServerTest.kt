@@ -7,7 +7,7 @@ import com.gempukku.context.processor.inject.decorator.WorkerThreadExecutorSyste
 import com.gempukku.context.processor.inject.property.YamlPropertyResolver
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
 import com.gempukku.context.update.UpdatingSystem
-import com.gempukku.server.login.LoggedUserResolverSystem
+import com.gempukku.server.login.LoggedUserSystem
 import com.gempukku.server.netty.NettyServerSystem
 import com.gempukku.server.polling.LongPollingSystem
 import org.apache.http.client.ClientProtocolException
@@ -36,13 +36,13 @@ class ChatServerTest {
     fun runTestScenario() {
         val lifecycleSystem = LifecycleSystem()
         val chatSystem = ChatSystem()
-        val loggedUser = LoggedUserResolverSystem()
+        val loggedUser = LoggedUserSystem()
         val workerThreadExecutorSystem = WorkerThreadExecutorSystem()
         val propertyResolver =
             YamlPropertyResolver(ChatServerTest::class.java.getResourceAsStream("/chat-server-config.yml")!!)
         val context = DefaultGempukkuContext(
             null, AnnotationSystemResolver(), AnnotationSystemInjector(propertyResolver, workerThreadExecutorSystem),
-            lifecycleSystem, chatSystem, ChatApiSystem("/chat"), NettyServerSystem(), loggedUser,
+            lifecycleSystem, chatSystem, ChatApiSystem(), NettyServerSystem(), loggedUser,
             UpdatingSystem(), LongPollingSystem(), workerThreadExecutorSystem,
         )
         context.initialize()

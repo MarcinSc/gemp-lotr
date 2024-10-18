@@ -1,7 +1,8 @@
 package com.gempukku.lotro.common;
 
-import java.time.*;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class DBDefs {
@@ -84,7 +85,7 @@ public class DBDefs {
         public String password;
         public String type;
         public Integer last_login_reward;
-        public Integer banned_until;
+        public Long banned_until;
         public String create_ip;
         public String last_ip;
 

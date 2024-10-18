@@ -1,0 +1,30 @@
+server:
+  netty:
+    # Port the server listens on
+    port: 8080
+  polling:
+    # After 10 seconds, if no events were sent, the long-polling request will return with no events
+    timeout: 10000
+    # After 60 seconds, if there is no long-polling request received for a given channel - it will be removed
+    channelTimeout: 60000
+  session:
+    # 5 minutes = 5 * 60 * 1000
+    timeout: 300000
+  chat:
+    urlPrefix: /gemp-lotr-server/chat
+parameterNames:
+  actAsParameter: participantId
+  pollId: pollId
+
+db:
+  connection:
+    class: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://db:3306/gemp_db
+    username: gempuser
+    password: gemppassword
+    validateQuery: /* ping */ select 1
+    batch: false
+roles:
+  admin: a
+update:
+  frequency: 100

@@ -53,4 +53,8 @@ class NettyPostHttpRequest(private val request: io.netty.handler.codec.http.Http
         }
         return result
     }
+
+    fun dispose() {
+        requestDecoder.destroy()
+    }
 }

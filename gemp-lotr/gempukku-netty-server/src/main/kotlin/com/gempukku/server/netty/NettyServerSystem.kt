@@ -20,8 +20,10 @@ import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.handler.codec.http.HttpContentCompressor
+import io.netty.handler.codec.http.HttpHeaderNames
 import io.netty.handler.codec.http.HttpObjectAggregator
 import io.netty.handler.codec.http.HttpServerCodec
+import io.netty.handler.codec.http.cookie.ServerCookieEncoder
 import io.netty.handler.logging.LogLevel
 import io.netty.handler.logging.LoggingHandler
 import java.util.*
@@ -55,6 +57,23 @@ class NettyServerSystem : LifecycleObserver, HttpServerSystem, UpdatedSystem {
         }
     }
 
+    override fun generateSetCookieHeader(cookieName: String, cookieValue: String): Map<String, String> {
+        return mapOf(
+            HttpHeaderNames.SET_COOKIE.toString() to ServerCookieEncoder.STRICT.encode(cookieName, cookieValue)
+        )
+    }
+
+    val serverRequestHandler = object : ServerRequestHandler {
+        override fun handleRequest(
+            uri: String,
+            request: HttpRequest,
+            remoteIp: String,
+            responseWriter: ResponseWriter
+        ) {
+            pendingRequests.add(PendingRequest(uri, request, remoteIp, responseWriter))
+        }
+    }
+
     override fun afterContextStartup() {
         bossGroup = NioEventLoopGroup(1)
         workerGroup = NioEventLoopGroup()
@@ -71,10 +90,9 @@ class NettyServerSystem : LifecycleObserver, HttpServerSystem, UpdatedSystem {
                     pipeline.addLast(HttpContentCompressor())
                     pipeline.addLast(
                         GempukkuHttpRequestHandler(
-                            banChecker
-                        ) { uri, request, remoteIp, responseWriter ->
-                            pendingRequests.add(PendingRequest(uri, request, remoteIp, responseWriter))
-                        })
+                            banChecker, serverRequestHandler
+                        )
+                    )
                 }
             })
             .childOption(ChannelOption.SO_KEEPALIVE, true)
@@ -93,24 +111,31 @@ class NettyServerSystem : LifecycleObserver, HttpServerSystem, UpdatedSystem {
     override fun update() {
         synchronized(pendingRequests) {
             pendingRequests.forEach { request ->
-                val registration = registrations.firstOrNull {
-                    it.method == request.request.method && request.uri.matches(it.uriRegex)
-                }
                 try {
-                    registration?.let {
-                        registration.requestHandler.handleRequest(
-                            request.uri,
-                            request.request,
-                            request.remoteIp,
-                            request.responseWriter
-                        )
-                    } ?: run {
-                        throw HttpProcessingException(404)
+                    val registration = registrations.firstOrNull {
+                        it.method == request.request.method && request.uri.matches(it.uriRegex)
                     }
-                } catch (exp: HttpProcessingException) {
-                    request.responseWriter.writeError(exp.status, mapOf("message" to exp.message))
-                } catch (exp: Exception) {
-                    request.responseWriter.writeError(500)
+                    try {
+                        registration?.let {
+                            registration.requestHandler.handleRequest(
+                                request.uri,
+                                request.request,
+                                request.remoteIp,
+                                request.responseWriter
+                            )
+                        } ?: run {
+                            throw HttpProcessingException(404)
+                        }
+                    } catch (exp: HttpProcessingException) {
+                        request.responseWriter.writeError(exp.status, mapOf("message" to exp.message))
+                    } catch (exp: Exception) {
+                        request.responseWriter.writeError(500)
+                    }
+                } finally {
+                    when (request.request) {
+                        is NettyPostHttpRequest -> request.request.dispose()
+                        is NettyGetHttpRequest -> request.request.dispose()
+                    }
                 }
             }
             pendingRequests.clear()
@@ -130,3 +155,4 @@ private data class Registration(
     val uriRegex: Regex,
     val requestHandler: ServerRequestHandler,
 )
+

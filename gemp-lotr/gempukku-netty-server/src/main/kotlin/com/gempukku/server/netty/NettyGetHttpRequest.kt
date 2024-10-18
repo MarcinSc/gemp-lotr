@@ -37,4 +37,7 @@ class NettyGetHttpRequest(private val request: io.netty.handler.codec.http.HttpR
     override fun getFormParameters(parameterName: String): List<String> {
         return emptyList()
     }
+
+    fun dispose() {
+    }
 }

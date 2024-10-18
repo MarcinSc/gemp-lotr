@@ -17,10 +17,14 @@
         <module>gemp-lotr-cards</module>
         <module>gemp-lotr-async</module>
         <module>gemp-lotr-images</module>
+
         <module>gempukku-context</module>
         <module>gempukku-netty-server</module>
         <module>gempukku-chat-server</module>
         <module>gempukku-server</module>
+        <module>gemp-db</module>
+        <module>gemp-user</module>
+        <module>gemp-lotr-assembly</module>
     </modules>
 
     <properties>
