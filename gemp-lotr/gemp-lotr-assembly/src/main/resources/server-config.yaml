@@ -12,6 +12,11 @@ server:
     timeout: 300000
   chat:
     urlPrefix: /gemp-lotr-server/chat
+  login:
+    url: /gemp-lotr-server/login
+  register:
+    url: /gemp-lotr-server/register
+
 parameterNames:
   actAsParameter: participantId
   pollId: pollId
@@ -25,6 +30,12 @@ db:
     validateQuery: /* ping */ select 1
     batch: false
 roles:
+  default: u
   admin: a
+  leagueAdmin: l
+  playTester: p
+  commentator: c
+  unbanned: n
+  user: u
 update:
   frequency: 100

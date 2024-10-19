@@ -1,6 +1,7 @@
 package com.gempukku.context.processor.inject.decorator
 
 import com.gempukku.context.ContextScheduledExecutor
+import com.gempukku.context.processor.inject.AnnotationSystemInjector
 import com.gempukku.context.processor.inject.InjectionException
 import com.gempukku.context.resolver.expose.Exposes
 import java.lang.reflect.InvocationHandler
@@ -14,6 +15,10 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
+import java.util.logging.Level
+import java.util.logging.Logger
+
+private val log: Logger = Logger.getLogger(AnnotationSystemInjector::class.java.name)
 
 @Exposes(ContextScheduledExecutor::class)
 class WorkerThreadExecutorSystem(threadName: String = "Worker-Thread") : SystemDecorator, ContextScheduledExecutor {
@@ -78,11 +83,16 @@ class WorkerThreadExecutorSystem(threadName: String = "Worker-Thread") : SystemD
     }
 
     private fun <T> callMethod(system: T, method: Method, args: Array<out Any>?): Any? =
-        if (args == null) {
-            method.invoke(system)
-        } else {
-            method.invoke(system, *args)
+        try {
+            if (args == null) {
+                method.invoke(system)
+            } else {
+                method.invoke(system, *args)
+            }
+        } catch (e: Exception) {
+            log.log(Level.SEVERE, "Failed executing in ${singleThreadFactory.singleThread?.name}", e)
         }
+
 }
 
 private class SingleThreadFactory(private val threadName: String) : ThreadFactory {

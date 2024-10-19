@@ -18,7 +18,7 @@ class PlayerSystem : PlayerInterface {
     @Inject(allowsNull = true)
     private var playerManagementCommunication: PlayerManagementCommunication? = null
 
-    @InjectProperty("default.roles")
+    @InjectProperty("roles.default")
     private lateinit var defaultRoles: String
 
     private val validLoginChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
