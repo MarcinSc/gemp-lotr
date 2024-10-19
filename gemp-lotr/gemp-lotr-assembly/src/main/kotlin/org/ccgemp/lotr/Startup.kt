@@ -16,6 +16,8 @@ import org.ccgemp.db.DbAccessSystem
 import org.ccgemp.server.player.DbPlayerDAO
 import org.ccgemp.server.player.PlayerApiSystem
 import org.ccgemp.server.player.PlayerSystem
+import org.ccgemp.server.player.admin.AdminPlayerApiSystem
+import org.ccgemp.server.player.admin.AdminPlayerSystem
 
 fun main() {
     val lifecycleSystem = LifecycleSystem()
@@ -44,6 +46,8 @@ fun main() {
         ChatSystem(), ChatApiSystem(),
         // Responsible for player registration, login, etc.
         PlayerSystem(), PlayerApiSystem(), DbPlayerDAO(),
+        // Responsible for administrating users
+        AdminPlayerSystem(), AdminPlayerApiSystem(),
     ).initialize()
 
     lifecycleSystem.start()

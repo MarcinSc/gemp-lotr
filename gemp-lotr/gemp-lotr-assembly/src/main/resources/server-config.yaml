@@ -26,6 +26,14 @@ server:
     url: /gemp-lotr-server/changeEmail
   changeEmailValidate:
     url: /gemp-lotr-server/changeEmail
+  banPlayer:
+    url: /gemp-lotr-server/banUser
+  banPlayers:
+    url: /gemp-lotr-server/banMultiple
+  banPlayerTemporarily:
+    url: /gemp-lotr-server/banUserTemp
+  unbanPlayer:
+    url: /gemp-lotr-server/unBanUser
 
 parameterNames:
   actAsParameter: participantId

@@ -122,6 +122,21 @@ class DbPlayerDAO : PlayerDAO {
         }
     }
 
+    override fun findPlayerByLogin(login: String): Player? {
+        return dbAccess.openDB().withConnection(
+            StatementRunnableWithResult { connection, _ ->
+                val sql: String = _selectPlayer +
+                        """
+                            WHERE name = :name
+                        """.trimIndent()
+                val result: List<Player> = connection.createQuery(sql)
+                    .addParameter("name", login)
+                    .executeAndFetch(Player::class.java)
+
+                result.firstOrNull()
+            })
+    }
+
     override fun findPlayerByEmail(email: String): Player? {
         return dbAccess.openDB().withConnection(
             StatementRunnableWithResult { connection, _ ->
@@ -159,6 +174,55 @@ class DbPlayerDAO : PlayerDAO {
                 """.trimIndent()
             connection.createQuery(sql)
                 .addParameter("changeEmailToken", changeEmailToken)
+                .executeUpdate()
+        }
+    }
+
+    override fun banPlayer(player: Player) {
+        return dbAccess.openDB().runInTransaction { connection, _ ->
+            val sql =
+                """
+                    UPDATE player set type = '', banned_until = null where id = :id
+                """.trimIndent()
+            connection.createQuery(sql)
+                .addParameter("id", player.id)
+                .executeUpdate()
+        }
+    }
+
+    override fun banPlayers(players: List<Player>) {
+        return dbAccess.openDB().runInTransaction { connection, _ ->
+            val sql =
+                """
+                    UPDATE player set type = '', banned_until = null where id in :ids
+                """.trimIndent()
+            connection.createQuery(sql)
+                .addParameter("ids", players.map { it.id })
+                .executeUpdate()
+        }
+    }
+
+    override fun banPlayerTemporarily(player: Player, bannedUntil: Long) {
+        return dbAccess.openDB().runInTransaction { connection, _ ->
+            val sql =
+                """
+                    UPDATE player set type = 'un', banned_until = :bannedUntil where id = :id
+                """.trimIndent()
+            connection.createQuery(sql)
+                .addParameter("bannedUntil", bannedUntil)
+                .addParameter("id", player.id)
+                .executeUpdate()
+        }
+    }
+
+    override fun unbanPlayer(player: Player) {
+        return dbAccess.openDB().runInTransaction { connection, _ ->
+            val sql =
+                """
+                    UPDATE player set type = 'un', banned_until = null where id = :id
+                """.trimIndent()
+            connection.createQuery(sql)
+                .addParameter("id", player.id)
                 .executeUpdate()
         }
     }

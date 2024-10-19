@@ -5,7 +5,6 @@ import com.gempukku.lotro.async.ResponseWriter;
 import com.gempukku.lotro.cache.CacheManager;
 import com.gempukku.lotro.chat.ChatServer;
 import com.gempukku.lotro.collection.CollectionsManager;
-import com.gempukku.lotro.common.DBDefs;
 import com.gempukku.lotro.common.DateUtils;
 import com.gempukku.lotro.db.LeagueDAO;
 import com.gempukku.lotro.db.PlayerDAO;
@@ -25,13 +24,13 @@ import com.gempukku.lotro.packs.ProductLibrary;
 import com.gempukku.lotro.service.AdminService;
 import com.gempukku.lotro.tournament.*;
 import com.gempukku.util.JsonUtils;
-import com.sun.jersey.core.util.StringIgnoreCaseKeyComparator;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;import org.w3c.dom.Document;
+import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -40,7 +39,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -117,14 +115,18 @@ public class AdminRequestHandler extends LotroServerRequestHandler implements Ur
         } else if (uri.equals("/addItemsToCollection") && request.method() == HttpMethod.POST) {
             addItemsToCollection(request, responseWriter);
         } else if (uri.equals("/banUser") && request.method() == HttpMethod.POST) {
+            // Done
             banUser(request, responseWriter);
         } else if (uri.equals("/resetUserPassword") && request.method() == HttpMethod.POST) {
             resetUserPassword(request, responseWriter);
         } else if (uri.equals("/banMultiple") && request.method() == HttpMethod.POST) {
+            // Done
             banMultiple(request, responseWriter);
         } else if (uri.equals("/banUserTemp") && request.method() == HttpMethod.POST) {
+            // Done
             banUserTemp(request, responseWriter);
         } else if (uri.equals("/unBanUser") && request.method() == HttpMethod.POST) {
+            // Done
             unBanUser(request, responseWriter);
         } else if (uri.equals("/findMultipleAccounts") && request.method() == HttpMethod.POST) {
             findMultipleAccounts(request, responseWriter);
