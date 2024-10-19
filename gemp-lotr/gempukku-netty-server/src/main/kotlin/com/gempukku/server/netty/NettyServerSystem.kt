@@ -34,8 +34,15 @@ class NettyServerSystem : LifecycleObserver, HttpServerSystem, UpdatedSystem {
     @InjectProperty("server.netty.port")
     private var port: Int = 8080
 
+    @InjectProperty("server.netty.origin.pattern")
+    private lateinit var originPattern: String
+
     @Inject(allowsNull = true)
     private var banChecker: BanChecker? = null
+
+    private val originRegex by lazy {
+        Regex(originPattern)
+    }
 
     private val pendingRequests: MutableList<PendingRequest> = Collections.synchronizedList(mutableListOf())
 
@@ -48,9 +55,10 @@ class NettyServerSystem : LifecycleObserver, HttpServerSystem, UpdatedSystem {
     override fun registerRequestHandler(
         method: HttpMethod,
         uriRegex: String,
-        requestHandler: ServerRequestHandler
+        requestHandler: ServerRequestHandler,
+        validateOrigin: Boolean
     ): Runnable {
-        val registration = Registration(method, Regex(uriRegex), requestHandler)
+        val registration = Registration(method, Regex(uriRegex), requestHandler, validateOrigin)
         registrations.add(registration)
         return Runnable {
             registrations.remove(registration)
@@ -63,15 +71,15 @@ class NettyServerSystem : LifecycleObserver, HttpServerSystem, UpdatedSystem {
         )
     }
 
-    val serverRequestHandler = object : ServerRequestHandler {
-        override fun handleRequest(
-            uri: String,
-            request: HttpRequest,
-            remoteIp: String,
-            responseWriter: ResponseWriter
-        ) {
-            pendingRequests.add(PendingRequest(uri, request, remoteIp, responseWriter))
-        }
+    val serverRequestHandler = ServerRequestHandler { uri, request, remoteIp, responseWriter ->
+        pendingRequests.add(
+            PendingRequest(
+                uri,
+                request,
+                remoteIp,
+                responseWriter
+            )
+        )
     }
 
     override fun afterContextStartup() {
@@ -117,6 +125,12 @@ class NettyServerSystem : LifecycleObserver, HttpServerSystem, UpdatedSystem {
                     }
                     try {
                         registration?.let {
+                            if (registration.validateOrigin) {
+                                val origin = request.request.getHeader("Origin")
+                                origin?.takeIf { !it.matches(originRegex) }?.run {
+                                    throw HttpProcessingException(403)
+                                }
+                            }
                             registration.requestHandler.handleRequest(
                                 request.uri,
                                 request.request,
@@ -154,5 +168,6 @@ private data class Registration(
     val method: HttpMethod,
     val uriRegex: Regex,
     val requestHandler: ServerRequestHandler,
+    val validateOrigin: Boolean
 )
 

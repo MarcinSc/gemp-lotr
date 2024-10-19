@@ -2,6 +2,8 @@ server:
   netty:
     # Port the server listens on
     port: 8080
+    origin:
+      pattern: ^.*$
   polling:
     # After 10 seconds, if no events were sent, the long-polling request will return with no events
     timeout: 10000

@@ -25,6 +25,10 @@ class NettyGetHttpRequest(private val request: io.netty.handler.codec.http.HttpR
         return null
     }
 
+    override fun getHeader(headerName: String): String? {
+        return request.headers().get(headerName)
+    }
+
     override fun getQueryParameter(parameterName: String): String? {
         val parameterValues = queryDecoder.parameters()[parameterName]
         return parameterValues?.firstOrNull()
