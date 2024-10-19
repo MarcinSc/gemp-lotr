@@ -79,8 +79,8 @@ class PlayerSystem : PlayerInterface {
         }
     }
 
-    override fun changeEmailValidate(changeEmailToken: String): Boolean {
-        return playerDao.emailUpdateValidated(changeEmailToken)
+    override fun changeEmailValidate(changeEmailToken: String) {
+        playerDao.emailUpdateValidated(changeEmailToken)
     }
 
     private fun encodePassword(password: String): String {

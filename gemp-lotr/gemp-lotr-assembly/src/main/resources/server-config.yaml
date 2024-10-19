@@ -16,6 +16,14 @@ server:
     url: /gemp-lotr-server/login
   register:
     url: /gemp-lotr-server/register
+  passwordReset:
+    url: /gemp-lotr-server/passwordReset
+  passwordResetValidate:
+    url: /gemp-lotr-server/passwordResetValidate
+  changeEmail:
+    url: /gemp-lotr-server/changeEmail
+  changeEmailValidate:
+    url: /gemp-lotr-server/changeEmail
 
 parameterNames:
   actAsParameter: participantId

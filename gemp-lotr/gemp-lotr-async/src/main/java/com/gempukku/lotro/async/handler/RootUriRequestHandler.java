@@ -44,6 +44,7 @@ public class RootUriRequestHandler implements UriRequestHandler {
         originPattern = Pattern.compile(originAllowedPattern);
         _hallRequestHandler = new HallRequestHandler(context, longPollingSystem);
         _deckRequestHandler = new DeckRequestHandler(context);
+        /* migrated */
         _loginRequestHandler = new LoginRequestHandler(context);
         _statusRequestHandler = new StatusRequestHandler(context);
         _adminRequestHandler = new AdminRequestHandler(context);
@@ -53,6 +54,7 @@ public class RootUriRequestHandler implements UriRequestHandler {
         _gameRequestHandler = new GameRequestHandler(context, longPollingSystem);
         _leagueRequestHandler = new LeagueRequestHandler(context);
         _merchantRequestHandler = new MerchantRequestHandler(context);
+        /* migrated */
         _registerRequestHandler = new RegisterRequestHandler(context);
         _replayRequestHandler = new ReplayRequestHandler(context);
         _gameHistoryRequestHandler = new GameHistoryRequestHandler(context);

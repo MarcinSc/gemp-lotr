@@ -17,5 +17,5 @@ interface PlayerInterface {
 
     fun changeEmail(login: String, password: String, newEmail: String): Boolean
 
-    fun changeEmailValidate(changeEmailToken: String): Boolean
+    fun changeEmailValidate(changeEmailToken: String)
 }

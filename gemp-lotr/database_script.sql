@@ -222,6 +222,9 @@ CREATE TABLE `player` (
   `banned_until` decimal(20,0) DEFAULT NULL,
   `email` varchar(128) COLLATE utf8_bin DEFAULT NULL,
   `verified` bit(1) DEFAULT NULL,
+  `password_reset_token` varchar(20) COLLATE utf8_bin  DEFAULT NULL,
+  `new_email`            varchar(128) COLLATE utf8_bin DEFAULT NULL,
+  `change_email_token`   varchar(20) COLLATE utf8_bin  DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=32845 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;

@@ -24,6 +24,18 @@ class PlayerApiSystem : LifecycleObserver {
     @InjectProperty("server.register.url")
     private lateinit var registerUrl: String
 
+    @InjectProperty("server.passwordReset.url")
+    private lateinit var passwordResetUrl: String
+
+    @InjectProperty("server.passwordResetValidate.url")
+    private lateinit var passwordResetValidateUrl: String
+
+    @InjectProperty("server.changeEmail.url")
+    private lateinit var changeEmailUrl: String
+
+    @InjectProperty("server.changeEmailValidate.url")
+    private lateinit var changeEmailValidateUrl: String
+
     private val deregistration: MutableList<Runnable> = mutableListOf()
 
     override fun afterContextStartup() {
@@ -39,10 +51,34 @@ class PlayerApiSystem : LifecycleObserver {
                 executeRegister()
             )
         )
+        deregistration.add(
+            server.registerRequestHandler(
+                HttpMethod.POST, "^$passwordResetUrl$",
+                executePasswordReset()
+            )
+        )
+        deregistration.add(
+            server.registerRequestHandler(
+                HttpMethod.POST, "^$passwordResetValidateUrl$",
+                executePasswordResetValidate()
+            )
+        )
+        deregistration.add(
+            server.registerRequestHandler(
+                HttpMethod.POST, "^$changeEmailUrl$",
+                executeChangeEmail()
+            )
+        )
+        deregistration.add(
+            server.registerRequestHandler(
+                HttpMethod.POST, "^$changeEmailValidateUrl$",
+                executeChangeEmailValidate()
+            )
+        )
     }
 
     private fun executeRegister(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
-        { uri, request, remoteIp, responseWriter ->
+        { _, request, remoteIp, responseWriter ->
             val login = request.getFormParameter("login")
             val password = request.getFormParameter("password")
             val email = request.getFormParameter("email")
@@ -64,7 +100,7 @@ class PlayerApiSystem : LifecycleObserver {
         }
 
     private fun executeLogin(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
-        { uri, request, remoteIp, responseWriter ->
+        { _, request, remoteIp, responseWriter ->
             val login = request.getFormParameter("login")
             val password = request.getFormParameter("password")
 
@@ -84,7 +120,50 @@ class PlayerApiSystem : LifecycleObserver {
             }
         }
 
+    private fun executePasswordReset(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
+        { _, request, _, responseWriter ->
+            val email = request.getFormParameter("email") ?: throw HttpProcessingException(400)
+            playerInterface.resetPassword(email)
+            responseWriter.writeXmlResponse(null)
+        }
+
+    private fun executePasswordResetValidate(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
+        { _, request, _, responseWriter ->
+            val newPassword = request.getFormParameter("password")
+            val resetToken = request.getFormParameter("resetToken")
+            if (newPassword == null || resetToken == null) {
+                throw HttpProcessingException(400)
+            }
+            playerInterface.resetPasswordValidate(newPassword, resetToken)
+            responseWriter.writeXmlResponse(null)
+        }
+
+    private fun executeChangeEmail(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
+        { _, request, _, responseWriter ->
+            val login = request.getFormParameter("login")
+            val password = request.getFormParameter("password")
+            val email = request.getFormParameter("email")
+            if (login == null || password == null || email == null) {
+                throw HttpProcessingException(400)
+            }
+            if (playerInterface.changeEmail(login, password, email)) {
+                responseWriter.writeXmlResponse(null)
+            } else {
+                throw HttpProcessingException(403)
+            }
+        }
+
+    private fun executeChangeEmailValidate(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
+        { _, request, _, responseWriter ->
+            val changeEmailToken = request.getFormParameter("changeEmailToken") ?: throw HttpProcessingException(400)
+            playerInterface.changeEmailValidate(changeEmailToken)
+            responseWriter.writeXmlResponse(null)
+        }
+
     override fun beforeContextStopped() {
-        super.beforeContextStopped()
+        deregistration.forEach {
+            it.run()
+        }
+        deregistration.clear()
     }
 }

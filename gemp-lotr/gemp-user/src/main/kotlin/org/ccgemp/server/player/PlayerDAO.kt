@@ -17,5 +17,5 @@ interface PlayerDAO {
 
     fun updateForEmailChange(player: Player, newEmail: String, changeEmailToken: String)
 
-    fun emailUpdateValidated(changeEmailToken: String): Boolean
+    fun emailUpdateValidated(changeEmailToken: String)
 }
