@@ -32,11 +32,7 @@ class NettyPostHttpRequest(private val request: io.netty.handler.codec.http.Http
         return request.headers().get(headerName)
     }
 
-    override fun getQueryParameter(parameterName: String): String? {
-        return null
-    }
-
-    override fun getFormParameter(parameterName: String): String? {
+    override fun getParameter(parameterName: String): String? {
         val data = requestDecoder.getBodyHttpData(parameterName) ?: return null
         if (data.httpDataType == InterfaceHttpData.HttpDataType.Attribute) {
             val attribute = data as Attribute
@@ -46,7 +42,7 @@ class NettyPostHttpRequest(private val request: io.netty.handler.codec.http.Http
         }
     }
 
-    override fun getFormParameters(parameterName: String): List<String> {
+    override fun getParameters(parameterName: String): List<String> {
         val datas = requestDecoder.getBodyHttpDatas(parameterName) ?: return emptyList()
         val result: MutableList<String> = LinkedList()
         for (data in datas) {

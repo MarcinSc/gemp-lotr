@@ -79,9 +79,9 @@ class PlayerApiSystem : LifecycleObserver {
 
     private fun executeRegister(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
         { _, request, remoteIp, responseWriter ->
-            val login = request.getFormParameter("login")
-            val password = request.getFormParameter("password")
-            val email = request.getFormParameter("email")
+            val login = request.getParameter("login")
+            val password = request.getParameter("password")
+            val email = request.getParameter("email")
 
             if (login == null || password == null || email == null) {
                 throw HttpProcessingException(400)
@@ -101,8 +101,8 @@ class PlayerApiSystem : LifecycleObserver {
 
     private fun executeLogin(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
         { _, request, remoteIp, responseWriter ->
-            val login = request.getFormParameter("login")
-            val password = request.getFormParameter("password")
+            val login = request.getParameter("login")
+            val password = request.getParameter("password")
 
             if (login == null || password == null) {
                 throw HttpProcessingException(400)
@@ -122,15 +122,15 @@ class PlayerApiSystem : LifecycleObserver {
 
     private fun executePasswordReset(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
         { _, request, _, responseWriter ->
-            val email = request.getFormParameter("email") ?: throw HttpProcessingException(400)
+            val email = request.getParameter("email") ?: throw HttpProcessingException(400)
             playerInterface.resetPassword(email)
             responseWriter.writeXmlResponse(null)
         }
 
     private fun executePasswordResetValidate(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
         { _, request, _, responseWriter ->
-            val newPassword = request.getFormParameter("password")
-            val resetToken = request.getFormParameter("resetToken")
+            val newPassword = request.getParameter("password")
+            val resetToken = request.getParameter("resetToken")
             if (newPassword == null || resetToken == null) {
                 throw HttpProcessingException(400)
             }
@@ -140,9 +140,9 @@ class PlayerApiSystem : LifecycleObserver {
 
     private fun executeChangeEmail(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
         { _, request, _, responseWriter ->
-            val login = request.getFormParameter("login")
-            val password = request.getFormParameter("password")
-            val email = request.getFormParameter("email")
+            val login = request.getParameter("login")
+            val password = request.getParameter("password")
+            val email = request.getParameter("email")
             if (login == null || password == null || email == null) {
                 throw HttpProcessingException(400)
             }
@@ -155,7 +155,7 @@ class PlayerApiSystem : LifecycleObserver {
 
     private fun executeChangeEmailValidate(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
         { _, request, _, responseWriter ->
-            val changeEmailToken = request.getFormParameter("changeEmailToken") ?: throw HttpProcessingException(400)
+            val changeEmailToken = request.getParameter("changeEmailToken") ?: throw HttpProcessingException(400)
             playerInterface.changeEmailValidate(changeEmailToken)
             responseWriter.writeXmlResponse(null)
         }

@@ -12,7 +12,8 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;import org.w3c.dom.Document;
+import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -38,10 +39,13 @@ public class PlaytestRequestHandler extends LotroServerRequestHandler implements
     @Override
     public void handleRequest(String uri, HttpRequest request, Map<Type, Object> context, ResponseWriter responseWriter, String remoteIp) throws Exception {
         if (uri.equals("/addTesterFlag") && request.method() == HttpMethod.POST) {
+            // Done (with get/setPlayerRoles
             addTesterFlag(request, responseWriter);
         } else if (uri.equals("/removeTesterFlag") && request.method() == HttpMethod.POST) {
+            // Done (with get/setPlayerRoles
             removeTesterFlag(request, responseWriter);
         } else if (uri.equals("/getTesterFlag") && request.method() == HttpMethod.GET) {
+            // Done (with get/setPlayerRoles
             getTesterFlag(request, responseWriter);
         } else if (uri.equals("/getRecentReplays") && request.method() == HttpMethod.POST) {
             getRecentReplays(request, responseWriter);

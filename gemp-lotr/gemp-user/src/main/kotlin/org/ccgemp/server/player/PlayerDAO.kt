@@ -29,4 +29,6 @@ interface PlayerDAO {
     fun banPlayerTemporarily(player: Player, bannedUntil: Long)
 
     fun unbanPlayer(player: Player)
+
+    fun setPlayerType(player: Player, roles: String)
 }

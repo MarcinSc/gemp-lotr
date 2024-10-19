@@ -34,6 +34,10 @@ server:
     url: /gemp-lotr-server/banUserTemp
   unbanPlayer:
     url: /gemp-lotr-server/unBanUser
+  getPlayerRoles:
+    url: /gemp-lotr-server/getPlayerRoles
+  setPlayerRoles:
+    url: /gemp-lotr-server/setPlayerRoles
 
 parameterNames:
   actAsParameter: participantId

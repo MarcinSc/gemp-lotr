@@ -29,17 +29,13 @@ class NettyGetHttpRequest(private val request: io.netty.handler.codec.http.HttpR
         return request.headers().get(headerName)
     }
 
-    override fun getQueryParameter(parameterName: String): String? {
+    override fun getParameter(parameterName: String): String? {
         val parameterValues = queryDecoder.parameters()[parameterName]
         return parameterValues?.firstOrNull()
     }
 
-    override fun getFormParameter(parameterName: String): String? {
-        return null
-    }
-
-    override fun getFormParameters(parameterName: String): List<String> {
-        return emptyList()
+    override fun getParameters(parameterName: String): List<String> {
+        return queryDecoder.parameters()[parameterName].orEmpty()
     }
 
     fun dispose() {

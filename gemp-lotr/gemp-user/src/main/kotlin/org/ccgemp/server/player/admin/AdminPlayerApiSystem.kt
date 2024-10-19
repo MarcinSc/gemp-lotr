@@ -12,6 +12,7 @@ import com.gempukku.server.ResponseWriter
 import com.gempukku.server.ServerRequestHandler
 import com.gempukku.server.login.LoggedUserInterface
 import com.gempukku.server.login.getLoggedUser
+import javax.xml.parsers.DocumentBuilderFactory
 
 @Exposes(LifecycleObserver::class)
 class AdminPlayerApiSystem : LifecycleObserver {
@@ -35,6 +36,12 @@ class AdminPlayerApiSystem : LifecycleObserver {
 
     @InjectProperty("server.unbanPlayer.url")
     private lateinit var unbanPlayerUrl: String
+
+    @InjectProperty("server.getPlayerRoles.url")
+    private lateinit var getPlayerRolesUrl: String
+
+    @InjectProperty("server.setPlayerRoles.url")
+    private lateinit var setPlayerRolesUrl: String
 
     @InjectProperty("roles.admin")
     private lateinit var adminRole: String
@@ -66,11 +73,23 @@ class AdminPlayerApiSystem : LifecycleObserver {
                 validateAdmin(executeUnbanPlayer())
             )
         )
+        deregistration.add(
+            server.registerRequestHandler(
+                HttpMethod.GET, "^$getPlayerRolesUrl$",
+                validateAdmin(executeGetPlayerRoles())
+            )
+        )
+        deregistration.add(
+            server.registerRequestHandler(
+                HttpMethod.POST, "^$setPlayerRolesUrl",
+                validateAdmin(executeSetPlayerRoles())
+            )
+        )
     }
 
     private fun executeBanPlayer(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
         { _, request, _, responseWriter ->
-            val login = request.getFormParameter("login") ?: throw HttpProcessingException(400)
+            val login = request.getParameter("login") ?: throw HttpProcessingException(400)
             if (!playerInterface.banPlayer(login))
                 throw HttpProcessingException(404)
             responseWriter.writeXmlResponse(null)
@@ -78,7 +97,7 @@ class AdminPlayerApiSystem : LifecycleObserver {
 
     private fun executeBanPlayers(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
         { _, request, remoteIp, responseWriter ->
-            val logins = request.getFormParameters("login[]")
+            val logins = request.getParameters("login[]")
             if (logins.isEmpty())
                 throw HttpProcessingException(400)
             if (!playerInterface.banPlayers(logins.toTypedArray()))
@@ -88,8 +107,8 @@ class AdminPlayerApiSystem : LifecycleObserver {
 
     private fun executeBanPlayerTemporarily(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
         { _, request, remoteIp, responseWriter ->
-            val login = request.getFormParameter("login")
-            val duration = request.getFormParameter("duration")?.toInt()
+            val login = request.getParameter("login")
+            val duration = request.getParameter("duration")?.toInt()
             if (login == null || duration == null)
                 throw HttpProcessingException(400)
             if (!playerInterface.banPlayerTemporarily(login, duration))
@@ -99,9 +118,35 @@ class AdminPlayerApiSystem : LifecycleObserver {
 
     private fun executeUnbanPlayer(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
         { _, request, _, responseWriter ->
-            val login = request.getFormParameter("login") ?: throw HttpProcessingException(400)
+            val login = request.getParameter("login") ?: throw HttpProcessingException(400)
             if (!playerInterface.unbanPlayer(login))
                 throw HttpProcessingException(404)
+            responseWriter.writeXmlResponse(null)
+        }
+
+    private fun executeGetPlayerRoles(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
+        { _, request, _, responseWriter ->
+            val login = request.getParameter("login") ?: throw HttpProcessingException(400)
+            val playerRoles = playerInterface.getPlayerRoles(login) ?: throw HttpProcessingException(404)
+
+            val documentBuilderFactory = DocumentBuilderFactory.newInstance()
+            val documentBuilder = documentBuilderFactory.newDocumentBuilder()
+            val doc = documentBuilder.newDocument()
+            val hasTester = doc.createElement("playerRoles")
+
+            hasTester.setAttribute("result", playerRoles)
+
+            responseWriter.writeXmlResponse(doc)
+        }
+
+    private fun executeSetPlayerRoles(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
+        { _, request, _, responseWriter ->
+            val login = request.getParameter("login") ?: throw HttpProcessingException(400)
+            val playerRoles = request.getParameter("playerRoles") ?: throw HttpProcessingException(400)
+
+            if (!playerInterface.setPlayerRoles(login, playerRoles))
+                throw HttpProcessingException(404)
+
             responseWriter.writeXmlResponse(null)
         }
 

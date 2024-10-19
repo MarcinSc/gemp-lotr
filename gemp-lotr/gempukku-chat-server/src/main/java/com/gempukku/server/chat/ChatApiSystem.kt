@@ -63,7 +63,7 @@ class ChatApiSystem : LifecycleObserver {
         { uri, request, _, responseWriter ->
             val roomName = uri.substring(urlPrefix.length + 1)
             val actAsUser =
-                getActingAsUser(loggedUserInterface, request, adminRole, request.getQueryParameter(actAsParameter))
+                getActingAsUser(loggedUserInterface, request, adminRole, request.getParameter(actAsParameter))
             val gatheringChatStream = GatheringXmlChatStream()
             val added = chat.joinUser(
                 roomName,
@@ -87,14 +87,14 @@ class ChatApiSystem : LifecycleObserver {
         { uri, request, _, responseWriter ->
             val roomName = uri.substring(urlPrefix.length + 1)
             val actAsUserSystem =
-                getActingAsUser(loggedUserInterface, request, adminRole, request.getFormParameter(actAsParameter))
-            val message = request.getFormParameter("message")
+                getActingAsUser(loggedUserInterface, request, adminRole, request.getParameter(actAsParameter))
+            val message = request.getParameter("message")
 
             if (message != null && message.trim().isNotEmpty()) {
                 chat.sendMessage(roomName, actAsUserSystem.playerId, message, actAsUserSystem.roles.contains(adminRole))
             }
 
-            val pollId = request.getFormParameter(pollIdParameterName) ?: throw HttpProcessingException(404)
+            val pollId = request.getParameter(pollIdParameterName) ?: throw HttpProcessingException(404)
             val found =
                 longPolling.registerSink(
                     pollId, XmlEventSink(

@@ -4,7 +4,6 @@ interface HttpRequest {
     val method: HttpMethod
     fun getCookie(cookieName: String): String?
     fun getHeader(headerName: String): String?
-    fun getQueryParameter(parameterName: String): String?
-    fun getFormParameter(parameterName: String): String?
-    fun getFormParameters(parameterName: String): List<String>
+    fun getParameter(parameterName: String): String?
+    fun getParameters(parameterName: String): List<String>
 }

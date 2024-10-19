@@ -226,4 +226,17 @@ class DbPlayerDAO : PlayerDAO {
                 .executeUpdate()
         }
     }
+
+    override fun setPlayerType(player: Player, roles: String) {
+        return dbAccess.openDB().runInTransaction { connection, _ ->
+            val sql =
+                """
+                    UPDATE player set type = :type where id = :id
+                """.trimIndent()
+            connection.createQuery(sql)
+                .addParameter("type", roles)
+                .addParameter("id", player.id)
+                .executeUpdate()
+        }
+    }
 }

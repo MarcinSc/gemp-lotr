@@ -50,4 +50,19 @@ class AdminPlayerSystem : AdminPlayerInterface {
             false
         }
     }
+
+    override fun getPlayerRoles(login: String): String? {
+        val player = playerDao.findPlayerByLogin(login)
+        return player?.type
+    }
+
+    override fun setPlayerRoles(login: String, roles: String): Boolean {
+        val player = playerDao.findPlayerByLogin(login)
+        return if (player != null) {
+            playerDao.setPlayerType(player, roles)
+            true
+        } else {
+            false
+        }
+    }
 }
