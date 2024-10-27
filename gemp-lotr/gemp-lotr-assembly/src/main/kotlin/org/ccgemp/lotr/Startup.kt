@@ -9,6 +9,7 @@ import com.gempukku.context.resolver.expose.AnnotationSystemResolver
 import com.gempukku.context.update.UpdatingSystem
 import com.gempukku.server.chat.ChatApiSystem
 import com.gempukku.server.chat.ChatSystem
+import com.gempukku.server.chat.polling.legacy.LegacyChatEventSinkProducer
 import com.gempukku.server.login.LoggedUserSystem
 import com.gempukku.server.netty.NettyServerSystem
 import com.gempukku.server.polling.LongPollingSystem
@@ -43,7 +44,7 @@ fun main() {
         // Allows access to database
         DbAccessSystem(),
         // Responsible for chat server and its API
-        ChatSystem(), ChatApiSystem(),
+        ChatSystem(), ChatApiSystem(), LegacyChatEventSinkProducer(), LegacyChatNameDisplayFormatter(),
         // Responsible for player registration, login, etc.
         PlayerSystem(), PlayerApiSystem(), DbPlayerDAO(),
         // Responsible for administrating users

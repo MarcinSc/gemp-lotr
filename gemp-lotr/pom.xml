@@ -18,12 +18,14 @@
         <module>gemp-lotr-async</module>
         <module>gemp-lotr-images</module>
 
-        <module>gempukku-context</module>
-        <module>gempukku-netty-server</module>
-        <module>gempukku-chat-server</module>
-        <module>gempukku-server</module>
-        <module>gemp-db</module>
-        <module>gemp-user</module>
+        <module>gempukku/gempukku-context</module>
+        <module>gempukku/gempukku-netty-server</module>
+        <module>gempukku/gempukku-chat-server</module>
+        <module>gempukku/gempukku-server</module>
+
+        <module>gemp-core/gemp-db</module>
+        <module>gemp-core/gemp-user</module>
+
         <module>gemp-lotr-assembly</module>
     </modules>
 
@@ -130,9 +132,8 @@
         <repository>
             <id>maven2-repository.java.net</id>
             <name>Java.net Repository for Maven</name>
-            <url>http://download.java.net/maven/2/</url>
+            <url>https://repo.maven.apache.org/maven2/</url>
             <layout>default</layout>
         </repository>
-
     </repositories>
 </project>
