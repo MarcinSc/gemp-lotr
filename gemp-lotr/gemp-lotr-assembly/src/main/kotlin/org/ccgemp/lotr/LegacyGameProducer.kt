@@ -91,6 +91,31 @@ internal class LegacyGame(
         }
     }
 
+    override fun checkForTimeouts() {
+        val currentTime = System.currentTimeMillis()
+        if (!lotroGame.isFinished && !lotroGame.isCancelled) {
+            userFeedback.usersPendingDecision.forEach { playerId ->
+                val awaitingDecision = userFeedback.getAwaitingDecision(playerId)
+                awaitingDecision?.let { decision ->
+                    if (currentTime > decision.creationTime + gameSettings.timeSettings.maxSecondsPerDecision * 1000L) {
+                        lotroGame.playerLost(playerId, "Player decision timed-out")
+                    }
+                }
+            }
+        }
+        if (!lotroGame.isFinished && !lotroGame.isCancelled) {
+            playerClocks.forEach { (playerId, usedTimeSeconds) ->
+                val awaitingDecision = userFeedback.getAwaitingDecision(playerId)
+                val currentDecisionSeconds = awaitingDecision?.let {
+                    (currentTime - awaitingDecision.creationTime) / 1000
+                } ?: 0
+                if (gameSettings.timeSettings.maxSecondsPerPlayer > usedTimeSeconds + currentDecisionSeconds) {
+                    lotroGame.playerLost(playerId, "Player run out of time")
+                }
+            }
+        }
+    }
+
     private fun addTimeSpentOnDecisionToUserClock(participantId: String, decision: AwaitingDecision) {
         val queryTime: Long = decision.creationTime
         val currentTime = System.currentTimeMillis()

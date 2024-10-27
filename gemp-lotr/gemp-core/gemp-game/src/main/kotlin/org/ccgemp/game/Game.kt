@@ -7,6 +7,8 @@ interface Game {
 
     fun processDecision(playerId: String, decisionId: String, decisionValue: String)
 
+    fun checkForTimeouts()
+
     fun joinGame(playerId: String, channelId: String, gameStream: GameStream<Any>)
     fun leaveGame(channelId: String)
 

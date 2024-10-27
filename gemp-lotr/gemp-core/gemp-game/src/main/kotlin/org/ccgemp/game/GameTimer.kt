@@ -1,9 +1,9 @@
 package org.ccgemp.game
 
 data class GameTimer(
-    private val name: String,
-    private val maxSecondsPerPlayer: Int,
-    private val maxSecondsPerDecision: Int,
+    val name: String,
+    val maxSecondsPerPlayer: Int,
+    val maxSecondsPerDecision: Int,
 ) {
     override fun toString(): String {
         return "This game table uses the '$name' timer. Each player has a total time bank of " +

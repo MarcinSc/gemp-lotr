@@ -41,13 +41,18 @@ class GameContainerSystem : GameContainerInterface<Any>, LifecycleObserver, Upda
         val gamesToRemove = mutableSetOf<String>()
 
         games.forEach { (gameId, game) ->
+            val gameContainer = findGameContainer(gameId)
+
             val gameFinished = game.gameFinished
             if (gameFinished != null && currentTime > gameFinished + gamesLingerTime) {
-                val gameContainer = findGameContainer(gameId)
                 gameContainer?.executorService?.execute {
                     game.finalizeGame()
                     gameContainer.games.remove(gameId)
                     gamesToRemove.add(gameId)
+                }
+            } else if (gameFinished == null) {
+                gameContainer?.executorService?.execute {
+                    game.checkForTimeouts()
                 }
             }
         }
