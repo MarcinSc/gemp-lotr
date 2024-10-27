@@ -11,19 +11,20 @@
     <url>http://maven.apache.org</url>
 
     <modules>
-        <module>gemp-lotr-server</module>
-        <module>gemp-lotr-logic</module>
-        <module>gemp-lotr-common</module>
-        <module>gemp-lotr-cards</module>
         <module>gemp-lotr-async</module>
+        <module>gemp-lotr-cards</module>
+        <module>gemp-lotr-common</module>
         <module>gemp-lotr-images</module>
+        <module>gemp-lotr-logic</module>
+        <module>gemp-lotr-server</module>
 
+        <module>gempukku/gempukku-chat-server</module>
         <module>gempukku/gempukku-context</module>
         <module>gempukku/gempukku-netty-server</module>
-        <module>gempukku/gempukku-chat-server</module>
         <module>gempukku/gempukku-server</module>
 
         <module>gemp-core/gemp-db</module>
+        <module>gemp-core/gemp-game</module>
         <module>gemp-core/gemp-user</module>
 
         <module>gemp-lotr-assembly</module>

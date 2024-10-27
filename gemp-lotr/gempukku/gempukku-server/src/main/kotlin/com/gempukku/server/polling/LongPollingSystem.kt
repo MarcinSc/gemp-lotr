@@ -14,8 +14,7 @@ class LongPollingSystem : LongPolling, UpdatedSystem {
     @InjectProperty("server.polling.channelTimeout")
     private var channelTimeout: Long = 60000
 
-
-    private val pollMap: MutableMap<String, PollRegistration> = mutableMapOf()
+    private val pollMap: MutableMap<String, PollRegistration<*>> = mutableMapOf()
 
     override fun <Event> registerLongPoll(eventStream: EventStream<Event>, timeoutRunnable: Runnable?): String {
         var pollId: String
@@ -27,10 +26,11 @@ class LongPollingSystem : LongPolling, UpdatedSystem {
     }
 
     override fun <Event> registerSink(pollId: String, eventSink: EventSink<Event>): Boolean {
-        return pollMap[pollId]?.let {
-            it.eventSink?.processEventsAndClose(emptyList())
-            it.lastAccessed = System.currentTimeMillis()
-            it.eventSink = eventSink
+        return pollMap[pollId]?.let { registration ->
+            val reg = registration as PollRegistration<Event>
+            reg.eventSink?.processEventsAndClose(emptyList())
+            reg.lastAccessed = System.currentTimeMillis()
+            reg.eventSink = eventSink
             true
         } ?: false
     }
@@ -39,11 +39,11 @@ class LongPollingSystem : LongPolling, UpdatedSystem {
         val updateTime = System.currentTimeMillis()
         // Send awaiting events
         pollMap.forEach {
-            val registration = it.value
+            val registration = it.value as PollRegistration<Any>
             registration.eventSink?.let { sink ->
                 val events = registration.eventStream.consumeEvents()
                 if (events.isNotEmpty() || registration.lastAccessed + pollTimeout < updateTime) {
-                    sink.processEventsAndClose(events as List<Nothing>)
+                    sink.processEventsAndClose(events)
                     registration.eventSink = null
                 }
             }
@@ -60,9 +60,9 @@ class LongPollingSystem : LongPolling, UpdatedSystem {
     }
 }
 
-private data class PollRegistration(
+private data class PollRegistration<Event>(
     var lastAccessed: Long,
-    val eventStream: EventStream<*>,
-    var eventSink: EventSink<*>?,
+    val eventStream: EventStream<Event>,
+    var eventSink: EventSink<Event>?,
     val timeOutRunnable: Runnable?,
 )

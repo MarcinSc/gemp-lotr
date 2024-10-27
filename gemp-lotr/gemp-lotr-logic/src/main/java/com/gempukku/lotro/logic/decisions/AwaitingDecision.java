@@ -5,6 +5,8 @@ import java.util.Map;
 public interface AwaitingDecision {
     public int getAwaitingDecisionId();
 
+    public long getCreationTime();
+
     public String getText();
 
     public AwaitingDecisionType getDecisionType();
