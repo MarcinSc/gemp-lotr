@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertSame;
 
-
 public class CultureTest {
     @Test
     public void urukHaiEnum() {

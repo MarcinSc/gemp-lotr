@@ -8,8 +8,8 @@ import com.gempukku.context.processor.inject.decorator.WorkerThreadExecutorSyste
 import com.gempukku.context.processor.inject.property.YamlPropertyResolver
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
 import com.gempukku.context.update.UpdatingSystem
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
+import org.junit.Assert.assertEquals
+import org.junit.Test
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection

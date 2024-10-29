@@ -243,7 +243,6 @@ public class Filters {
                                 || game.getModifiersQuerying().isUnhastyCompanionAllowedToParticipateInSkirmishes(game, physicalCard)),
                 Filters.and(
                         CardType.MINION,
-                        Filters.notAssignedToSkirmish,
                         new Filter() {
                             @Override
                             public boolean accepts(LotroGame game, PhysicalCard physicalCard) {
@@ -253,19 +252,15 @@ public class Filters {
 
         return Filters.and(
                 assignableFilter,
-                (Filter) (game, physicalCard) -> {
-                    if (!ignoreUnassigned) {
-                        boolean notAssignedToSkirmish = Filters.notAssignedToSkirmish.accepts(game, physicalCard);
-                        if (!notAssignedToSkirmish)
-                            return false;
-                    }
-                    return game.getModifiersQuerying().canBeAssignedToSkirmish(game, assignedBySide, physicalCard);
-                });
+                ignoreUnassigned ? Filters.any : Filters.notAssignedToSkirmish,
+                (Filter) (game, physicalCard) ->
+                        game.getModifiersQuerying().canBeAssignedToSkirmish(game, assignedBySide, physicalCard));
     }
 
     public static Filter siteBlock(final SitesBlock block) {
         return (game, physicalCard) -> physicalCard.getBlueprint().getSiteBlock() == block;
     }
+
     public static final Filter frodo = Filters.name("Frodo");
     public static final Filter sam = Filters.name("Sam");
 
