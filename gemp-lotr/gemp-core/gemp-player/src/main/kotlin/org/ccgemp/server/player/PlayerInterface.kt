@@ -4,12 +4,12 @@ interface PlayerInterface {
     /**
      * Returns an authentication token if registered successfully
      */
-    fun register(login: String, password: String, email: String, remoteIp: String): String?
+    fun register(login: String, password: String, email: String, remoteIp: String): Boolean
 
     /**
      * Returns an authentication token if logged in successfully
      */
-    fun login(login: String, password: String, remoteIp: String): String?
+    fun login(login: String, password: String, remoteIp: String): Boolean
 
     fun resetPassword(email: String)
 

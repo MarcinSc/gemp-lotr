@@ -1,6 +1,6 @@
 package com.gempukku.context.processor.inject
 
 class MultipleInjectingSystem {
-    @InjectList
+    @InjectList(selectFromAncestors = false)
     lateinit var injectedSystems: List<InjectedSystem>
 }

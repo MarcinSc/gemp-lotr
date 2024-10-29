@@ -4,5 +4,5 @@ package com.gempukku.context.processor.inject
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Inject(
     val allowsNull: Boolean = false,
-    val firstNotNullFromAncestors: Boolean = false,
+    val firstNotNullFromAncestors: Boolean = true,
 )

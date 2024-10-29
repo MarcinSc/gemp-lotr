@@ -25,7 +25,7 @@
 
         <module>gemp-core/gemp-db</module>
         <module>gemp-core/gemp-game</module>
-        <module>gemp-core/gemp-user</module>
+        <module>gemp-core/gemp-player</module>
 
         <module>gemp-lotr-assembly</module>
     </modules>

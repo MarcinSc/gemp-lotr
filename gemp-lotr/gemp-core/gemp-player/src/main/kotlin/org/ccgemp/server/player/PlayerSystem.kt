@@ -4,16 +4,13 @@ import com.gempukku.context.processor.inject.Inject
 import com.gempukku.context.processor.inject.InjectProperty
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.server.generateUniqueId
-import com.gempukku.server.login.LoggedUserInterface
+import com.gempukku.server.login.UserRolesProvider
 import java.security.MessageDigest
 
-@Exposes(PlayerInterface::class)
-class PlayerSystem : PlayerInterface {
+@Exposes(PlayerInterface::class, UserRolesProvider::class)
+class PlayerSystem : PlayerInterface, UserRolesProvider {
     @Inject
-    private lateinit var playerDao: PlayerDAO
-
-    @Inject
-    private lateinit var loggedUserInterface: LoggedUserInterface
+    private lateinit var playerRepository: PlayerRepository
 
     @Inject(allowsNull = true)
     private var playerManagementCommunication: PlayerManagementCommunication? = null
@@ -24,43 +21,52 @@ class PlayerSystem : PlayerInterface {
     private val validLoginChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
     private val invalidLoginPrefixes = setOf("admin", "guest", "system", "bye")
 
-    override fun register(login: String, password: String, email: String, remoteIp: String): String? {
+    override fun register(login: String, password: String, email: String, remoteIp: String): Boolean {
         if (!validLoginName(login))
-            return null
-        return if (playerDao.registerPlayer(login, encodePassword(password), email, defaultRoles, remoteIp)) {
-            loggedUserInterface.logUser(login, defaultRoles.convertToRoleSet())
-        } else {
-            null
+            return false
+        val validateEmailToken = generateUniqueId()
+
+        val success = playerRepository.registerPlayer(
+            login,
+            encodePassword(password),
+            email,
+            validateEmailToken,
+            defaultRoles,
+            remoteIp
+        )
+        if (success) {
+            playerManagementCommunication?.sendValidateRegistrationEmail(email, validateEmailToken)
         }
+        return success
     }
 
-    override fun login(login: String, password: String, remoteIp: String): String? {
-        val player = playerDao.loginPlayer(login, password)
+    override fun login(login: String, password: String, remoteIp: String): Boolean {
+        val player = playerRepository.loginPlayer(login, password)
         return if (player != null) {
             if ((player.bannedUntil == null) || (player.bannedUntil < System.currentTimeMillis())) {
-                playerDao.updateLastIp(player, remoteIp)
-                loggedUserInterface.logUser(login, player.type.convertToRoleSet())
+                playerRepository.updateLastIp(player, remoteIp)
+                true
             } else {
                 throw PlayerBannedException()
             }
         } else {
-            null
+            false
         }
     }
 
     override fun resetPassword(email: String) {
-        val player = playerDao.findPlayerByEmail(email)
+        val player = playerRepository.findPlayerByEmail(email)
         if (player != null) {
             val resetToken = generateUniqueId()
-            playerDao.updateForPasswordReset(player, resetToken)
+            playerRepository.updateForPasswordReset(player, resetToken)
             playerManagementCommunication?.sendPasswordResetEmail(email, resetToken)
         }
     }
 
     override fun resetPasswordValidate(password: String, resetToken: String): String? {
-        val player = playerDao.findPlayerByPasswordResetToken(resetToken)
+        val player = playerRepository.findPlayerByPasswordResetToken(resetToken)
         return if (player != null) {
-            playerDao.setPassword(player, encodePassword(password))
+            playerRepository.setPassword(player, encodePassword(password))
             player.email
         } else {
             null
@@ -68,10 +74,10 @@ class PlayerSystem : PlayerInterface {
     }
 
     override fun changeEmail(login: String, password: String, newEmail: String): Boolean {
-        val player = playerDao.loginPlayer(login, password)
+        val player = playerRepository.loginPlayer(login, password)
         return if (player != null) {
             val changeEmailToken = generateUniqueId()
-            playerDao.updateForEmailChange(player, newEmail, changeEmailToken)
+            playerRepository.updateForEmailChange(player, newEmail, changeEmailToken)
             playerManagementCommunication?.sendEmailChangeEmail(newEmail, changeEmailToken)
             true
         } else {
@@ -80,11 +86,17 @@ class PlayerSystem : PlayerInterface {
     }
 
     override fun changeEmailValidate(changeEmailToken: String) {
-        playerDao.emailUpdateValidated(changeEmailToken)
+        playerRepository.emailUpdateValidated(changeEmailToken)
     }
 
     override fun findPlayerByLogin(login: String): Player? {
-        return playerDao.findPlayerByLogin(login)
+        return playerRepository.findPlayerByLogin(login)
+    }
+
+    override fun getUserRoles(userId: String): Set<String> {
+        return findPlayerByLogin(userId)?.let {
+            it.type.convertToRoleSet()
+        }.orEmpty()
     }
 
     private fun encodePassword(password: String): String {

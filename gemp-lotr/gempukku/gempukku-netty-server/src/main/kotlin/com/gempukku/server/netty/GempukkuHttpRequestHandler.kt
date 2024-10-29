@@ -2,6 +2,7 @@ package com.gempukku.server.netty
 
 import com.gempukku.server.*
 import com.gempukku.server.HttpMethod
+import com.gempukku.server.login.LoggedUserInterface
 import io.netty.buffer.Unpooled
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
@@ -22,6 +23,7 @@ import javax.xml.transform.stream.StreamResult
 
 class GempukkuHttpRequestHandler(
     private val banChecker: BanChecker?,
+    private val loggedUserInterface: LoggedUserInterface?,
     private val requestHandler: ServerRequestHandler
 ) :
     SimpleChannelInboundHandler<FullHttpRequest>() {
@@ -70,8 +72,8 @@ class GempukkuHttpRequestHandler(
                 log.info("Denying entry to user from banned IP " + requestInformation.remoteIp)
             } else {
                 val externalHttpRequest = when (httpRequest.method().toInternal()) {
-                    HttpMethod.POST -> NettyPostHttpRequest(httpRequest)
-                    else -> NettyGetHttpRequest(httpRequest)
+                    HttpMethod.POST -> NettyPostHttpRequest(httpRequest, loggedUserInterface)
+                    else -> NettyGetHttpRequest(httpRequest, loggedUserInterface)
                 }
 
                 requestHandler.handleRequest(uri, externalHttpRequest, requestInformation.remoteIp, responseSender)

@@ -1,7 +1,14 @@
 package org.ccgemp.server.player
 
-interface PlayerDAO {
-    fun registerPlayer(login: String, password: String, email: String, type: String, remoteIp: String): Boolean
+interface PlayerRepository {
+    fun registerPlayer(
+        login: String,
+        password: String,
+        email: String,
+        validateEmailToken: String,
+        type: String,
+        remoteIp: String
+    ): Boolean
 
     fun loginPlayer(login: String, password: String): Player?
 

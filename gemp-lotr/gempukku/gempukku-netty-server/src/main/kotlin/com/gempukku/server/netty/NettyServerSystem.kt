@@ -6,6 +6,7 @@ import com.gempukku.context.processor.inject.InjectProperty
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.context.update.UpdatedSystem
 import com.gempukku.server.*
+import com.gempukku.server.login.LoggedUserInterface
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
@@ -33,6 +34,9 @@ class NettyServerSystem : LifecycleObserver, HttpServerSystem, UpdatedSystem {
 
     @Inject(allowsNull = true)
     private var banChecker: BanChecker? = null
+
+    @Inject(allowsNull = true)
+    private var loggedUserInterface: LoggedUserInterface? = null
 
     private val originRegex by lazy {
         Regex(originPattern)
@@ -92,7 +96,7 @@ class NettyServerSystem : LifecycleObserver, HttpServerSystem, UpdatedSystem {
                     pipeline.addLast(HttpContentCompressor())
                     pipeline.addLast(
                         GempukkuHttpRequestHandler(
-                            banChecker, serverRequestHandler
+                            banChecker, loggedUserInterface, serverRequestHandler
                         )
                     )
                 }

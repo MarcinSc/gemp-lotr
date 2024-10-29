@@ -64,7 +64,7 @@ class ChatApiSystem : LifecycleObserver {
             val gatheringChatStream = GatheringChatStream()
             val added = chat.joinUser(
                 roomName,
-                actAsUser.playerId,
+                actAsUser.userId,
                 actAsUser.roles.contains(adminRole),
                 gatheringChatStream
             )
@@ -85,7 +85,7 @@ class ChatApiSystem : LifecycleObserver {
             val message = request.getParameter("message")
 
             if (message != null && message.trim().isNotEmpty()) {
-                chat.sendMessage(roomName, actAsUserSystem.playerId, message, actAsUserSystem.roles.contains(adminRole))
+                chat.sendMessage(roomName, actAsUserSystem.userId, message, actAsUserSystem.roles.contains(adminRole))
             }
 
             val pollId = request.getParameter(pollIdParameterName) ?: throw HttpProcessingException(404)

@@ -6,6 +6,7 @@ import com.gempukku.context.processor.inject.InjectionException
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import java.util.concurrent.Executors
 
 class WorkerThreadTest {
     @Test
@@ -13,9 +14,13 @@ class WorkerThreadTest {
         val proxySystem = ProxySystem()
         val callingSystem = CallingSystem()
 
+        val threadPoolFactory = SimpleThreadPoolFactory("Worker-Thread")
+        val executorService = Executors.newSingleThreadScheduledExecutor(threadPoolFactory)
+
+        val workerExecutorSystem = WorkerThreadExecutorSystem(threadPoolFactory, executorService)
         val context = DefaultGempukkuContext(
             null,
-            AnnotationSystemResolver(), AnnotationSystemInjector(null, WorkerThreadExecutorSystem()),
+            AnnotationSystemResolver(), AnnotationSystemInjector(null, workerExecutorSystem),
             proxySystem, callingSystem
         )
 
@@ -37,7 +42,10 @@ class WorkerThreadTest {
         val proxySystem = ProxySystem()
         val callingSystem = CallingSystem()
 
-        val workerExecutorSystem = WorkerThreadExecutorSystem()
+        val threadPoolFactory = SimpleThreadPoolFactory("Worker-Thread")
+        val executorService = Executors.newSingleThreadScheduledExecutor(threadPoolFactory)
+
+        val workerExecutorSystem = WorkerThreadExecutorSystem(threadPoolFactory, executorService)
         val context = DefaultGempukkuContext(
             null,
             AnnotationSystemResolver(), AnnotationSystemInjector(null, workerExecutorSystem),
@@ -47,7 +55,7 @@ class WorkerThreadTest {
         context.initialize()
 
         // This will be executed in the work Thread
-        workerExecutorSystem.executorService.submit {
+        executorService.submit {
             callingSystem.execute()
             assertTrue(proxySystem.executed)
 

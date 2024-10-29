@@ -1,7 +1,7 @@
 package com.gempukku.server.login
 
 data class LoggedUser(
-    val playerId: String,
+    val userId: String,
     val roles: Set<String>,
-    var lastAccess: Long,
+    val lastAccess: Long,
 )

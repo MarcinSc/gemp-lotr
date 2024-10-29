@@ -1,6 +1,6 @@
 package com.gempukku.context.processor.inject
 
 class SingleInjectingSystem {
-    @Inject
+    @Inject(firstNotNullFromAncestors = false)
     lateinit var injectedSystem: InjectedSystem
 }

@@ -3,14 +3,8 @@ package com.gempukku.server.login
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpRequest
 
-fun findLoggedUser(loggedUserInterface: LoggedUserInterface, request: HttpRequest): LoggedUser? {
-    return request.getCookie("loggedUser")?.let {
-        loggedUserInterface.findLoggedUser(it)
-    }
-}
-
 fun getLoggedUser(loggedUserInterface: LoggedUserInterface, request: HttpRequest): LoggedUser {
-    return findLoggedUser(loggedUserInterface, request) ?: throw HttpProcessingException(401)
+    return loggedUserInterface.findLoggedUser(request) ?: throw HttpProcessingException(401)
 }
 
 fun getActingAsUser(

@@ -15,13 +15,10 @@ import java.util.logging.Logger
 private val log: Logger = Logger.getLogger(AnnotationSystemInjector::class.java.name)
 
 @Exposes(ContextScheduledExecutor::class)
-class WorkerThreadExecutorSystem(threadName: String = "Worker-Thread") : SystemDecorator, ContextScheduledExecutor {
-    private val singleThreadFactory = SingleThreadFactory(threadName)
-    val executorService: ScheduledExecutorService =
-        Executors.newSingleThreadScheduledExecutor(singleThreadFactory).also {
-            // Ensure thread is created
-            it.submit {}.get()
-        }
+class WorkerThreadExecutorSystem(
+    private val threadPool: ThreadPool,
+    private val executorService: ScheduledExecutorService,
+) : SystemDecorator, ContextScheduledExecutor {
 
     override fun <T> decorate(system: T, systemClass: Class<T>): T {
         val methodsThatCanBeOffloadedToWorkerThread = mutableSetOf<Method>()
@@ -33,7 +30,7 @@ class WorkerThreadExecutorSystem(threadName: String = "Worker-Thread") : SystemD
         }
 
         val handler = InvocationHandler { _, method, args ->
-            if (Thread.currentThread() == singleThreadFactory.singleThread) {
+            if (threadPool.containsThread(Thread.currentThread())) {
                 callMethod(system, method, args)
             } else {
                 if (methodsThatCanBeOffloadedToWorkerThread.contains(method)) {
@@ -84,15 +81,7 @@ class WorkerThreadExecutorSystem(threadName: String = "Worker-Thread") : SystemD
                 method.invoke(system, *args)
             }
         } catch (e: Exception) {
-            log.log(Level.SEVERE, "Failed executing in ${singleThreadFactory.singleThread?.name}", e)
+            log.log(Level.SEVERE, "Failed executing in ${Thread.currentThread().name}", e)
         }
 
-}
-
-private class SingleThreadFactory(private val threadName: String) : ThreadFactory {
-    var singleThread: Thread? = null
-
-    override fun newThread(r: Runnable): Thread {
-        return Thread(r, threadName).also { singleThread = it }
-    }
 }

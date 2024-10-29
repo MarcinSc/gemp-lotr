@@ -3,6 +3,7 @@ package com.gempukku.server.netty
 import com.gempukku.context.DefaultGempukkuContext
 import com.gempukku.context.lifecycle.LifecycleSystem
 import com.gempukku.context.processor.inject.AnnotationSystemInjector
+import com.gempukku.context.processor.inject.decorator.SimpleThreadPoolFactory
 import com.gempukku.context.processor.inject.decorator.WorkerThreadExecutorSystem
 import com.gempukku.context.processor.inject.property.YamlPropertyResolver
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
@@ -13,12 +14,17 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.concurrent.Executors
 
 
 class NettyServerSystemTest {
     @Test
     fun testStartupAndShutdown() {
-        val workerThreadExecutorSystem = WorkerThreadExecutorSystem()
+        val threadPoolFactory = SimpleThreadPoolFactory("Worker-Thread")
+        val executorService = Executors.newSingleThreadScheduledExecutor(threadPoolFactory)
+
+        val workerThreadExecutorSystem = WorkerThreadExecutorSystem(threadPoolFactory, executorService)
+
         val nettyServerSystem = NettyServerSystem()
         val lifecycleSystem = LifecycleSystem()
 

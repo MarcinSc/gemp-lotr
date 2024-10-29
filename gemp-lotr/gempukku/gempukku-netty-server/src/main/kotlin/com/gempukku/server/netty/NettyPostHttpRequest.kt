@@ -2,6 +2,8 @@ package com.gempukku.server.netty
 
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpRequest
+import com.gempukku.server.login.LoggedUser
+import com.gempukku.server.login.LoggedUserInterface
 import io.netty.handler.codec.http.HttpHeaderNames
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder
 import io.netty.handler.codec.http.multipart.Attribute
@@ -9,7 +11,10 @@ import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder
 import io.netty.handler.codec.http.multipart.InterfaceHttpData
 import java.util.*
 
-class NettyPostHttpRequest(private val request: io.netty.handler.codec.http.HttpRequest) : HttpRequest {
+class NettyPostHttpRequest(
+    private val request: io.netty.handler.codec.http.HttpRequest,
+    private val loggedUserInterface: LoggedUserInterface?,
+) : HttpRequest {
     private val requestDecoder = HttpPostRequestDecoder(request)
 
     override val method: HttpMethod = HttpMethod.POST
@@ -52,6 +57,10 @@ class NettyPostHttpRequest(private val request: io.netty.handler.codec.http.Http
             }
         }
         return result
+    }
+
+    override fun getLoggedUserId(): LoggedUser? {
+        return loggedUserInterface?.findLoggedUser(this)
     }
 
     fun dispose() {

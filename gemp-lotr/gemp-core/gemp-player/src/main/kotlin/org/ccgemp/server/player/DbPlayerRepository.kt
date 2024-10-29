@@ -5,8 +5,8 @@ import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.db.DbAccessInterface
 import org.sql2o.StatementRunnableWithResult
 
-@Exposes(PlayerDAO::class)
-class DbPlayerDAO : PlayerDAO {
+@Exposes(PlayerRepository::class)
+class DbPlayerRepository : PlayerRepository {
     @Inject
     private lateinit var dbAccess: DbAccessInterface
 
@@ -25,11 +25,14 @@ class DbPlayerDAO : PlayerDAO {
             FROM player
         """.trimIndent()
 
+    private val cacheByLogin: MutableMap<String, Player> = mutableMapOf()
+    private val cacheByEmail: MutableMap<String, Player> = mutableMapOf()
 
     override fun registerPlayer(
         login: String,
         password: String,
         email: String,
+        validateEmailToken: String,
         type: String,
         remoteIp: String
     ): Boolean {
@@ -37,12 +40,14 @@ class DbPlayerDAO : PlayerDAO {
             StatementRunnableWithResult { connection, _ ->
                 val sql =
                     """
-                        INSERT INTO player (name, password, email, type, create_ip)
-                        VALUES (:login, :password, :email, :type, :create_ip)
+                        INSERT INTO player (name, password, new_email, change_email_token, type, create_ip)
+                        VALUES (:login, :password, :email, :validateEmailToken, :type, :create_ip)
                     """.trimIndent()
                 connection.createQuery(sql)
                     .addParameter("login", login)
                     .addParameter("password", password)
+                    .addParameter("email", email)
+                    .addParameter("validateEmailToken", validateEmailToken)
                     .addParameter("type", type)
                     .addParameter("create_ip", remoteIp)
                     .executeUpdate()
@@ -123,7 +128,7 @@ class DbPlayerDAO : PlayerDAO {
     }
 
     override fun findPlayerByLogin(login: String): Player? {
-        return dbAccess.openDB().withConnection(
+        return cacheByLogin[login] ?: dbAccess.openDB().withConnection(
             StatementRunnableWithResult { connection, _ ->
                 val sql: String = _selectPlayer +
                         """
@@ -134,11 +139,11 @@ class DbPlayerDAO : PlayerDAO {
                     .executeAndFetch(Player::class.java)
 
                 result.firstOrNull()
-            })
+            })?.also { cacheByLogin[login] = it }
     }
 
     override fun findPlayerByEmail(email: String): Player? {
-        return dbAccess.openDB().withConnection(
+        return cacheByEmail[email.lowercase()] ?: dbAccess.openDB().withConnection(
             StatementRunnableWithResult { connection, _ ->
                 val sql: String = _selectPlayer +
                         """
@@ -149,7 +154,7 @@ class DbPlayerDAO : PlayerDAO {
                     .executeAndFetch(Player::class.java)
 
                 result.firstOrNull()
-            })
+            })?.also { cacheByEmail[email.lowercase()] = it }
     }
 
     override fun updateForEmailChange(player: Player, newEmail: String, changeEmailToken: String) {
