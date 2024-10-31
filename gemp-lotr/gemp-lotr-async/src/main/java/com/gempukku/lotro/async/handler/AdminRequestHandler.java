@@ -28,8 +28,6 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -42,6 +40,8 @@ import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 public class AdminRequestHandler extends LotroServerRequestHandler implements UriRequestHandler {
@@ -59,7 +59,7 @@ public class AdminRequestHandler extends LotroServerRequestHandler implements Ur
     private final AdminService _adminService;
     private final ChatServer _chatServer;
 
-    private static final Logger _log = LogManager.getLogger(AdminRequestHandler.class);
+    private static final Logger _log = Logger.getLogger(AdminRequestHandler.class.getName());
 
     public AdminRequestHandler(Map<Type, Object> context) {
         super(context);
@@ -1069,7 +1069,7 @@ public class AdminRequestHandler extends LotroServerRequestHandler implements Ur
 
             responseWriter.writeHtmlResponse("OK");
         } catch (Exception e) {
-            _log.error("Error response for " + request.uri(), e);
+            _log.log(Level.SEVERE, "Error response for " + request.uri(), e);
             responseWriter.writeHtmlResponse("Error handling request");
         } finally {
             postDecoder.destroy();

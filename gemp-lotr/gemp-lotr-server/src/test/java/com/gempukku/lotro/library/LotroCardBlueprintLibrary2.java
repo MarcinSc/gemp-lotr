@@ -12,8 +12,6 @@ import com.gempukku.lotro.logic.GameUtils;
 import com.gempukku.util.JsonUtils;
 import com.google.common.reflect.ClassPath;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.hjson.JsonValue;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -25,10 +23,12 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public class LotroCardBlueprintLibrary2 {
-    private static final Logger logger = LogManager.getLogger(LotroCardBlueprintLibrary2.class);
+    private static final Logger logger = Logger.getLogger(LotroCardBlueprintLibrary2.class.getName());
 
     private final String[] _packageNames =
             new String[]{
@@ -211,7 +211,7 @@ public class LotroCardBlueprintLibrary2 {
             for (Map.Entry<String, JSONObject> cardEntry : cardsInFile) {
                 String blueprintId = cardEntry.getKey();
                 if (validateNew && _blueprints.containsKey(blueprintId)) {
-                    logger.error(blueprintId + " from " +
+                    logger.log(Level.SEVERE, blueprintId + " from " +
                             file.getAbsolutePath() + " - Replacing existing card definition!");
                 }
                 final JSONObject cardDefinition = cardEntry.getValue();
@@ -219,21 +219,21 @@ public class LotroCardBlueprintLibrary2 {
                     final var lotroCardBlueprint = cardBlueprintBuilder.buildFromJson(blueprintId, cardDefinition);
                     _blueprints.put(blueprintId, lotroCardBlueprint);
                 } catch (InvalidCardDefinitionException exp) {
-                    logger.error("Unable to load card " + blueprintId +
+                    logger.log(Level.SEVERE, "Unable to load card " + blueprintId +
                             " from " + file.getAbsolutePath(), exp);
                 }
             }
         } catch (FileNotFoundException exp) {
-            logger.error("Failed to find file " + file.getAbsolutePath(), exp);
+            logger.log(Level.SEVERE, "Failed to find file " + file.getAbsolutePath(), exp);
         } catch (IOException exp) {
-            logger.error("Error while loading file " + file.getAbsolutePath(), exp);
+            logger.log(Level.SEVERE, "Error while loading file " + file.getAbsolutePath(), exp);
         } catch (ParseException exp) {
-            logger.error("Failed to parse file " + file.getAbsolutePath(), exp);
+            logger.log(Level.SEVERE, "Failed to parse file " + file.getAbsolutePath(), exp);
         }
         catch (Exception exp) {
-            logger.error("Unexpected error while parsing file " + file.getAbsolutePath(), exp);
+            logger.log(Level.SEVERE, "Unexpected error while parsing file " + file.getAbsolutePath(), exp);
         }
-        logger.debug("Loaded JSON card file " + file.getName());
+        logger.log(Level.FINE, "Loaded JSON card file " + file.getName());
     }
 
     //com.gempukku.lotro.cards.set10.dwarven.Card10_001$1
@@ -241,7 +241,7 @@ public class LotroCardBlueprintLibrary2 {
 
     private void cacheAllJavaBlueprints() {
         try {
-            logger.debug("Loading remaining Java cards...");
+            logger.log(Level.FINE, "Loading remaining Java cards...");
             final ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
             for(var info : ClassPath.from(loader).getTopLevelClasses()) {
@@ -265,7 +265,7 @@ public class LotroCardBlueprintLibrary2 {
                 }
             }
 
-            logger.debug("Java card loading complete.");
+            logger.log(Level.FINE, "Java card loading complete.");
         } catch (IOException e) {
             throw new RuntimeException("Unable to start the server: failure while searching for Java cards.", e);
         }

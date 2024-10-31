@@ -17,8 +17,6 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -29,6 +27,8 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class DeckRequestHandler extends LotroServerRequestHandler implements UriRequestHandler {
@@ -39,7 +39,7 @@ public class DeckRequestHandler extends LotroServerRequestHandler implements Uri
     private final SoloDraftDefinitions _draftLibrary;
     private final LotroServer _lotroServer;
 
-    private static final Logger _log = LogManager.getLogger(DeckRequestHandler.class);
+    private static final Logger _log = Logger.getLogger(DeckRequestHandler.class.getName());
 
     public DeckRequestHandler(Map<Type, Object> context) {
         super(context);
@@ -602,7 +602,7 @@ public class DeckRequestHandler extends LotroServerRequestHandler implements Uri
                 side = "FREE_PEOPLE";
             }
             catch (NullPointerException e) {
-                _log.debug("Non-sided card?? " + cardItem.getBlueprintId());
+                _log.log(Level.FINE, "Non-sided card?? " + cardItem.getBlueprintId());
                 side = "FREE_PEOPLE";
             }
             card.setAttribute("side", side);

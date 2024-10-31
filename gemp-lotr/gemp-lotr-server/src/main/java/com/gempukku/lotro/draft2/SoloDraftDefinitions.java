@@ -5,8 +5,7 @@ import com.gempukku.lotro.common.AppConfig;
 import com.gempukku.lotro.draft2.builder.*;
 import com.gempukku.lotro.game.LotroCardBlueprintLibrary;
 import com.gempukku.lotro.game.formats.LotroFormatLibrary;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;import org.json.simple.JSONArray;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -18,9 +17,11 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SoloDraftDefinitions {
-    private static final Logger _logger = LogManager.getLogger(SoloDraftDefinitions.class);
+    private static final Logger _logger = Logger.getLogger(SoloDraftDefinitions.class.getName());
     private Map<String, SoloDraft> _draftTypes = new HashMap<>();
     private final DraftChoiceBuilder _draftChoiceBuilder;
     private final File _draftDefinitionPath;
@@ -87,7 +88,7 @@ public class SoloDraftDefinitions {
                         draftChoiceDefinitions.add(draftChoiceDefinition);
                 }
 
-                _logger.debug("Loaded draft definition: " + file);
+                _logger.log(Level.FINE, "Loaded draft definition: " + file);
                 var result = new DefaultSoloDraft(code, format, cardCollectionProducer, draftChoiceDefinitions, draftPoolProducer);
 
                 if(_draftTypes.containsKey(code))

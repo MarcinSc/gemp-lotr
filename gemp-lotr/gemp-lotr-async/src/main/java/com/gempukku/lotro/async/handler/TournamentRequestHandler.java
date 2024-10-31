@@ -12,8 +12,6 @@ import com.gempukku.lotro.tournament.Tournament;
 import com.gempukku.lotro.tournament.TournamentService;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -35,8 +33,6 @@ public class TournamentRequestHandler extends LotroServerRequestHandler implemen
     private final LotroCardBlueprintLibrary _library;
     private final SortAndFilterCards _sortAndFilterCards;
     private final DeckRenderer _deckRenderer;
-
-    private static final Logger _log = LogManager.getLogger(TournamentRequestHandler.class);
 
     public TournamentRequestHandler(Map<Type, Object> context) {
         super(context);

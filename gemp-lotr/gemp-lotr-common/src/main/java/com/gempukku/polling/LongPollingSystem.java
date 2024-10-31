@@ -1,11 +1,7 @@
 package com.gempukku.polling;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
@@ -13,8 +9,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class LongPollingSystem {
-    private static final Logger _log = LogManager.getLogger(LongPollingSystem.class);
-
     private final Set<ResourceWaitingRequest> _waitingActions = Collections.synchronizedSet(new HashSet<>());
 
     private final long _pollingInterval = 100;

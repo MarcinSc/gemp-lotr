@@ -21,8 +21,7 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;import org.w3c.dom.Document;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -30,6 +29,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class HallRequestHandler extends LotroServerRequestHandler implements UriRequestHandler {
     private final CollectionsManager _collectionManager;
@@ -40,7 +41,7 @@ public class HallRequestHandler extends LotroServerRequestHandler implements Uri
     private final LotroServer _lotroServer;
     private final LongPollingSystem longPollingSystem;
 
-    private static final Logger _log = LogManager.getLogger(HallRequestHandler.class);
+    private static final Logger _log = Logger.getLogger(HallRequestHandler.class.getName());
 
     public HallRequestHandler(Map<Type, Object> context, LongPollingSystem longPollingSystem) {
         super(context);
@@ -108,11 +109,11 @@ public class HallRequestHandler extends LotroServerRequestHandler implements Uri
                 return;
             } catch (HallException ex) {
                 if(!IgnoreError(ex)) {
-                    _log.error("Error response for " + request.uri(), ex);
+                    _log.log(Level.SEVERE, "Error response for " + request.uri(), ex);
                 }
             }
             catch (Exception ex) {
-                _log.error("Additional error response for " + request.uri(), ex);
+                _log.log(Level.SEVERE, "Additional error response for " + request.uri(), ex);
                 throw ex;
             }
             responseWriter.writeXmlResponse(marshalException(e));
@@ -202,7 +203,7 @@ public class HallRequestHandler extends LotroServerRequestHandler implements Uri
         {
             //This is a worthless error that doesn't need to be spammed into the log
             if(!IgnoreError(ex)) {
-                _log.error("Error response for " + request.uri(), ex);
+                _log.log(Level.SEVERE, "Error response for " + request.uri(), ex);
             }
             responseWriter.writeXmlResponse(marshalException(new HallException("Failed to create table. Please try again later.")));
         }
@@ -280,7 +281,7 @@ public class HallRequestHandler extends LotroServerRequestHandler implements Uri
             responseWriter.writeXmlResponse(null);
         } catch (HallException e) {
             if(!IgnoreError(e)) {
-                _log.error("Error response for " + request.uri(), e);
+                _log.log(Level.SEVERE, "Error response for " + request.uri(), e);
             }
             responseWriter.writeXmlResponse(marshalException(e));
         }
@@ -464,7 +465,7 @@ public class HallRequestHandler extends LotroServerRequestHandler implements Uri
             logHttpError(_log, exp.getStatus(), request.uri(), exp);
             responseWriter.writeError(exp.getStatus());
         } catch (Exception exp) {
-            _log.error("Error response for " + request.uri(), exp);
+            _log.log(Level.SEVERE, "Error response for " + request.uri(), exp);
             responseWriter.writeError(500);
         }
     }

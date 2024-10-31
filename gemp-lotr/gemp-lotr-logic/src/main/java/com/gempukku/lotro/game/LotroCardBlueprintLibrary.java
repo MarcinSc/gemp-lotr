@@ -9,8 +9,6 @@ import com.gempukku.lotro.game.packs.SetDefinition;
 import com.gempukku.lotro.logic.GameUtils;
 import com.gempukku.util.JsonUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.hjson.JsonValue;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -20,9 +18,11 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LotroCardBlueprintLibrary {
-    private static final Logger logger = LogManager.getLogger(LotroCardBlueprintLibrary.class);
+    private static final Logger logger = Logger.getLogger(LotroCardBlueprintLibrary.class.getName());
 
     private final Map<String, LotroCardBlueprint> _blueprints = new HashMap<>();
     private final Map<String, String> _blueprintMapping = new HashMap<>();
@@ -192,7 +192,7 @@ public class LotroCardBlueprintLibrary {
                     final var lotroCardBlueprint = cardBlueprintBuilder.buildFromJson(blueprintId, cardDefinition);
                     result.put(blueprintId, lotroCardBlueprint);
                 } catch (InvalidCardDefinitionException exp) {
-                    logger.error("Unable to load card " + blueprintId, exp);
+                    logger.log(Level.SEVERE, "Unable to load card " + blueprintId, exp);
                 }
             }
         }
@@ -208,20 +208,20 @@ public class LotroCardBlueprintLibrary {
             for (Map.Entry<String, LotroCardBlueprint> cardBlueprintEntry : loadedCards.entrySet()) {
                 String blueprintId = cardBlueprintEntry.getKey();
                 if (validateNew && _blueprints.containsKey(blueprintId))
-                    logger.error(blueprintId + " from " +
+                    logger.log(Level.SEVERE, blueprintId + " from " +
                             file.getAbsolutePath() + " - Replacing existing card definition!");
                 _blueprints.put(blueprintId, cardBlueprintEntry.getValue());
             }
         } catch (FileNotFoundException exp) {
-            logger.error("Failed to find file " + file.getAbsolutePath(), exp);
+            logger.log(Level.SEVERE, "Failed to find file " + file.getAbsolutePath(), exp);
         } catch (IOException exp) {
-            logger.error("Error while loading file " + file.getAbsolutePath(), exp);
+            logger.log(Level.SEVERE, "Error while loading file " + file.getAbsolutePath(), exp);
         } catch (ParseException exp) {
-            logger.error("Failed to parse file " + file.getAbsolutePath(), exp);
+            logger.log(Level.SEVERE, "Failed to parse file " + file.getAbsolutePath(), exp);
         } catch (Exception exp) {
-            logger.error("Unexpected error while parsing file " + file.getAbsolutePath(), exp);
+            logger.log(Level.SEVERE, "Unexpected error while parsing file " + file.getAbsolutePath(), exp);
         }
-        logger.debug("Loaded JSON card file " + file.getName());
+        logger.log(Level.FINE, "Loaded JSON card file " + file.getName());
     }
 
     public String getBaseBlueprintId(String blueprintId) {

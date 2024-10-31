@@ -1,16 +1,15 @@
 package com.gempukku.lotro.common;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AppConfig {
-    private static final Logger LOGGER = LogManager.getLogger(AppConfig.class);
+    private static final Logger LOGGER = Logger.getLogger(AppConfig.class.getName());
     private static Properties _properties;
     private static File _root;
 
@@ -24,7 +23,7 @@ public class AppConfig {
                     props.load(AppConfig.class.getResourceAsStream(gempPropertiesOverride));
                 _properties = props;
             } catch (Exception exp) {
-                LOGGER.error("Can't load application configuration", exp);
+                LOGGER.log(Level.SEVERE, "Can't load application configuration", exp);
                 throw new RuntimeException("Unable to load application configuration", exp);
             }
         }

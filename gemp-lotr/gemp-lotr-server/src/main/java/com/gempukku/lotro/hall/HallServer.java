@@ -19,8 +19,6 @@ import com.gempukku.lotro.logic.timing.GameResultListener;
 import com.gempukku.lotro.logic.vo.LotroDeck;
 import com.gempukku.lotro.service.AdminService;
 import com.gempukku.lotro.tournament.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -28,6 +26,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class HallServer extends AbstractServer {
     private static final int _playerTableInactivityPeriod = 1000 * 20; // 20 seconds
@@ -59,7 +59,7 @@ public class HallServer extends AbstractServer {
     private final ChatRoomMediator _hallChat;
     private final GameResultListener _notifyHallListeners = new NotifyHallListenersGameResultListener();
 
-    private static final Logger _log = LogManager.getLogger(HallServer.class);
+    private static final Logger _log = Logger.getLogger(HallServer.class.getName());
 
     public HallServer(IgnoreDAO ignoreDAO, LotroServer lotroServer, ChatServer chatServer, LeagueService leagueService, TournamentService tournamentService, LotroCardBlueprintLibrary library,
                       LotroFormatLibrary formatLibrary, CollectionsManager collectionsManager, AdminService adminService) {
@@ -534,20 +534,20 @@ public class HallServer extends AbstractServer {
                 if(submitted) {
                     result = "Registered deck '" + deckName + "' with tournament <b>" + tournament.getTournamentName() + "</b> successfully."
                             + "<br/><br/>If you make an update to your deck, you will need to register it here again for any changes to take effect.";
-                    _log.trace("Player '" + player.getName() + "' registered deck '" + deckName + "' for tournament '" + tournament.getTournamentName() + "' successfully.");
+                    _log.log(Level.FINEST, "Player '" + player.getName() + "' registered deck '" + deckName + "' for tournament '" + tournament.getTournamentName() + "' successfully.");
                 }
                 else {
                     result = "Could not register deck with tournament <b>" + tournament.getTournamentName() + "</b>."
                             + "<br/><br/>Please contact an administrator if you think this was in error.";
 
-                    _log.trace("Player '" + player.getName() + "' failed to register deck '" + deckName + "' for tournament '" + tournament.getTournamentName() + "'.");
+                    _log.log(Level.FINEST, "Player '" + player.getName() + "' failed to register deck '" + deckName + "' for tournament '" + tournament.getTournamentName() + "'.");
                 }
 
                 hallChanged();
             }
             else {
                 result = "Registration for that tournament has already closed.";
-                _log.trace("Player '" + player.getName() + "' attempted to register deck '" + deckName + "' for tournament '" + tournament.getTournamentName() + "' after registration closed.");
+                _log.log(Level.FINEST, "Player '" + player.getName() + "' attempted to register deck '" + deckName + "' for tournament '" + tournament.getTournamentName() + "' after registration closed.");
             }
 
             return result;
@@ -630,7 +630,7 @@ public class HallServer extends AbstractServer {
     private LotroDeck validateUserAndDeck(LotroFormat format, Player player, String deckName, CollectionType collectionType) throws HallException {
         LotroDeck lotroDeck = _lotroServer.getParticipantDeck(player, deckName);
         if (lotroDeck == null) {
-            _log.debug("Player '" + player.getName() + "' attempting to use deck '" + deckName + "' but failed.");
+            _log.log(Level.FINE, "Player '" + player.getName() + "' attempting to use deck '" + deckName + "' but failed.");
             throw new HallException("You don't have a deck registered yet");
         }
 

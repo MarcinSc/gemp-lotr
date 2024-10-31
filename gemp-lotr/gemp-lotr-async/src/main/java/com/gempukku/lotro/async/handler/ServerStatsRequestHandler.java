@@ -9,8 +9,6 @@ import com.gempukku.util.JsonUtils;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.time.ZoneOffset;
@@ -18,11 +16,12 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.logging.Logger;
 
 public class ServerStatsRequestHandler extends LotroServerRequestHandler implements UriRequestHandler {
     private final GameHistoryService _gameHistoryService;
 
-    private static final Logger _log = LogManager.getLogger(ServerStatsRequestHandler.class);
+    private static final Logger _log = Logger.getLogger(ServerStatsRequestHandler.class.getName());
 
     public ServerStatsRequestHandler(Map<Type, Object> context) {
         super(context);

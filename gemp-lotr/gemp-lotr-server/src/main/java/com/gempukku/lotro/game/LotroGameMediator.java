@@ -16,14 +16,14 @@ import com.gempukku.lotro.logic.modifiers.Modifier;
 import com.gempukku.lotro.logic.timing.DefaultLotroGame;
 import com.gempukku.lotro.logic.timing.GameResultListener;
 import com.gempukku.lotro.logic.vo.LotroDeck;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LotroGameMediator {
-    private static final Logger LOG = LogManager.getLogger(LotroGameMediator.class);
+    private static final Logger LOG = Logger.getLogger(LotroGameMediator.class.getName());
 
     private final Map<String, GameCommunicationChannel> _communicationChannels = Collections.synchronizedMap(new HashMap<>());
     private final DefaultUserFeedback _userFeedback;
@@ -451,7 +451,7 @@ public class LotroGameMediator {
                                 _lotroGame.getGameState().sendWarning(playerName, decisionResultInvalidException.getWarningMessage());
                                 _userFeedback.sendAwaitingDecision(playerName, awaitingDecision);
                             } catch (RuntimeException runtimeException) {
-                                LOG.error("Error processing game decision", runtimeException);
+                                LOG.log(Level.SEVERE, "Error processing game decision", runtimeException);
                                 _lotroGame.cancelGame();
                             }
                         }

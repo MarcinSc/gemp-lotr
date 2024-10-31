@@ -10,8 +10,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;import org.w3c.dom.Document;
+import org.w3c.dom.Document;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -25,6 +24,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import static io.netty.handler.codec.http.HttpHeaderNames.*;
 import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
@@ -32,8 +33,8 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 public class GempukkuHttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     private final static long SIX_MONTHS = 1000L * 60L * 60L * 24L * 30L * 6L;
-    private static final Logger _log = LogManager.getLogger(GempukkuHttpRequestHandler.class);
-    private static final Logger _accesslog = LogManager.getLogger("access");
+    private static final Logger _log = Logger.getLogger(GempukkuHttpRequestHandler.class.getName());
+    private static final Logger _accesslog = Logger.getLogger("access");
     private final Map<String, byte[]> _fileCache = Collections.synchronizedMap(new HashMap<>());
 
     private final Map<Type, Object> _objects;
@@ -58,7 +59,7 @@ public class GempukkuHttpRequestHandler extends SimpleChannelInboundHandler<Full
         }
 
         public void printLog(int statusCode, long finishedTime) {
-            _accesslog.debug(remoteIp + "," + statusCode + "," + uri + "," + (finishedTime - requestTime));
+            _accesslog.log(Level.FINE, remoteIp + "," + statusCode + "," + uri + "," + (finishedTime - requestTime));
         }
     }
 
@@ -95,11 +96,11 @@ public class GempukkuHttpRequestHandler extends SimpleChannelInboundHandler<Full
             int code = exp.getStatus();
             //401, 403, 404, and other 400-series errors should just do minimal logging,
             if(code % 400 < 100 && code != 400) {
-                _log.debug("HTTP " + code + " response for " + requestInformation.remoteIp + ": " + requestInformation.uri);
+                _log.log(Level.FINE, "HTTP " + code + " response for " + requestInformation.remoteIp + ": " + requestInformation.uri);
             }
             // but 400 itself should error out
             else if(code == 400 || code % 500 < 100) {
-                _log.error("HTTP code " + code + " response for " + requestInformation.remoteIp + ": " + requestInformation.uri, exp);
+                _log.log(Level.SEVERE, "HTTP code " + code + " response for " + requestInformation.remoteIp + ": " + requestInformation.uri, exp);
             }
 
             if(exp.getMessage() != null) {
@@ -109,7 +110,7 @@ public class GempukkuHttpRequestHandler extends SimpleChannelInboundHandler<Full
                 responseSender.writeError(exp.getStatus());
             }
         } catch (Exception exp) {
-            _log.error("Error response for " + uri, exp);
+            _log.log(Level.SEVERE, "Error response for " + uri, exp);
             responseSender.writeError(500);
         }
     }
@@ -212,7 +213,7 @@ public class GempukkuHttpRequestHandler extends SimpleChannelInboundHandler<Full
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         if (!(cause instanceof IOException) && !(cause instanceof IllegalArgumentException))
-            _log.error("Error while processing request", cause);
+            _log.log(Level.SEVERE, "Error while processing request", cause);
         ctx.close();
     }
 
@@ -289,7 +290,7 @@ public class GempukkuHttpRequestHandler extends SimpleChannelInboundHandler<Full
             } catch (Exception exp) {
                 byte[] content = new byte[0];
                 // Build the response object.
-                _log.error("Error response for " + request.uri(), exp);
+                _log.log(Level.SEVERE, "Error response for " + request.uri(), exp);
                 FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR, Unpooled.wrappedBuffer(content), null, EmptyHttpHeaders.INSTANCE);
                 sendResponse(ctx, request, response);
             }
@@ -367,7 +368,7 @@ public class GempukkuHttpRequestHandler extends SimpleChannelInboundHandler<Full
             } catch (IOException exp) {
                 byte[] content = new byte[0];
                 // Build the response object.
-                _log.error("Error response for " + request.uri(), exp);
+                _log.log(Level.SEVERE, "Error response for " + request.uri(), exp);
                 FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(500), Unpooled.wrappedBuffer(content), convertToHeaders(null), EmptyHttpHeaders.INSTANCE);
                 sendResponse(ctx, request, response);
             }

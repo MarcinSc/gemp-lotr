@@ -7,8 +7,6 @@ import com.gempukku.lotro.game.GameHistoryService;
 import com.gempukku.lotro.hall.HallServer;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import java.lang.reflect.Type;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -18,8 +16,6 @@ public class StatusRequestHandler extends LotroServerRequestHandler implements U
     private final HallServer _hallServer;
     private final GameHistoryService _gameHistoryService;
     private final ChatServer _chatServer;
-
-    private static final Logger _log = LogManager.getLogger(StatusRequestHandler.class);
 
     public StatusRequestHandler(Map<Type, Object> context) {
         super(context);

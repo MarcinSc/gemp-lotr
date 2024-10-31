@@ -18,8 +18,7 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;import org.w3c.dom.Document;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -36,8 +35,6 @@ public class LeagueRequestHandler extends LotroServerRequestHandler implements U
     private final LotroFormatLibrary _formatLibrary;
     private final LotroCardBlueprintLibrary _library;
     private final ProductLibrary _productLibrary;
-
-    private static final Logger _log = LogManager.getLogger(LeagueRequestHandler.class);
 
     public LeagueRequestHandler(Map<Type, Object> context) {
         super(context);

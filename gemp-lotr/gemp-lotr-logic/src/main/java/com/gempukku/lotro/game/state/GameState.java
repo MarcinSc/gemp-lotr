@@ -7,15 +7,15 @@ import com.gempukku.lotro.logic.PlayerOrder;
 import com.gempukku.lotro.logic.decisions.AwaitingDecision;
 import com.gempukku.lotro.logic.modifiers.ModifierFlag;
 import com.gempukku.lotro.logic.timing.GameStats;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GameState {
-    private static final Logger _log = LogManager.getLogger(GameState.class);
+    private static final Logger _log = Logger.getLogger(GameState.class.getName());
     private static final int LAST_MESSAGE_STORED_COUNT = 15;
     private PlayerOrder _playerOrder;
 
@@ -469,7 +469,7 @@ public class GameState {
         for (PhysicalCard card : cards) {
             List<PhysicalCardImpl> zoneCards = getZoneCards(card.getOwner(), card.getBlueprint().getCardType(), card.getZone());
             if (!zoneCards.contains(card))
-                _log.error("Card was not found in the expected zone");
+                _log.log(Level.SEVERE, "Card was not found in the expected zone");
         }
 
         for (PhysicalCard card : cards) {
@@ -537,7 +537,7 @@ public class GameState {
             zoneCards.addFirst((PhysicalCardImpl) card);
 
         if (card.getZone() != null)
-            _log.error("Card was in " + card.getZone() + " when tried to add to zone: " + zone);
+            _log.log(Level.SEVERE, "Card was in " + card.getZone() + " when tried to add to zone: " + zone);
 
         ((PhysicalCardImpl) card).setZone(zone);
 

@@ -32,3 +32,6 @@ hs_err_pid*
 
 # Ignoring stuff in target
 **/target/*
+
+# Ignore Gradle build output directory
+build

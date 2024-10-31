@@ -14,8 +14,6 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.util.AsciiString;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,6 +23,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
@@ -33,7 +33,7 @@ public class ReplayRequestHandler extends LotroServerRequestHandler implements U
     private final GameRecorder _gameRecorder;
     private final DeckRenderer _deckRenderer;
 
-    private static final Logger _log = LogManager.getLogger(ReplayRequestHandler.class);
+    private static final Logger _log = Logger.getLogger(ReplayRequestHandler.class.getName());
 
     public ReplayRequestHandler(Map<Type, Object> context) {
         super(context);
@@ -103,7 +103,7 @@ public class ReplayRequestHandler extends LotroServerRequestHandler implements U
             while ((count = recordedGame.read(bytes)) != -1)
                 baos.write(bytes, 0, count);
         } catch (IOException exp) {
-            _log.error("Error 404 response for " + request.uri(), exp);
+            _log.log(Level.SEVERE, "Error 404 response for " + request.uri(), exp);
             throw new HttpProcessingException(404);
         }
 

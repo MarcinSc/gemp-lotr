@@ -8,7 +8,7 @@ import com.gempukku.server.*
 @Exposes(LifecycleObserver::class)
 class ExampleRequestHandler : ServerRequestHandler, LifecycleObserver {
     @Inject
-    private lateinit var serverSystem: HttpServerSystem
+    private lateinit var serverSystem: HttpServer
 
     override fun handleRequest(uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) {
         responseWriter.writeHtmlResponse("<html><body>Hello world!</body></html>")

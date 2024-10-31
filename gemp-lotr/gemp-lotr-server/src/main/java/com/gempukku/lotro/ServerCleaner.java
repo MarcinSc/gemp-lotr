@@ -1,18 +1,18 @@
 package com.gempukku.lotro;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ServerCleaner {
-    private static final Logger LOG = LogManager.getLogger(ServerCleaner.class);
+    private static final Logger LOG = Logger.getLogger(ServerCleaner.class.getName());
     private final Set<AbstractServer> _servers = Collections.synchronizedSet(new HashSet<>());
     private CleaningThread _thr;
 
     public synchronized void addServer(AbstractServer server) {
-        LOG.debug("Adding server: " + server.getClass());
+        LOG.log(Level.FINE, "Adding server: " + server.getClass());
         _servers.add(server);
         if (_thr == null) {
             _thr = new CleaningThread();
@@ -40,7 +40,7 @@ public class ServerCleaner {
                                 server.cleanup();
                             } catch (Exception exp) {
                                 // We can't do much about it
-                                LOG.error("Error while cleaning up a server", exp);
+                                LOG.log(Level.SEVERE, "Error while cleaning up a server", exp);
                             }
                         }
                     }
