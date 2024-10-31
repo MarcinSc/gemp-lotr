@@ -29,10 +29,17 @@ class NettyServerSystemTest {
 
         val propertyResolver = YamlPropertyResolver("classpath:/netty-server-test.yaml")
 
-        val context = DefaultGempukkuContext(
-            null, AnnotationSystemResolver(), AnnotationSystemInjector(propertyResolver),
-            nettyServerSystem, workerThreadExecutorSystem, ExampleRequestHandler(), lifecycleSystem, UpdatingSystem()
-        )
+        val context =
+            DefaultGempukkuContext(
+                null,
+                AnnotationSystemResolver(),
+                AnnotationSystemInjector(propertyResolver),
+                nettyServerSystem,
+                workerThreadExecutorSystem,
+                ExampleRequestHandler(),
+                lifecycleSystem,
+                UpdatingSystem(),
+            )
 
         context.initialize()
 
@@ -49,9 +56,10 @@ class NettyServerSystemTest {
         val conExample = urlExample.openConnection() as HttpURLConnection
         conExample.setRequestMethod("GET")
         assertEquals(200, conExample.responseCode)
-        val reader = BufferedReader(
-            InputStreamReader(conExample.inputStream)
-        )
+        val reader =
+            BufferedReader(
+                InputStreamReader(conExample.inputStream),
+            )
         var inputLine: String?
         val content = StringBuffer()
         while ((reader.readLine().also { inputLine = it }) != null) {

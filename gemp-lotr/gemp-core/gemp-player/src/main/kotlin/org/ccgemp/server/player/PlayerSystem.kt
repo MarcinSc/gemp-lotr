@@ -106,7 +106,9 @@ class PlayerSystem :
     }
 
     override fun changeEmailValidate(changeEmailToken: String) {
-        playerRepository.emailUpdateValidated(changeEmailToken)
+        playerRepository.findPlayerByChangeEmailToken(changeEmailToken)?.let {
+            playerRepository.confirmEmailUpdate(it)
+        }
     }
 
     override fun findPlayerByLogin(login: String): Player? = playerRepository.findPlayerByLogin(login)

@@ -42,7 +42,9 @@ interface PlayerRepository {
         changeEmailToken: String,
     )
 
-    fun emailUpdateValidated(changeEmailToken: String)
+    fun findPlayerByChangeEmailToken(changeEmailToken: String): Player?
+
+    fun confirmEmailUpdate(player: Player)
 
     fun banPlayer(player: Player)
 

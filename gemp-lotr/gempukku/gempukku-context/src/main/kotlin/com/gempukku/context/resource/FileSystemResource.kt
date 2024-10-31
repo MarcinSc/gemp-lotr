@@ -5,7 +5,7 @@ import java.io.InputStream
 
 class FileSystemResource(
     private val file: File,
-): FileResource {
+) : FileResource {
     override fun createInputStream(): InputStream? {
         return file.takeIf { it.isFile }?.inputStream()
     }

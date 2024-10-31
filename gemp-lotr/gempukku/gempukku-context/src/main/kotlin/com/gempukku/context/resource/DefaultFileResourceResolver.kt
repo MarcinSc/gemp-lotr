@@ -2,10 +2,13 @@ package com.gempukku.context.resource
 
 import java.io.File
 
-class DefaultFileResourceResolver: FileResourceResolver {
+class DefaultFileResourceResolver : FileResourceResolver {
     private val resourceTypeHandlers: MutableMap<String, FileResourceHandler> = mutableMapOf()
 
-    fun addFileResourceHandler(type: String, handler: FileResourceHandler) {
+    fun addFileResourceHandler(
+        type: String,
+        handler: FileResourceHandler,
+    ) {
         resourceTypeHandlers[type.lowercase()] = handler
     }
 
@@ -23,15 +26,21 @@ class DefaultFileResourceResolver: FileResourceResolver {
 
 fun createDefaultFileResourceResolver(): FileResourceResolver {
     val result = DefaultFileResourceResolver()
-    result.addFileResourceHandler("file", object : FileResourceHandler {
-        override fun createFileResource(value: String): FileResource {
-            return FileSystemResource(File(value))
-        }
-    })
-    result.addFileResourceHandler("classpath", object : FileResourceHandler {
-        override fun createFileResource(value: String): FileResource {
-            return FileClasspathResource(value)
-        }
-    })
+    result.addFileResourceHandler(
+        "file",
+        object : FileResourceHandler {
+            override fun createFileResource(value: String): FileResource {
+                return FileSystemResource(File(value))
+            }
+        },
+    )
+    result.addFileResourceHandler(
+        "classpath",
+        object : FileResourceHandler {
+            override fun createFileResource(value: String): FileResource {
+                return FileClasspathResource(value)
+            }
+        },
+    )
     return result
 }

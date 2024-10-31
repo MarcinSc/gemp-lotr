@@ -93,6 +93,8 @@ class DbPlayerRepository : PlayerRepository {
             .addParameter("lastIp", lastIp)
             .addParameter("id", player.id)
             .executeUpdate()
+
+        clearCacheForPlayer(player)
     }
 
     override fun updateForPasswordReset(
@@ -108,6 +110,8 @@ class DbPlayerRepository : PlayerRepository {
             .addParameter("resetToken", resetToken)
             .addParameter("id", player.id)
             .executeUpdate()
+
+        clearCacheForPlayer(player)
     }
 
     override fun findPlayerByPasswordResetToken(resetToken: String): Player? =
@@ -141,6 +145,8 @@ class DbPlayerRepository : PlayerRepository {
             .addParameter("password", password)
             .addParameter("id", player.id)
             .executeUpdate()
+
+        clearCacheForPlayer(player)
     }
 
     override fun findPlayerByLogin(login: String): Player? =
@@ -198,19 +204,42 @@ class DbPlayerRepository : PlayerRepository {
             .addParameter("changeEmailToken", changeEmailToken)
             .addParameter("id", player.id)
             .executeUpdate()
+
+        clearCacheForPlayer(player)
     }
 
-    override fun emailUpdateValidated(changeEmailToken: String) =
+    override fun findPlayerByChangeEmailToken(changeEmailToken: String): Player? =
+        dbAccess.openDB().withConnection(
+            StatementRunnableWithResult { connection, _ ->
+                val sql: String =
+                    selectPlayer +
+                        """
+                        WHERE change_email_token = :changeEmailToken
+                        """.trimIndent()
+                val result: List<Player> =
+                    connection
+                        .createQuery(sql)
+                        .addParameter("changeEmailToken", changeEmailToken)
+                        .executeAndFetch(Player::class.java)
+
+                result.firstOrNull()
+            },
+        )
+
+    override fun confirmEmailUpdate(player: Player) {
         dbAccess.openDB().runInTransaction { connection, _ ->
             val sql =
                 """
-                UPDATE player set email = new_email, new_email = null, change_email_token = null where change_email_token = :changeEmailToken
+                UPDATE player set email = new_email, new_email = null, change_email_token = null where name = :name
                 """.trimIndent()
             connection
                 .createQuery(sql)
-                .addParameter("changeEmailToken", changeEmailToken)
+                .addParameter("name", player.name)
                 .executeUpdate()
+
+            clearCacheForPlayer(player)
         }
+    }
 
     override fun banPlayer(player: Player) =
         dbAccess.openDB().runInTransaction { connection, _ ->
@@ -222,6 +251,8 @@ class DbPlayerRepository : PlayerRepository {
                 .createQuery(sql)
                 .addParameter("id", player.id)
                 .executeUpdate()
+
+            clearCacheForPlayer(player)
         }
 
     override fun banPlayers(players: List<Player>) =
@@ -234,6 +265,10 @@ class DbPlayerRepository : PlayerRepository {
                 .createQuery(sql)
                 .addParameter("ids", players.map { it.id })
                 .executeUpdate()
+
+            players.forEach {
+                clearCacheForPlayer(it)
+            }
         }
 
     override fun banPlayerTemporarily(
@@ -249,6 +284,8 @@ class DbPlayerRepository : PlayerRepository {
             .addParameter("bannedUntil", bannedUntil)
             .addParameter("id", player.id)
             .executeUpdate()
+
+        clearCacheForPlayer(player)
     }
 
     override fun unbanPlayer(player: Player) =
@@ -261,6 +298,8 @@ class DbPlayerRepository : PlayerRepository {
                 .createQuery(sql)
                 .addParameter("id", player.id)
                 .executeUpdate()
+
+            clearCacheForPlayer(player)
         }
 
     override fun setPlayerType(
@@ -276,5 +315,12 @@ class DbPlayerRepository : PlayerRepository {
             .addParameter("type", roles)
             .addParameter("id", player.id)
             .executeUpdate()
+
+        clearCacheForPlayer(player)
+    }
+
+    private fun clearCacheForPlayer(player: Player) {
+        cacheByLogin.remove(player.name)
+        cacheByEmail.remove(player.email)
     }
 }

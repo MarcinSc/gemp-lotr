@@ -7,7 +7,6 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.gempukku.context.resource.FileResourceResolver
 import com.gempukku.context.resource.createDefaultFileResourceResolver
-import java.io.InputStream
 import java.util.Properties
 
 class YamlPropertyResolver(

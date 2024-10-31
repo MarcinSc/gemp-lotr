@@ -70,7 +70,9 @@ class GempukkuHttpRequestHandler(
             statusCode: Int,
             finishedTime: Long,
         ) {
-            accessLog.log(Level.FINE, remoteIp + "," + statusCode + "," + uri + "," + (finishedTime - requestTime))
+            if (accessLog.isLoggable(Level.FINE)) {
+                accessLog.log(Level.FINE, remoteIp + "," + statusCode + "," + uri + "," + (finishedTime - requestTime))
+            }
         }
     }
 
@@ -95,7 +97,7 @@ class GempukkuHttpRequestHandler(
                 System.currentTimeMillis(),
             )
 
-        val responseSender = ResponseSender(ctx, httpRequest)
+        val responseSender = ResponseSender(requestInformation, ctx, httpRequest)
 
         try {
             if (isBanned(requestInformation.remoteIp)) {
@@ -111,19 +113,21 @@ class GempukkuHttpRequestHandler(
                 requestHandler.handleRequest(uri, externalHttpRequest, requestInformation.remoteIp, responseSender)
             }
         } catch (exp: HttpProcessingException) {
-            val code = exp.status
             // 401, 403, 404, and other 400-series errors should just do minimal logging,
-            if (code % 400 < 100 && code != 400) {
-                log.log(
-                    Level.FINE,
-                    "HTTP " + code + " response for " + requestInformation.remoteIp + ": " + requestInformation.uri,
-                )
-            } else if (code == 400 || code % 500 < 100) {
-                log.log(
-                    Level.SEVERE,
-                    "HTTP code " + code + " response for " + requestInformation.remoteIp + ": " + requestInformation.uri,
-                    exp,
-                )
+            when (val code = exp.status) {
+                400, in 501..599 -> {
+                    log.log(
+                        Level.SEVERE,
+                        "HTTP code " + code + " response for " + requestInformation.remoteIp + ": " + requestInformation.uri,
+                        exp,
+                    )
+                }
+                in 401..499 -> {
+                    log.log(
+                        Level.FINE,
+                        "HTTP " + code + " response for " + requestInformation.remoteIp + ": " + requestInformation.uri,
+                    )
+                }
             }
 
             responseSender.writeError(exp.status, mapOf("message" to exp.message))
@@ -137,7 +141,10 @@ class GempukkuHttpRequestHandler(
         ctx: ChannelHandlerContext,
         request: HttpRequest,
         response: FullHttpResponse,
+        requestInformation: RequestInformation,
     ) {
+        requestInformation.printLog(response.status().code(), System.currentTimeMillis())
+
         val keepAlive = HttpUtil.isKeepAlive(request)
 
         if (keepAlive) {
@@ -231,6 +238,7 @@ class GempukkuHttpRequestHandler(
     }
 
     private inner class ResponseSender(
+        private val requestInformation: RequestInformation,
         private val ctx: ChannelHandlerContext,
         private val request: HttpRequest,
     ) : ResponseWriter {
@@ -248,7 +256,7 @@ class GempukkuHttpRequestHandler(
                     convertToHeaders(headersMap),
                     EmptyHttpHeaders.INSTANCE,
                 )
-            sendResponse(ctx, request, response)
+            sendResponse(ctx, request, response, requestInformation)
         }
 
         override fun writeXmlResponse(
@@ -284,7 +292,7 @@ class GempukkuHttpRequestHandler(
                         headers1,
                         EmptyHttpHeaders.INSTANCE,
                     )
-                sendResponse(ctx, request, response)
+                sendResponse(ctx, request, response, requestInformation)
             } catch (exp: Exception) {
                 val content = ByteArray(0)
                 // Build the response object.
@@ -297,7 +305,7 @@ class GempukkuHttpRequestHandler(
                         null,
                         EmptyHttpHeaders.INSTANCE,
                     )
-                sendResponse(ctx, request, response)
+                sendResponse(ctx, request, response, requestInformation)
             }
         }
 
@@ -317,7 +325,7 @@ class GempukkuHttpRequestHandler(
                     headers,
                     EmptyHttpHeaders.INSTANCE,
                 )
-            sendResponse(ctx, request, response)
+            sendResponse(ctx, request, response, requestInformation)
         }
 
         override fun writeJsonResponse(
@@ -336,7 +344,7 @@ class GempukkuHttpRequestHandler(
                     headers,
                     EmptyHttpHeaders.INSTANCE,
                 )
-            sendResponse(ctx, request, response)
+            sendResponse(ctx, request, response, requestInformation)
         }
 
         override fun writeByteResponse(
@@ -354,7 +362,7 @@ class GempukkuHttpRequestHandler(
                     headers1,
                     EmptyHttpHeaders.INSTANCE,
                 )
-            sendResponse(ctx, request, response)
+            sendResponse(ctx, request, response, requestInformation)
         }
 
         override fun writeFile(
@@ -376,7 +384,7 @@ class GempukkuHttpRequestHandler(
                                 convertToHeaders(null),
                                 EmptyHttpHeaders.INSTANCE,
                             )
-                        sendResponse(ctx, request, response)
+                        sendResponse(ctx, request, response, requestInformation)
                         return
                     }
 
@@ -406,7 +414,7 @@ class GempukkuHttpRequestHandler(
                         headers1,
                         EmptyHttpHeaders.INSTANCE,
                     )
-                sendResponse(ctx, request, response)
+                sendResponse(ctx, request, response, requestInformation)
             } catch (exp: IOException) {
                 val content = ByteArray(0)
                 // Build the response object.
@@ -419,7 +427,7 @@ class GempukkuHttpRequestHandler(
                         convertToHeaders(null),
                         EmptyHttpHeaders.INSTANCE,
                     )
-                sendResponse(ctx, request, response)
+                sendResponse(ctx, request, response, requestInformation)
             }
         }
 

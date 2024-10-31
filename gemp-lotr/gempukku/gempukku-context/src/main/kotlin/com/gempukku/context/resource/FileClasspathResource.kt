@@ -4,7 +4,7 @@ import java.io.InputStream
 
 class FileClasspathResource(
     private val path: String,
-): FileResource {
+) : FileResource {
     override fun createInputStream(): InputStream? {
         return FileClasspathResource::class.java.getResourceAsStream(path)
     }

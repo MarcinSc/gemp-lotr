@@ -61,7 +61,9 @@ fun main() {
             // Responsible for administrating users
             AdminPlayerSystem(),
             AdminPlayerApiSystem(),
-        ).initialize()
+        )
+
+    serverContext.initialize()
 
     lifecycleSystem.start()
 }

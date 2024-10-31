@@ -4,14 +4,9 @@ import com.gempukku.context.GempukkuContext
 import com.gempukku.context.processor.SystemProcessor
 import com.gempukku.context.processor.inject.decorator.SystemDecorator
 import com.gempukku.context.processor.inject.property.PropertyResolver
-import com.gempukku.context.resource.FileClasspathResource
 import com.gempukku.context.resource.FileResource
-import com.gempukku.context.resource.FileResourceHandler
-import com.gempukku.context.resource.DefaultFileResourceResolver
 import com.gempukku.context.resource.FileResourceResolver
-import com.gempukku.context.resource.FileSystemResource
 import com.gempukku.context.resource.createDefaultFileResourceResolver
-import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.WildcardType
@@ -96,7 +91,7 @@ class AnnotationSystemInjector(
                 field.trySetAccessible()
                 field.set(
                     system,
-                    fileResourceResolver.resolveFileResource(resolveProperty(injectAnnotation.value, "missing:"))
+                    fileResourceResolver.resolveFileResource(resolveProperty(injectAnnotation.value, "missing:")),
                 )
             }
         }
@@ -168,14 +163,16 @@ class AnnotationSystemInjector(
             0 -> {
                 if (!injectAnnotation.allowsNull) {
                     throw InjectionException(
-                        "Unable to inject system annotated with @Inject into ${system.javaClass.name}::${field.name}, system not found and not allowed to be null",
+                        "Unable to inject system annotated with @Inject into ${system.javaClass.name}::${field.name}, " +
+                            "system not found and not allowed to be null",
                     )
                 }
             }
 
             else -> {
                 throw InjectionException(
-                    "Unable to inject system annotated with @Inject into ${system.javaClass.name}::${field.name}, multiple systems matching criteria found",
+                    "Unable to inject system annotated with @Inject into ${system.javaClass.name}::${field.name}, " +
+                        "multiple systems matching criteria found",
                 )
             }
         }

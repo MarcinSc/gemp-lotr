@@ -4,5 +4,6 @@ import java.io.InputStream
 
 interface FileResource {
     fun createInputStream(): InputStream?
+
     fun describe(): String
 }

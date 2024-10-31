@@ -5,4 +5,3 @@ plugins {
 dependencies {
     api(project(":gempukku:gempukku-context"))
 }
-
