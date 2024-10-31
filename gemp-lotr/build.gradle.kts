@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.js.translate.context.Namer.kotlin
-
 plugins {
     java
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"

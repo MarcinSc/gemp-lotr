@@ -11,11 +11,9 @@ include(
     "gempukku:gempukku-context",
     "gempukku:gempukku-netty-server",
     "gempukku:gempukku-server",
-
     "gemp-core:gemp-db",
     "gemp-core:gemp-game",
     "gemp-core:gemp-player",
-
     "gemp-lotr-assembly",
     "gemp-lotr-async",
     "gemp-lotr-cards",
