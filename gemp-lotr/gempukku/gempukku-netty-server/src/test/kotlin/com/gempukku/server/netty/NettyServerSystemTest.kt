@@ -9,13 +9,12 @@ import com.gempukku.context.processor.inject.property.YamlPropertyResolver
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
 import com.gempukku.context.update.UpdatingSystem
 import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.concurrent.Executors
-
 
 class NettyServerSystemTest {
     @Test

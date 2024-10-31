@@ -5,7 +5,7 @@ import com.gempukku.context.processor.inject.AnnotationSystemInjector
 import com.gempukku.context.processor.inject.property.YamlPropertyResolver
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
 import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class PrioritySortingTest {
     @Test

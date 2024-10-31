@@ -20,7 +20,7 @@ import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.w3c.dom.Document
 import java.io.ByteArrayInputStream
 import java.io.StringWriter

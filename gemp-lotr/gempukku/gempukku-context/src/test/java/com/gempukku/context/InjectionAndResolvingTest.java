@@ -2,7 +2,7 @@ package com.gempukku.context;
 
 import com.gempukku.context.processor.inject.AnnotationSystemInjector;
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertEquals;
 

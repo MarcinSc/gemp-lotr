@@ -11,6 +11,8 @@ dependencies {
 
     // https://mvnrepository.com/artifact/junit/junit
     testImplementation("junit:junit:4.13.2")
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.3")
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.11.3")
     // https://mvnrepository.com/artifact/org.mockito.kotlin/mockito-kotlin
