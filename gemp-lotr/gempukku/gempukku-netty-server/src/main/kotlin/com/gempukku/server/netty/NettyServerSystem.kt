@@ -2,7 +2,7 @@ package com.gempukku.server.netty
 
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.processor.inject.Inject
-import com.gempukku.context.processor.inject.InjectProperty
+import com.gempukku.context.processor.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.context.update.UpdatedSystem
 import com.gempukku.server.BanChecker
@@ -34,10 +34,10 @@ class NettyServerSystem :
     LifecycleObserver,
     HttpServer,
     UpdatedSystem {
-    @InjectProperty("server.netty.port")
+    @InjectValue("server.netty.port")
     private var port: Int = 8080
 
-    @InjectProperty("server.netty.origin.pattern")
+    @InjectValue("server.netty.origin.pattern")
     private lateinit var originPattern: String
 
     @Inject(allowsNull = true)

@@ -7,7 +7,7 @@ import com.gempukku.context.processor.inject.decorator.SimpleThreadPoolFactory
 import com.gempukku.context.processor.inject.decorator.WorkerThreadExecutorSystem
 import com.gempukku.context.processor.inject.property.YamlPropertyResolver
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
-import org.junit.Assert.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.concurrent.Executors
 
@@ -17,10 +17,7 @@ class PeriodicUpdateTest {
         val lifecycleSystem = LifecycleSystem()
         val periodicallyUpdatedTestSystem = PeriodicallyUpdatedTestSystem()
 
-        val propertyResolver =
-            PeriodicUpdateTest::class.java.getResourceAsStream("/periodic-update-test.yaml")!!.use {
-                YamlPropertyResolver(it)
-            }
+        val propertyResolver = YamlPropertyResolver("classpath:/periodic-update-test.yaml")
 
         val threadPoolFactory = SimpleThreadPoolFactory("Worker-Thread")
         val executorService = Executors.newSingleThreadScheduledExecutor(threadPoolFactory)

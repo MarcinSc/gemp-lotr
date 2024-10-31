@@ -24,8 +24,7 @@ import java.util.concurrent.Executors
 
 fun main() {
     val lifecycleSystem = LifecycleSystem()
-    val propertyResolver =
-        YamlPropertyResolver(ResourceLocator::class.java.getResourceAsStream("/server-config.yaml")!!)
+    val propertyResolver = YamlPropertyResolver("classpath:/server-config.yaml")
     val threadPoolFactory = SimpleThreadPoolFactory("Worker-Thread")
     val executorService = Executors.newSingleThreadScheduledExecutor(threadPoolFactory)
 

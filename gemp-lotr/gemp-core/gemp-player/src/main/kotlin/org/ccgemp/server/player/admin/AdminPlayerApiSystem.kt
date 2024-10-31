@@ -2,7 +2,7 @@ package org.ccgemp.server.player.admin
 
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.processor.inject.Inject
-import com.gempukku.context.processor.inject.InjectProperty
+import com.gempukku.context.processor.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
@@ -25,25 +25,25 @@ class AdminPlayerApiSystem : LifecycleObserver {
     @Inject
     private lateinit var loggedUserSystem: LoggedUserInterface
 
-    @InjectProperty("server.banPlayer.url")
+    @InjectValue("server.banPlayer.url")
     private lateinit var banPlayerUrl: String
 
-    @InjectProperty("server.banPlayers.url")
+    @InjectValue("server.banPlayers.url")
     private lateinit var banPlayersUrl: String
 
-    @InjectProperty("server.banPlayerTemporarily.url")
+    @InjectValue("server.banPlayerTemporarily.url")
     private lateinit var banPlayerTemporarilyUrl: String
 
-    @InjectProperty("server.unbanPlayer.url")
+    @InjectValue("server.unbanPlayer.url")
     private lateinit var unbanPlayerUrl: String
 
-    @InjectProperty("server.getPlayerRoles.url")
+    @InjectValue("server.getPlayerRoles.url")
     private lateinit var getPlayerRolesUrl: String
 
-    @InjectProperty("server.setPlayerRoles.url")
+    @InjectValue("server.setPlayerRoles.url")
     private lateinit var setPlayerRolesUrl: String
 
-    @InjectProperty("roles.admin")
+    @InjectValue("roles.admin")
     private lateinit var adminRole: String
 
     private val deregistration: MutableList<Runnable> = mutableListOf()

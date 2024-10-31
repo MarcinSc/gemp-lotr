@@ -4,7 +4,7 @@ import com.gempukku.context.processor.inject.AnnotationSystemInjector;
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InjectionAndResolvingTest {
     @Test

@@ -1,6 +1,6 @@
 package com.gempukku.context.resolver.expose
 
-import org.junit.Assert.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 internal class AnnotationSystemResolverTest {

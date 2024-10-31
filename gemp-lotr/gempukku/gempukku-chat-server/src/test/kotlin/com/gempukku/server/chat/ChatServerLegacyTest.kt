@@ -19,7 +19,7 @@ import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
-import org.junit.Assert.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.w3c.dom.Document
 import java.io.ByteArrayInputStream
@@ -40,8 +40,7 @@ class ChatServerLegacyTest {
         val threadPoolFactory = SimpleThreadPoolFactory("Worker-Thread")
         val executorService = Executors.newSingleThreadScheduledExecutor(threadPoolFactory)
         val workerThreadExecutorSystem = WorkerThreadExecutorSystem(threadPoolFactory, executorService)
-        val propertyResolver =
-            YamlPropertyResolver(ChatServerLegacyTest::class.java.getResourceAsStream("/chat-server-config.yml")!!)
+        val propertyResolver = YamlPropertyResolver("classpath:/chat-server-config.yml")
         val context =
             DefaultGempukkuContext(
                 null,

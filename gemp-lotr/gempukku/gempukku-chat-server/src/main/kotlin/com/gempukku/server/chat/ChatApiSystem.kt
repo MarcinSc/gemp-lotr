@@ -2,7 +2,7 @@ package com.gempukku.server.chat
 
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.processor.inject.Inject
-import com.gempukku.context.processor.inject.InjectProperty
+import com.gempukku.context.processor.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
@@ -31,16 +31,16 @@ class ChatApiSystem : LifecycleObserver {
     @Inject
     private lateinit var chatEventSinkProducer: ChatEventSinkProducer
 
-    @InjectProperty("server.chat.urlPrefix")
+    @InjectValue("server.chat.urlPrefix")
     private lateinit var urlPrefix: String
 
-    @InjectProperty("roles.admin")
+    @InjectValue("roles.admin")
     private lateinit var adminRole: String
 
-    @InjectProperty("parameterNames.actAsParameter")
+    @InjectValue("parameterNames.actAsParameter")
     private lateinit var actAsParameter: String
 
-    @InjectProperty("parameterNames.pollId")
+    @InjectValue("parameterNames.pollId")
     private lateinit var pollIdParameterName: String
 
     private val deregistration: MutableList<Runnable> = mutableListOf()

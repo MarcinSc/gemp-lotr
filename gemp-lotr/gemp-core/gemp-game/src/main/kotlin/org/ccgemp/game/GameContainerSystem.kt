@@ -2,7 +2,7 @@ package org.ccgemp.game
 
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.processor.inject.Inject
-import com.gempukku.context.processor.inject.InjectProperty
+import com.gempukku.context.processor.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.context.update.UpdatedSystem
 import com.gempukku.server.generateUniqueId
@@ -17,10 +17,10 @@ class GameContainerSystem :
     @Inject
     private lateinit var gameProducer: GameProducer
 
-    @InjectProperty("games.threadCount")
+    @InjectValue("games.threadCount")
     private var gamesThreadCount: Int = 1
 
-    @InjectProperty("games.lingerTime")
+    @InjectValue("games.lingerTime")
     private var gamesLingerTime: Long = 1000 * 60 * 5
 
     private val gameContainers = mutableListOf<GameContainer>()

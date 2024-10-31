@@ -4,7 +4,7 @@ import com.gempukku.context.DefaultGempukkuContext
 import com.gempukku.context.processor.inject.AnnotationSystemInjector
 import com.gempukku.context.processor.inject.property.YamlPropertyResolver
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
-import org.junit.Assert.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class PrioritySortingTest {
@@ -15,10 +15,7 @@ class PrioritySortingTest {
 
         val testSystem = PriorityTestSystem()
 
-        val propertyResolver =
-            PriorityTestSystem::class.java.getResourceAsStream("/priority-test-a.yaml")!!.use {
-                YamlPropertyResolver(it)
-            }
+        val propertyResolver = YamlPropertyResolver("classpath:/priority-test-a.yaml")
 
         val context =
             DefaultGempukkuContext(
@@ -47,10 +44,7 @@ class PrioritySortingTest {
 
         val testSystem = PriorityTestSystem()
 
-        val propertyResolver =
-            PriorityTestSystem::class.java.getResourceAsStream("/priority-test-b.yaml")!!.use {
-                YamlPropertyResolver(it)
-            }
+        val propertyResolver = YamlPropertyResolver("classpath:/priority-test-b.yaml")
 
         val context =
             DefaultGempukkuContext(

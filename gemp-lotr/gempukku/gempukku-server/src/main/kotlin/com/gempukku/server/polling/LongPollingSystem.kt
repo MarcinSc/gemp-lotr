@@ -1,6 +1,6 @@
 package com.gempukku.server.polling
 
-import com.gempukku.context.processor.inject.InjectProperty
+import com.gempukku.context.processor.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.context.update.UpdatedSystem
 import com.gempukku.server.generateUniqueId
@@ -9,10 +9,10 @@ import com.gempukku.server.generateUniqueId
 class LongPollingSystem :
     LongPolling,
     UpdatedSystem {
-    @InjectProperty("server.polling.timeout")
+    @InjectValue("server.polling.timeout")
     private var pollTimeout: Long = 10000
 
-    @InjectProperty("server.polling.channelTimeout")
+    @InjectValue("server.polling.channelTimeout")
     private var channelTimeout: Long = 60000
 
     private val pollMap: MutableMap<String, PollRegistration<*>> = mutableMapOf()

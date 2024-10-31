@@ -4,13 +4,13 @@ import com.gempukku.context.ContextScheduledExecutor
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.processor.inject.Inject
 import com.gempukku.context.processor.inject.InjectList
-import com.gempukku.context.processor.inject.InjectProperty
+import com.gempukku.context.processor.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import java.util.concurrent.TimeUnit
 
 @Exposes(LifecycleObserver::class)
 class UpdatingSystem : LifecycleObserver {
-    @InjectProperty("update.frequency")
+    @InjectValue("update.frequency")
     private var frequency: Long = 100
 
     @Inject

@@ -1,7 +1,7 @@
 package org.ccgemp.db
 
 import com.gempukku.context.lifecycle.LifecycleObserver
-import com.gempukku.context.processor.inject.InjectProperty
+import com.gempukku.context.processor.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import org.apache.commons.dbcp2.ConnectionFactory
 import org.apache.commons.dbcp2.DriverManagerConnectionFactory
@@ -20,22 +20,22 @@ import java.util.Properties
 class DbAccessSystem :
     DbAccessInterface,
     LifecycleObserver {
-    @InjectProperty("db.connection.class")
+    @InjectValue("db.connection.class")
     private lateinit var connectionClass: String
 
-    @InjectProperty("db.connection.url")
+    @InjectValue("db.connection.url")
     private lateinit var connectionUrl: String
 
-    @InjectProperty("db.connection.username")
+    @InjectValue("db.connection.username")
     private lateinit var username: String
 
-    @InjectProperty("db.connection.password")
+    @InjectValue("db.connection.password")
     private lateinit var password: String
 
-    @InjectProperty("db.connection.validateQuery")
+    @InjectValue("db.connection.validateQuery")
     private lateinit var validateQuery: String
 
-    @InjectProperty("db.connection.batch")
+    @InjectValue("db.connection.batch")
     private var batch: Boolean = false
 
     private var dataSource: PoolingDataSource<PoolableConnection>? = null

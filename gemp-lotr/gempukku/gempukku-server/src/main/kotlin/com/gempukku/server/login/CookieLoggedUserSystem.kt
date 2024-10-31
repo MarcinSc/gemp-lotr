@@ -1,7 +1,7 @@
 package com.gempukku.server.login
 
 import com.gempukku.context.processor.inject.Inject
-import com.gempukku.context.processor.inject.InjectProperty
+import com.gempukku.context.processor.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.context.update.UpdatedSystem
 import com.gempukku.server.HttpRequest
@@ -13,7 +13,7 @@ import com.gempukku.server.generateUniqueId
 class CookieLoggedUserSystem :
     UpdatedSystem,
     LoggedUserInterface {
-    @InjectProperty("server.session.timeout")
+    @InjectValue("server.session.timeout")
     private var sessionTimeout: Long = 1000 * 60 * 10
 
     @Inject

@@ -1,7 +1,7 @@
 package org.ccgemp.server.player
 
 import com.gempukku.context.processor.inject.Inject
-import com.gempukku.context.processor.inject.InjectProperty
+import com.gempukku.context.processor.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.server.generateUniqueId
 import com.gempukku.server.login.UserRolesProvider
@@ -17,7 +17,7 @@ class PlayerSystem :
     @Inject(allowsNull = true)
     private var playerManagementCommunication: PlayerManagementCommunication? = null
 
-    @InjectProperty("roles.default")
+    @InjectValue("roles.default")
     private lateinit var defaultRoles: String
 
     private val validLoginChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"

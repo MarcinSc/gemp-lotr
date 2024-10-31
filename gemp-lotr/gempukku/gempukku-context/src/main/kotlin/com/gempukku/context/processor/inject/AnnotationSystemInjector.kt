@@ -4,6 +4,14 @@ import com.gempukku.context.GempukkuContext
 import com.gempukku.context.processor.SystemProcessor
 import com.gempukku.context.processor.inject.decorator.SystemDecorator
 import com.gempukku.context.processor.inject.property.PropertyResolver
+import com.gempukku.context.resource.FileClasspathResource
+import com.gempukku.context.resource.FileResource
+import com.gempukku.context.resource.FileResourceHandler
+import com.gempukku.context.resource.DefaultFileResourceResolver
+import com.gempukku.context.resource.FileResourceResolver
+import com.gempukku.context.resource.FileSystemResource
+import com.gempukku.context.resource.createDefaultFileResourceResolver
+import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.WildcardType
@@ -14,6 +22,7 @@ private val log: Logger = Logger.getLogger(AnnotationSystemInjector::class.java.
 class AnnotationSystemInjector(
     private val propertyResolver: PropertyResolver? = null,
     private val systemDecorator: SystemDecorator? = null,
+    private val fileResourceResolver: FileResourceResolver = createDefaultFileResourceResolver(),
 ) : SystemProcessor {
     private val usedProperties = mutableSetOf<String>()
 
@@ -29,7 +38,7 @@ class AnnotationSystemInjector(
                 if (field.isAnnotationPresent(InjectList::class.java)) {
                     processInjectList(field, context, system)
                 }
-                if (field.isAnnotationPresent(InjectProperty::class.java)) {
+                if (field.isAnnotationPresent(InjectValue::class.java)) {
                     processInjectProperty(field, system)
                 }
             }
@@ -50,7 +59,7 @@ class AnnotationSystemInjector(
             throw InjectionException("Unable to inject property, property resolver is missing")
         }
 
-        val injectAnnotation = field.getAnnotation(InjectProperty::class.java)
+        val injectAnnotation = field.getAnnotation(InjectValue::class.java)
         val fieldType = field.type
         when (fieldType) {
             String::class.java -> {
@@ -81,6 +90,14 @@ class AnnotationSystemInjector(
             Boolean::class.java -> {
                 field.trySetAccessible()
                 field.setBoolean(system, resolveProperty(injectAnnotation.value, "0").toBoolean())
+            }
+
+            FileResource::class.java -> {
+                field.trySetAccessible()
+                field.set(
+                    system,
+                    fileResourceResolver.resolveFileResource(resolveProperty(injectAnnotation.value, "missing:"))
+                )
             }
         }
     }

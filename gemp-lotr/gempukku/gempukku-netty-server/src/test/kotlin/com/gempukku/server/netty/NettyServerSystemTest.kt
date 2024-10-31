@@ -8,7 +8,7 @@ import com.gempukku.context.processor.inject.decorator.WorkerThreadExecutorSyste
 import com.gempukku.context.processor.inject.property.YamlPropertyResolver
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
 import com.gempukku.context.update.UpdatingSystem
-import org.junit.Assert.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -27,9 +27,7 @@ class NettyServerSystemTest {
         val nettyServerSystem = NettyServerSystem()
         val lifecycleSystem = LifecycleSystem()
 
-        val propertyResolver = NettyServerSystemTest::class.java.getResourceAsStream("/netty-server-test.yaml")!!.use {
-            YamlPropertyResolver(it)
-        }
+        val propertyResolver = YamlPropertyResolver("classpath:/netty-server-test.yaml")
 
         val context = DefaultGempukkuContext(
             null, AnnotationSystemResolver(), AnnotationSystemInjector(propertyResolver),

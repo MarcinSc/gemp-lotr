@@ -2,7 +2,7 @@ package org.ccgemp.server.player
 
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.processor.inject.Inject
-import com.gempukku.context.processor.inject.InjectProperty
+import com.gempukku.context.processor.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
@@ -22,22 +22,22 @@ class PlayerApiSystem : LifecycleObserver {
     @Inject
     private lateinit var loggedUserInterface: LoggedUserInterface
 
-    @InjectProperty("server.login.url")
+    @InjectValue("server.login.url")
     private lateinit var loginUrl: String
 
-    @InjectProperty("server.register.url")
+    @InjectValue("server.register.url")
     private lateinit var registerUrl: String
 
-    @InjectProperty("server.passwordReset.url")
+    @InjectValue("server.passwordReset.url")
     private lateinit var passwordResetUrl: String
 
-    @InjectProperty("server.passwordResetValidate.url")
+    @InjectValue("server.passwordResetValidate.url")
     private lateinit var passwordResetValidateUrl: String
 
-    @InjectProperty("server.changeEmail.url")
+    @InjectValue("server.changeEmail.url")
     private lateinit var changeEmailUrl: String
 
-    @InjectProperty("server.changeEmailValidate.url")
+    @InjectValue("server.changeEmailValidate.url")
     private lateinit var changeEmailValidateUrl: String
 
     private val deregistration: MutableList<Runnable> = mutableListOf()
