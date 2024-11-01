@@ -71,10 +71,7 @@ class NettyServerSystem :
         }
     }
 
-    override fun generateSetCookieHeader(
-        cookieName: String,
-        cookieValue: String,
-    ): Map<String, String> =
+    override fun generateSetCookieHeader(cookieName: String, cookieValue: String): Map<String, String> =
         mapOf(
             HttpHeaderNames.SET_COOKIE.toString() to ServerCookieEncoder.STRICT.encode(cookieName, cookieValue),
         )

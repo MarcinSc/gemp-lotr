@@ -29,10 +29,7 @@ class YamlPropertyResolver(
         properties = result
     }
 
-    override fun resolveProperty(
-        name: String,
-        default: String?,
-    ): String? = properties.getProperty(name, default)
+    override fun resolveProperty(name: String, default: String?): String? = properties.getProperty(name, default)
 
     override fun getAllPropertyNames(): Set<String> = properties.stringPropertyNames()
 }

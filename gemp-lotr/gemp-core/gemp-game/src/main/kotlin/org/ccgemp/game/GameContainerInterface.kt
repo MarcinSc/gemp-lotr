@@ -1,10 +1,7 @@
 package org.ccgemp.game
 
 interface GameContainerInterface<Event> {
-    fun createNewGame(
-        participants: Array<GameParticipant>,
-        gameSettings: GameSettings,
-    ): String
+    fun createNewGame(participants: Array<GameParticipant>, gameSettings: GameSettings): String
 
     fun joinGame(
         gameId: String,

@@ -57,12 +57,8 @@ class LegacyEventSink(
     }
 
     private class CaseInsensitiveStringComparator : Comparator<String> {
-        override fun compare(
-            o1: String,
-            o2: String,
-        ): Int = o1.compareTo(o2, true)
+        override fun compare(o1: String, o2: String): Int = o1.compareTo(o2, true)
     }
 
-    private fun formatPlayerNameForChatList(userInRoom: String): String =
-        chatNameDisplayFormatter?.formatNameDisplay(userInRoom) ?: userInRoom
+    private fun formatPlayerNameForChatList(userInRoom: String): String = chatNameDisplayFormatter?.formatNameDisplay(userInRoom) ?: userInRoom
 }

@@ -12,9 +12,6 @@ class SimpleLoggedUser : LoggedUserInterface {
 
     override fun findLoggedUser(request: HttpRequest): LoggedUser? = loggedUser
 
-    override fun sendLogUserResponse(
-        userId: String,
-        responseWriter: ResponseWriter,
-    ) {
+    override fun sendLogUserResponse(userId: String, responseWriter: ResponseWriter) {
     }
 }

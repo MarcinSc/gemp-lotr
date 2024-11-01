@@ -24,10 +24,7 @@ class CookieLoggedUserSystem :
 
     private val loggedUsersBySessionId: MutableMap<String, UserLastAccess> = mutableMapOf()
 
-    override fun sendLogUserResponse(
-        userId: String,
-        responseWriter: ResponseWriter,
-    ) {
+    override fun sendLogUserResponse(userId: String, responseWriter: ResponseWriter) {
         val lastAccess = UserLastAccess(userId, System.currentTimeMillis())
 
         var sessionId: String

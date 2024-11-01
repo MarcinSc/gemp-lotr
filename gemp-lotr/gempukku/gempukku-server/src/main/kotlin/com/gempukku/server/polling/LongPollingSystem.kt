@@ -17,10 +17,7 @@ class LongPollingSystem :
 
     private val pollMap: MutableMap<String, PollRegistration<*>> = mutableMapOf()
 
-    override fun <Event> registerLongPoll(
-        eventStream: EventStream<Event>,
-        timeoutRunnable: Runnable?,
-    ): String {
+    override fun <Event> registerLongPoll(eventStream: EventStream<Event>, timeoutRunnable: Runnable?): String {
         var pollId: String
         do {
             pollId = generateUniqueId()
@@ -29,10 +26,7 @@ class LongPollingSystem :
         return pollId
     }
 
-    override fun <Event> registerSink(
-        pollId: String,
-        eventSink: EventSink<Event>,
-    ): Boolean =
+    override fun <Event> registerSink(pollId: String, eventSink: EventSink<Event>): Boolean =
         pollMap[pollId]?.let { registration ->
             val reg = registration as PollRegistration<Event>
             reg.eventSink?.processEventsAndClose(emptyList())

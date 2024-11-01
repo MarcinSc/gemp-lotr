@@ -175,9 +175,7 @@ class AdminPlayerApiSystem : LifecycleObserver {
         deregistration.clear()
     }
 
-    private fun validateAdmin(
-        requestHandler: ServerRequestHandler,
-    ): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
+    private fun validateAdmin(requestHandler: ServerRequestHandler): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
         { uri, request, remoteIp, responseWriter ->
             validateArmin(request)
 

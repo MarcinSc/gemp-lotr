@@ -24,10 +24,7 @@ class WorkerThreadExecutorSystem(
     private val executorService: ScheduledExecutorService,
 ) : SystemDecorator,
     ContextScheduledExecutor {
-    override fun <T> decorate(
-        system: T,
-        systemClass: Class<T>,
-    ): T {
+    override fun <T> decorate(system: T, systemClass: Class<T>): T {
         val methodsThatCanBeOffloadedToWorkerThread = mutableSetOf<Method>()
 
         systemClass.declaredMethods.forEach { method ->
@@ -83,11 +80,7 @@ class WorkerThreadExecutorSystem(
         }
     }
 
-    private fun <T> callMethod(
-        system: T,
-        method: Method,
-        args: Array<out Any>?,
-    ): Any? =
+    private fun <T> callMethod(system: T, method: Method, args: Array<out Any>?): Any? =
         try {
             if (args == null) {
                 method.invoke(system)

@@ -31,10 +31,7 @@ class AdminPlayerSystem : AdminPlayerInterface {
         }
     }
 
-    override fun banPlayerTemporarily(
-        login: String,
-        days: Int,
-    ): Boolean {
+    override fun banPlayerTemporarily(login: String, days: Int): Boolean {
         val player = playerRepository.findPlayerByLogin(login)
         return if (player != null) {
             playerRepository.banPlayerTemporarily(player, System.currentTimeMillis() + days * DAY_IN_MILIS)
@@ -59,10 +56,7 @@ class AdminPlayerSystem : AdminPlayerInterface {
         return player?.type
     }
 
-    override fun setPlayerRoles(
-        login: String,
-        roles: String,
-    ): Boolean {
+    override fun setPlayerRoles(login: String, roles: String): Boolean {
         val player = playerRepository.findPlayerByLogin(login)
         return if (player != null) {
             playerRepository.setPlayerType(player, roles)

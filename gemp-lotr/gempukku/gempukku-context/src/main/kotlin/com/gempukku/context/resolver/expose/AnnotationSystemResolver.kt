@@ -3,10 +3,7 @@ package com.gempukku.context.resolver.expose
 import com.gempukku.context.resolver.SystemResolver
 
 class AnnotationSystemResolver : SystemResolver {
-    override fun <T> resolveValues(
-        systems: List<Any>,
-        clazz: Class<out T>,
-    ): List<T> {
+    override fun <T> resolveValues(systems: List<Any>, clazz: Class<out T>): List<T> {
         @Suppress("UNCHECKED_CAST")
         return systems.mapNotNull { system ->
             system

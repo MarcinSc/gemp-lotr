@@ -18,11 +18,7 @@ interface ChatInterface {
         chatStream: ChatStream,
     ): Runnable?
 
-    fun setIncognito(
-        roomName: String,
-        playerId: String,
-        incognito: Boolean,
-    )
+    fun setIncognito(roomName: String, playerId: String, incognito: Boolean)
 
     fun sendMessage(
         roomName: String,

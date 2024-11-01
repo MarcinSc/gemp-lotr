@@ -1,0 +1,8 @@
+[*.{kt,kts}]
+max_line_length = 180
+ij_kotlin_allow_trailing_comma_on_call_site = true
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_packages_to_use_import_on_demand = unset
+ktlint_standard_no-wildcard-imports = disabled
+ktlint_function_signature_rule_force_multiline_when_parameter_count_greater_or_equal_than = 4
+no-wildcard-imports = true

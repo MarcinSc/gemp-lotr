@@ -24,10 +24,7 @@ class ChatRoom(
         openChatStreams.clear()
     }
 
-    private fun canAccessRoom(
-        playerId: String,
-        admin: Boolean,
-    ): Boolean = admin || userPredicate.test(playerId)
+    private fun canAccessRoom(playerId: String, admin: Boolean): Boolean = admin || userPredicate.test(playerId)
 
     private fun playerIsInRoom(playerId: String): Boolean =
         !incognitoPlayers.contains(playerId) &&
@@ -35,10 +32,7 @@ class ChatRoom(
                 it.playerId == playerId
             }
 
-    fun setIncognito(
-        playerId: String,
-        incognito: Boolean,
-    ) {
+    fun setIncognito(playerId: String, incognito: Boolean) {
         if (allowIncognito) {
             val wasInRoom = playerIsInRoom(playerId)
             if (incognito) {
@@ -105,11 +99,7 @@ class ChatRoom(
         }
     }
 
-    fun sendMessage(
-        from: String,
-        message: String,
-        admin: Boolean,
-    ) {
+    fun sendMessage(from: String, message: String, admin: Boolean) {
         if (canAccessRoom(from, admin)) {
             if (message.trim { it <= ' ' }.startsWith("/")) {
                 processIfKnownCommand(from, message.trim { it <= ' ' }.substring(1), admin)
@@ -128,11 +118,7 @@ class ChatRoom(
         }
     }
 
-    private fun processIfKnownCommand(
-        playerId: String,
-        commandString: String,
-        admin: Boolean,
-    ) {
+    private fun processIfKnownCommand(playerId: String, commandString: String, admin: Boolean) {
         val spaceIndex = commandString.indexOf(" ")
         val commandName: String
         var commandParameters = ""

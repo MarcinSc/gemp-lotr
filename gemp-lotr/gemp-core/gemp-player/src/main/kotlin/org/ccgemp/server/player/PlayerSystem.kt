@@ -49,11 +49,7 @@ class PlayerSystem :
         return success
     }
 
-    override fun login(
-        login: String,
-        password: String,
-        remoteIp: String,
-    ): Boolean {
+    override fun login(login: String, password: String, remoteIp: String): Boolean {
         val player = playerRepository.loginPlayer(login, password)
         return if (player != null) {
             if ((player.bannedUntil == null) || (player.bannedUntil < System.currentTimeMillis())) {
@@ -76,10 +72,7 @@ class PlayerSystem :
         }
     }
 
-    override fun resetPasswordValidate(
-        password: String,
-        resetToken: String,
-    ): String? {
+    override fun resetPasswordValidate(password: String, resetToken: String): String? {
         val player = playerRepository.findPlayerByPasswordResetToken(resetToken)
         return if (player != null) {
             playerRepository.setPassword(player, encodePassword(password))
@@ -89,11 +82,7 @@ class PlayerSystem :
         }
     }
 
-    override fun changeEmail(
-        login: String,
-        password: String,
-        newEmail: String,
-    ): Boolean {
+    override fun changeEmail(login: String, password: String, newEmail: String): Boolean {
         val player = playerRepository.loginPlayer(login, password)
         return if (player != null) {
             val changeEmailToken = generateUniqueId()

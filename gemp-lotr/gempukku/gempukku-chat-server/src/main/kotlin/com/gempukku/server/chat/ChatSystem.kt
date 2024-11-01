@@ -50,11 +50,7 @@ class ChatSystem : ChatInterface {
             chatStream,
         )
 
-    override fun setIncognito(
-        roomName: String,
-        playerId: String,
-        incognito: Boolean,
-    ) {
+    override fun setIncognito(roomName: String, playerId: String, incognito: Boolean) {
         chatRooms[roomName]?.setIncognito(playerId, incognito)
     }
 

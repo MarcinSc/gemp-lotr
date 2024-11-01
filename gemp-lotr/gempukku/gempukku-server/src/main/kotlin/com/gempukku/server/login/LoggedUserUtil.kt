@@ -3,10 +3,7 @@ package com.gempukku.server.login
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpRequest
 
-fun getLoggedUser(
-    loggedUserInterface: LoggedUserInterface,
-    request: HttpRequest,
-): LoggedUser = loggedUserInterface.findLoggedUser(request) ?: throw HttpProcessingException(401)
+fun getLoggedUser(loggedUserInterface: LoggedUserInterface, request: HttpRequest): LoggedUser = loggedUserInterface.findLoggedUser(request) ?: throw HttpProcessingException(401)
 
 fun getActingAsUser(
     loggedUserInterface: LoggedUserInterface,

@@ -57,10 +57,7 @@ class DbPlayerRepository : PlayerRepository {
             },
         )
 
-    override fun loginPlayer(
-        login: String,
-        password: String,
-    ): Player? =
+    override fun loginPlayer(login: String, password: String): Player? =
         dbAccess.openDB().withConnection(
             StatementRunnableWithResult { connection, _ ->
                 val sql: String =
@@ -80,39 +77,35 @@ class DbPlayerRepository : PlayerRepository {
             },
         )
 
-    override fun updateLastIp(
-        player: Player,
-        lastIp: String,
-    ) = dbAccess.openDB().runInTransaction { connection, _ ->
-        val sql =
-            """
-            UPDATE player set last_ip = :lastIp where id = :id
-            """.trimIndent()
-        connection
-            .createQuery(sql)
-            .addParameter("lastIp", lastIp)
-            .addParameter("id", player.id)
-            .executeUpdate()
+    override fun updateLastIp(player: Player, lastIp: String) =
+        dbAccess.openDB().runInTransaction { connection, _ ->
+            val sql =
+                """
+                UPDATE player set last_ip = :lastIp where id = :id
+                """.trimIndent()
+            connection
+                .createQuery(sql)
+                .addParameter("lastIp", lastIp)
+                .addParameter("id", player.id)
+                .executeUpdate()
 
-        clearCacheForPlayer(player)
-    }
+            clearCacheForPlayer(player)
+        }
 
-    override fun updateForPasswordReset(
-        player: Player,
-        resetToken: String,
-    ) = dbAccess.openDB().runInTransaction { connection, _ ->
-        val sql =
-            """
-            UPDATE player set password_reset_token = :resetToken where id = :id
-            """.trimIndent()
-        connection
-            .createQuery(sql)
-            .addParameter("resetToken", resetToken)
-            .addParameter("id", player.id)
-            .executeUpdate()
+    override fun updateForPasswordReset(player: Player, resetToken: String) =
+        dbAccess.openDB().runInTransaction { connection, _ ->
+            val sql =
+                """
+                UPDATE player set password_reset_token = :resetToken where id = :id
+                """.trimIndent()
+            connection
+                .createQuery(sql)
+                .addParameter("resetToken", resetToken)
+                .addParameter("id", player.id)
+                .executeUpdate()
 
-        clearCacheForPlayer(player)
-    }
+            clearCacheForPlayer(player)
+        }
 
     override fun findPlayerByPasswordResetToken(resetToken: String): Player? =
         dbAccess.openDB().withConnection(
@@ -132,22 +125,20 @@ class DbPlayerRepository : PlayerRepository {
             },
         )
 
-    override fun setPassword(
-        player: Player,
-        password: String,
-    ) = dbAccess.openDB().runInTransaction { connection, _ ->
-        val sql =
-            """
-            UPDATE player set password = :password, password_reset_token = null where id = :id
-            """.trimIndent()
-        connection
-            .createQuery(sql)
-            .addParameter("password", password)
-            .addParameter("id", player.id)
-            .executeUpdate()
+    override fun setPassword(player: Player, password: String) =
+        dbAccess.openDB().runInTransaction { connection, _ ->
+            val sql =
+                """
+                UPDATE player set password = :password, password_reset_token = null where id = :id
+                """.trimIndent()
+            connection
+                .createQuery(sql)
+                .addParameter("password", password)
+                .addParameter("id", player.id)
+                .executeUpdate()
 
-        clearCacheForPlayer(player)
-    }
+            clearCacheForPlayer(player)
+        }
 
     override fun findPlayerByLogin(login: String): Player? =
         cacheByLogin[login] ?: dbAccess
@@ -189,24 +180,21 @@ class DbPlayerRepository : PlayerRepository {
                 },
             )?.also { cacheByEmail[email.lowercase()] = it }
 
-    override fun updateForEmailChange(
-        player: Player,
-        newEmail: String,
-        changeEmailToken: String,
-    ) = dbAccess.openDB().runInTransaction { connection, _ ->
-        val sql =
-            """
-            UPDATE player set new_email = :newEmail, change_email_token = :changeEmailToken where id = :id
-            """.trimIndent()
-        connection
-            .createQuery(sql)
-            .addParameter("newEmail", newEmail)
-            .addParameter("changeEmailToken", changeEmailToken)
-            .addParameter("id", player.id)
-            .executeUpdate()
+    override fun updateForEmailChange(player: Player, newEmail: String, changeEmailToken: String) =
+        dbAccess.openDB().runInTransaction { connection, _ ->
+            val sql =
+                """
+                UPDATE player set new_email = :newEmail, change_email_token = :changeEmailToken where id = :id
+                """.trimIndent()
+            connection
+                .createQuery(sql)
+                .addParameter("newEmail", newEmail)
+                .addParameter("changeEmailToken", changeEmailToken)
+                .addParameter("id", player.id)
+                .executeUpdate()
 
-        clearCacheForPlayer(player)
-    }
+            clearCacheForPlayer(player)
+        }
 
     override fun findPlayerByChangeEmailToken(changeEmailToken: String): Player? =
         dbAccess.openDB().withConnection(
@@ -271,22 +259,20 @@ class DbPlayerRepository : PlayerRepository {
             }
         }
 
-    override fun banPlayerTemporarily(
-        player: Player,
-        bannedUntil: Long,
-    ) = dbAccess.openDB().runInTransaction { connection, _ ->
-        val sql =
-            """
-            UPDATE player set type = 'un', banned_until = :bannedUntil where id = :id
-            """.trimIndent()
-        connection
-            .createQuery(sql)
-            .addParameter("bannedUntil", bannedUntil)
-            .addParameter("id", player.id)
-            .executeUpdate()
+    override fun banPlayerTemporarily(player: Player, bannedUntil: Long) =
+        dbAccess.openDB().runInTransaction { connection, _ ->
+            val sql =
+                """
+                UPDATE player set type = 'un', banned_until = :bannedUntil where id = :id
+                """.trimIndent()
+            connection
+                .createQuery(sql)
+                .addParameter("bannedUntil", bannedUntil)
+                .addParameter("id", player.id)
+                .executeUpdate()
 
-        clearCacheForPlayer(player)
-    }
+            clearCacheForPlayer(player)
+        }
 
     override fun unbanPlayer(player: Player) =
         dbAccess.openDB().runInTransaction { connection, _ ->
@@ -302,22 +288,20 @@ class DbPlayerRepository : PlayerRepository {
             clearCacheForPlayer(player)
         }
 
-    override fun setPlayerType(
-        player: Player,
-        roles: String,
-    ) = dbAccess.openDB().runInTransaction { connection, _ ->
-        val sql =
-            """
-            UPDATE player set type = :type where id = :id
-            """.trimIndent()
-        connection
-            .createQuery(sql)
-            .addParameter("type", roles)
-            .addParameter("id", player.id)
-            .executeUpdate()
+    override fun setPlayerType(player: Player, roles: String) =
+        dbAccess.openDB().runInTransaction { connection, _ ->
+            val sql =
+                """
+                UPDATE player set type = :type where id = :id
+                """.trimIndent()
+            connection
+                .createQuery(sql)
+                .addParameter("type", roles)
+                .addParameter("id", player.id)
+                .executeUpdate()
 
-        clearCacheForPlayer(player)
-    }
+            clearCacheForPlayer(player)
+        }
 
     private fun clearCacheForPlayer(player: Player) {
         cacheByLogin.remove(player.name)

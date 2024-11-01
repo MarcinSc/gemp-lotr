@@ -24,10 +24,7 @@ class LegacyGameProducer : GameProducer {
     @Inject
     private lateinit var legacyObjectsProvider: LegacyObjectsProvider
 
-    override fun createGame(
-        gameParticipants: Array<GameParticipant>,
-        gameSettings: GameSettings,
-    ): Game {
+    override fun createGame(gameParticipants: Array<GameParticipant>, gameSettings: GameSettings): Game {
         val format = legacyObjectsProvider.formatLibrary.getFormat(gameSettings.format)
         val userFeedback = DefaultUserFeedback()
         val decks =
@@ -82,11 +79,7 @@ internal class LegacyGame(
     override val gameFinished: Long?
         get() = gameFinishedTime
 
-    override fun processDecision(
-        playerId: String,
-        decisionId: String,
-        decisionValue: String,
-    ) {
+    override fun processDecision(playerId: String, decisionId: String, decisionValue: String) {
         val awaitingDecision = userFeedback.getAwaitingDecision(playerId)
         if (awaitingDecision != null) {
             if (awaitingDecision.awaitingDecisionId.toString() == decisionId && !lotroGame.isFinished) {
@@ -136,10 +129,7 @@ internal class LegacyGame(
         }
     }
 
-    private fun addTimeSpentOnDecisionToUserClock(
-        participantId: String,
-        decision: AwaitingDecision,
-    ) {
+    private fun addTimeSpentOnDecisionToUserClock(participantId: String, decision: AwaitingDecision) {
         val queryTime: Long = decision.creationTime
         val currentTime = System.currentTimeMillis()
         val diffSec = ((currentTime - queryTime) / 1000).toInt()
@@ -150,11 +140,7 @@ internal class LegacyGame(
         }
     }
 
-    override fun joinGame(
-        playerId: String,
-        channelId: String,
-        gameStream: GameStream<Any>,
-    ) {
+    override fun joinGame(playerId: String, channelId: String, gameStream: GameStream<Any>) {
         lotroGame.addGameStateListener(
             playerId,
             GameStateStreamListener(playerId, lotroGame.format, gameStream as GameStream<GameEvent>),

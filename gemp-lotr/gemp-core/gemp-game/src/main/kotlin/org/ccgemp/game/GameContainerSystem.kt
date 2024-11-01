@@ -64,10 +64,7 @@ class GameContainerSystem :
         }
     }
 
-    override fun createNewGame(
-        participants: Array<GameParticipant>,
-        gameSettings: GameSettings,
-    ): String {
+    override fun createNewGame(participants: Array<GameParticipant>, gameSettings: GameSettings): String {
         val gameContainer = findBestContainer()
         val gameId = generateUniqueId()
         val game = gameProducer.createGame(participants, gameSettings)
@@ -149,10 +146,7 @@ class GameContainerSystem :
         game.joinGame(playerId, channelId, gameStream)
     }
 
-    private fun leaveGameInGameThread(
-        game: Game,
-        channelId: String,
-    ) {
+    private fun leaveGameInGameThread(game: Game, channelId: String) {
         game.leaveGame(channelId)
     }
 }

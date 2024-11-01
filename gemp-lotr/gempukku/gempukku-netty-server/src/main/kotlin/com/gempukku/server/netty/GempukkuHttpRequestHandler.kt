@@ -66,20 +66,14 @@ class GempukkuHttpRequestHandler(
         val remoteIp: String,
         private val requestTime: Long,
     ) {
-        fun printLog(
-            statusCode: Int,
-            finishedTime: Long,
-        ) {
+        fun printLog(statusCode: Int, finishedTime: Long) {
             if (accessLog.isLoggable(Level.FINE)) {
                 accessLog.log(Level.FINE, remoteIp + "," + statusCode + "," + uri + "," + (finishedTime - requestTime))
             }
         }
     }
 
-    override fun channelRead0(
-        ctx: ChannelHandlerContext,
-        httpRequest: FullHttpRequest,
-    ) {
+    override fun channelRead0(ctx: ChannelHandlerContext, httpRequest: FullHttpRequest) {
         if (HttpUtil.is100ContinueExpected(httpRequest)) send100Continue(ctx)
 
         var uri = httpRequest.uri()
@@ -166,10 +160,7 @@ class GempukkuHttpRequestHandler(
 
     private fun isBanned(ipAddress: String): Boolean = banChecker?.isBanned(ipAddress) ?: false
 
-    private fun getHeadersForFile(
-        headers: Map<String, String>?,
-        file: File,
-    ): Map<String, String> {
+    private fun getHeadersForFile(headers: Map<String, String>?, file: File): Map<String, String> {
         val fileHeaders: MutableMap<String, String> = HashMap(headers ?: emptyMap())
 
         val disableCaching = false
@@ -227,10 +218,7 @@ class GempukkuHttpRequestHandler(
     }
 
     @Deprecated("Deprecated in Java")
-    override fun exceptionCaught(
-        ctx: ChannelHandlerContext,
-        cause: Throwable,
-    ) {
+    override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
         if (cause !is IOException && cause !is IllegalArgumentException) {
             log.log(Level.SEVERE, "Error while processing request", cause)
         }
@@ -242,10 +230,7 @@ class GempukkuHttpRequestHandler(
         private val ctx: ChannelHandlerContext,
         private val request: HttpRequest,
     ) : ResponseWriter {
-        override fun writeError(
-            status: Int,
-            headersMap: Map<String, String>?,
-        ) {
+        override fun writeError(status: Int, headersMap: Map<String, String>?) {
             val content = ByteArray(0)
             // Build the response object.
             val response: FullHttpResponse =
@@ -259,10 +244,7 @@ class GempukkuHttpRequestHandler(
             sendResponse(ctx, request, response, requestInformation)
         }
 
-        override fun writeXmlResponse(
-            document: Document?,
-            headersMap: Map<String, String>?,
-        ) {
+        override fun writeXmlResponse(document: Document?, headersMap: Map<String, String>?) {
             try {
                 val textResponse =
                     if (document != null) {
@@ -309,10 +291,7 @@ class GempukkuHttpRequestHandler(
             }
         }
 
-        override fun writeHtmlResponse(
-            html: String,
-            headersMap: Map<String, String>?,
-        ) {
+        override fun writeHtmlResponse(html: String, headersMap: Map<String, String>?) {
             val headers: HttpHeaders = convertToHeaders(headersMap)
             headers[HttpHeaderNames.CONTENT_TYPE] = "text/html; charset=UTF-8"
 
@@ -328,10 +307,7 @@ class GempukkuHttpRequestHandler(
             sendResponse(ctx, request, response, requestInformation)
         }
 
-        override fun writeJsonResponse(
-            json: String,
-            headersMap: Map<String, String>?,
-        ) {
+        override fun writeJsonResponse(json: String, headersMap: Map<String, String>?) {
             val headers: HttpHeaders = convertToHeaders(headersMap)
             headers[HttpHeaderNames.CONTENT_TYPE] = "application/json; charset=UTF-8"
 
@@ -347,10 +323,7 @@ class GempukkuHttpRequestHandler(
             sendResponse(ctx, request, response, requestInformation)
         }
 
-        override fun writeByteResponse(
-            bytes: ByteArray,
-            headersMap: Map<String, String>?,
-        ) {
+        override fun writeByteResponse(bytes: ByteArray, headersMap: Map<String, String>?) {
             val headers1 = convertToHeaders(headersMap)
 
             // Build the response object.
@@ -365,10 +338,7 @@ class GempukkuHttpRequestHandler(
             sendResponse(ctx, request, response, requestInformation)
         }
 
-        override fun writeFile(
-            file: File,
-            headersMap: Map<String, String>?,
-        ) {
+        override fun writeFile(file: File, headersMap: Map<String, String>?) {
             try {
                 val canonicalPath = file.canonicalPath
                 var fileBytes = fileCache[canonicalPath]
@@ -431,11 +401,7 @@ class GempukkuHttpRequestHandler(
             }
         }
 
-        private fun copyLarge(
-            inputStream: InputStream,
-            outputStream: OutputStream,
-            buffer: ByteArray = ByteArray(8192),
-        ): Long {
+        private fun copyLarge(inputStream: InputStream, outputStream: OutputStream, buffer: ByteArray = ByteArray(8192)): Long {
             var count = 0L
             var n: Int
             while (-1 != (inputStream.read(buffer).also { n = it })) {

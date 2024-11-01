@@ -8,8 +8,5 @@ interface HttpServer {
         validateOrigin: Boolean = true,
     ): Runnable
 
-    fun generateSetCookieHeader(
-        cookieName: String,
-        cookieValue: String,
-    ): Map<String, String>
+    fun generateSetCookieHeader(cookieName: String, cookieValue: String): Map<String, String>
 }

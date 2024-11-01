@@ -6,8 +6,5 @@ import com.gempukku.server.ResponseWriter
 interface LoggedUserInterface {
     fun findLoggedUser(request: HttpRequest): LoggedUser?
 
-    fun sendLogUserResponse(
-        userId: String,
-        responseWriter: ResponseWriter,
-    )
+    fun sendLogUserResponse(userId: String, responseWriter: ResponseWriter)
 }

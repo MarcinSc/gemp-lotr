@@ -22,11 +22,7 @@ class XmlEventSink(
     }
 }
 
-fun createRootElement(
-    rootName: String,
-    pollIdParameter: String,
-    pollId: String,
-): (Document) -> Element =
+fun createRootElement(rootName: String, pollIdParameter: String, pollId: String): (Document) -> Element =
     {
         val root = it.createElement(rootName)
         root.setAttribute(pollIdParameter, pollId)

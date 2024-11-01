@@ -9,10 +9,7 @@ import java.util.Properties
 class PropertiesDeserializer : JsonDeserializer<Properties>() {
     private val pathStack: MutableList<String> = mutableListOf()
 
-    override fun deserialize(
-        parser: JsonParser,
-        context: DeserializationContext,
-    ): Properties {
+    override fun deserialize(parser: JsonParser, context: DeserializationContext): Properties {
         val result = Properties()
         while (true) {
             when (parser.nextToken()) {

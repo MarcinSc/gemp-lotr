@@ -17,11 +17,7 @@ class LegacyChatEventSinkProducer : ChatEventSinkProducer {
     @Inject(allowsNull = true)
     private var chatNameDisplayFormatter: ChatNameDisplayFormatter? = null
 
-    override fun createChatEventSink(
-        room: String,
-        pollId: String,
-        responseWriter: ResponseWriter,
-    ): EventSink<ChatEvent> =
+    override fun createChatEventSink(room: String, pollId: String, responseWriter: ResponseWriter): EventSink<ChatEvent> =
         LegacyEventSink(
             room,
             pollId,

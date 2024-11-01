@@ -21,10 +21,7 @@ class GameStateStreamListener(
         stream.processGameEvent(event)
     }
 
-    override fun initializeBoard(
-        participants: List<String>?,
-        discardIsPublic: Boolean,
-    ) {
+    override fun initializeBoard(participants: List<String>?, discardIsPublic: Boolean) {
         val participantIds: MutableList<String> = LinkedList()
         participantIds.addAll(participants!!)
         appendEvent(
@@ -47,10 +44,7 @@ class GameStateStreamListener(
 
     private fun getCardIds(cards: Collection<PhysicalCard>): IntArray = cards.map { it.cardId }.toIntArray()
 
-    override fun addAssignment(
-        freePeople: PhysicalCard,
-        minions: Set<PhysicalCard>,
-    ) {
+    override fun addAssignment(freePeople: PhysicalCard, minions: Set<PhysicalCard>) {
         appendEvent(
             GameEvent(GameEvent.Type.ADD_ASSIGNMENT).cardId(freePeople.cardId).otherCardIds(getCardIds(minions)),
         )
@@ -60,10 +54,7 @@ class GameStateStreamListener(
         appendEvent(GameEvent(GameEvent.Type.REMOVE_ASSIGNMENT).cardId(freePeople.cardId))
     }
 
-    override fun startSkirmish(
-        freePeople: PhysicalCard?,
-        minions: Set<PhysicalCard>,
-    ) {
+    override fun startSkirmish(freePeople: PhysicalCard?, minions: Set<PhysicalCard>) {
         val gameEvent = GameEvent(GameEvent.Type.START_SKIRMISH).otherCardIds(getCardIds(minions))
         if (freePeople != null) gameEvent.cardId(freePeople.cardId)
         appendEvent(gameEvent)
@@ -94,10 +85,7 @@ class GameStateStreamListener(
         }
     }
 
-    override fun cardCreated(
-        card: PhysicalCard,
-        overridePlayerVisibility: Boolean,
-    ) {
+    override fun cardCreated(card: PhysicalCard, overridePlayerVisibility: Boolean) {
         val publicDiscard = card.zone == Zone.DISCARD && format.discardPileIsPublic()
         if (card.zone.isPublic ||
             publicDiscard ||
@@ -113,10 +101,7 @@ class GameStateStreamListener(
         appendEvent(GameEvent(GameEvent.Type.MOVE_CARD_IN_PLAY).card(card))
     }
 
-    override fun cardsRemoved(
-        playerPerforming: String?,
-        cards: Collection<PhysicalCard>,
-    ) {
+    override fun cardsRemoved(playerPerforming: String?, cards: Collection<PhysicalCard>) {
         val removedCardsVisibleByPlayer: MutableSet<PhysicalCard> = HashSet()
         for (card in cards) {
             val publicDiscard = card.zone == Zone.DISCARD && format.discardPileIsPublic()
@@ -139,10 +124,7 @@ class GameStateStreamListener(
         }
     }
 
-    override fun setPlayerPosition(
-        participant: String?,
-        position: Int,
-    ) {
+    override fun setPlayerPosition(participant: String?, position: Int) {
         appendEvent(GameEvent(GameEvent.Type.PLAYER_POSITION).participantId(participant).index(position))
     }
 
@@ -156,19 +138,11 @@ class GameStateStreamListener(
 
     override fun getAssignedPlayerId(): String = playerId
 
-    override fun addTokens(
-        card: PhysicalCard?,
-        token: Token?,
-        count: Int,
-    ) {
+    override fun addTokens(card: PhysicalCard?, token: Token?, count: Int) {
         appendEvent(GameEvent(GameEvent.Type.ADD_TOKENS).card(card).token(token).count(count))
     }
 
-    override fun removeTokens(
-        card: PhysicalCard?,
-        token: Token?,
-        count: Int,
-    ) {
+    override fun removeTokens(card: PhysicalCard?, token: Token?, count: Int) {
         appendEvent(GameEvent(GameEvent.Type.REMOVE_TOKENS).card(card).token(token).count(count))
     }
 
@@ -184,11 +158,7 @@ class GameStateStreamListener(
         appendEvent(GameEvent(GameEvent.Type.GAME_STATS).gameStats(gameStats.makeACopy()))
     }
 
-    override fun cardAffectedByCard(
-        playerPerforming: String?,
-        card: PhysicalCard?,
-        affectedCards: Collection<PhysicalCard>,
-    ) {
+    override fun cardAffectedByCard(playerPerforming: String?, card: PhysicalCard?, affectedCards: Collection<PhysicalCard>) {
         appendEvent(
             GameEvent(GameEvent.Type.CARD_AFFECTED_BY_CARD)
                 .card(card)
@@ -201,17 +171,11 @@ class GameStateStreamListener(
         appendEvent(GameEvent(GameEvent.Type.SHOW_CARD_ON_SCREEN).card(card))
     }
 
-    override fun cardActivated(
-        playerPerforming: String?,
-        card: PhysicalCard?,
-    ) {
+    override fun cardActivated(playerPerforming: String?, card: PhysicalCard?) {
         appendEvent(GameEvent(GameEvent.Type.FLASH_CARD_IN_PLAY).card(card).participantId(playerPerforming))
     }
 
-    override fun decisionRequired(
-        playerId: String,
-        decision: AwaitingDecision?,
-    ) {
+    override fun decisionRequired(playerId: String, decision: AwaitingDecision?) {
         if (playerId == this.playerId) {
             appendEvent(
                 GameEvent(GameEvent.Type.DECISION).awaitingDecision(decision).participantId(playerId),
@@ -219,10 +183,7 @@ class GameStateStreamListener(
         }
     }
 
-    override fun sendWarning(
-        playerId: String,
-        warning: String?,
-    ) {
+    override fun sendWarning(playerId: String, warning: String?) {
         if (playerId == this.playerId) appendEvent(GameEvent(GameEvent.Type.SEND_WARNING).message(warning))
     }
 

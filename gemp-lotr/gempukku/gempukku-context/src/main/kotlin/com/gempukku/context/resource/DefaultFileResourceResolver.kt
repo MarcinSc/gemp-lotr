@@ -5,10 +5,7 @@ import java.io.File
 class DefaultFileResourceResolver : FileResourceResolver {
     private val resourceTypeHandlers: MutableMap<String, FileResourceHandler> = mutableMapOf()
 
-    fun addFileResourceHandler(
-        type: String,
-        handler: FileResourceHandler,
-    ) {
+    fun addFileResourceHandler(type: String, handler: FileResourceHandler) {
         resourceTypeHandlers[type.lowercase()] = handler
     }
 

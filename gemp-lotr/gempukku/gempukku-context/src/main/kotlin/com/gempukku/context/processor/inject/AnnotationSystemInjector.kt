@@ -21,10 +21,7 @@ class AnnotationSystemInjector(
 ) : SystemProcessor {
     private val usedProperties = mutableSetOf<String>()
 
-    override fun processSystems(
-        context: GempukkuContext,
-        vararg systems: Any,
-    ) {
+    override fun processSystems(context: GempukkuContext, vararg systems: Any) {
         systems.forEach { system ->
             system.javaClass.declaredFields.forEach { field ->
                 if (field.isAnnotationPresent(Inject::class.java)) {
@@ -46,10 +43,7 @@ class AnnotationSystemInjector(
         usedProperties.clear()
     }
 
-    private fun processInjectProperty(
-        field: Field,
-        system: Any,
-    ) {
+    private fun processInjectProperty(field: Field, system: Any) {
         if (propertyResolver == null) {
             throw InjectionException("Unable to inject property, property resolver is missing")
         }
@@ -97,10 +91,7 @@ class AnnotationSystemInjector(
         }
     }
 
-    private fun resolveProperty(
-        propertyName: String,
-        default: String,
-    ): String {
+    private fun resolveProperty(propertyName: String, default: String): String {
         val propertyValue = propertyResolver!!.resolveProperty(propertyName)
         if (propertyValue == null) {
             log.warning("Unable to resolve property: $propertyName")
@@ -110,11 +101,7 @@ class AnnotationSystemInjector(
         return propertyValue ?: default
     }
 
-    private fun processInjectList(
-        field: Field,
-        context: GempukkuContext,
-        system: Any,
-    ) {
+    private fun processInjectList(field: Field, context: GempukkuContext, system: Any) {
         val injectAnnotation = field.getAnnotation(InjectList::class.java)
         val fieldType = field.type
         if (List::class.java.isAssignableFrom(fieldType)) {
@@ -145,11 +132,7 @@ class AnnotationSystemInjector(
         }
     }
 
-    private fun processInject(
-        field: Field,
-        context: GempukkuContext,
-        system: Any,
-    ) {
+    private fun processInject(field: Field, context: GempukkuContext, system: Any) {
         val injectAnnotation = field.getAnnotation(Inject::class.java)
         val fieldType = field.type as Class<Any>
 
@@ -178,16 +161,9 @@ class AnnotationSystemInjector(
         }
     }
 
-    private fun decorateIfNeeded(
-        system: Any,
-        typeClass: Class<Any>,
-    ) = systemDecorator?.let { systemDecorator.decorate(system, typeClass) } ?: system
+    private fun decorateIfNeeded(system: Any, typeClass: Class<Any>) = systemDecorator?.let { systemDecorator.decorate(system, typeClass) } ?: system
 
-    private fun findValues(
-        context: GempukkuContext,
-        clazz: Class<out Any>,
-        injectAnnotation: Inject,
-    ): List<Any> {
+    private fun findValues(context: GempukkuContext, clazz: Class<out Any>, injectAnnotation: Inject): List<Any> {
         val systems = context.getSystems(clazz)
         return systems.ifEmpty {
             if (injectAnnotation.firstNotNullFromAncestors && context.parent != null) {
