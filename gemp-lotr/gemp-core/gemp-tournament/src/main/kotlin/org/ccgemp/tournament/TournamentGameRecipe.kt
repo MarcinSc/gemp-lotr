@@ -1,10 +1,10 @@
 package org.ccgemp.tournament
 
-import org.ccgemp.game.GameParticipant
 import org.ccgemp.game.GameSettings
 
 data class TournamentGameRecipe(
-    val participants: Array<GameParticipant>,
+    val round: Int,
+    val participants: Array<String>,
     val gameSettings: GameSettings,
 ) {
     override fun equals(other: Any?): Boolean {
