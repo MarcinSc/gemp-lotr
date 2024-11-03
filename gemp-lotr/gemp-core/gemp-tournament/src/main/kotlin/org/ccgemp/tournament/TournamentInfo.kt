@@ -1,0 +1,10 @@
+package org.ccgemp.tournament
+
+interface TournamentInfo<TournamentData> {
+    val id: String
+    val stage: String
+    val round: Int
+    val players: List<TournamentPlayer>
+    val matches: List<TournamentMatch>
+    val data: TournamentData
+}

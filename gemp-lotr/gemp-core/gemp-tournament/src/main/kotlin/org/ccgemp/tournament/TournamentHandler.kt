@@ -1,9 +1,18 @@
 package org.ccgemp.tournament
 
-interface TournamentHandler {
-    fun initializeTournament(tournament: Tournament, players: List<TournamentPlayer>, matches: List<TournamentMatch>): LoadedTournament
+import org.ccgemp.game.GameDeck
+import org.ccgemp.game.GameSettings
 
-    fun progressTournament(tournament: LoadedTournament, tournamentProgress: TournamentProgress)
+interface TournamentHandler<TournamentData> {
+    fun initializeTournament(tournament: Tournament): TournamentData
 
-    fun unloadTournament(tournament: LoadedTournament)
+    fun getPlayerDeck(tournament: TournamentInfo<TournamentData>, player: String, round: Int): GameDeck
+
+    fun getGameSettings(tournament: TournamentInfo<TournamentData>, round: Int): GameSettings
+
+    fun progressTournament(tournament: TournamentInfo<TournamentData>, tournamentProgress: TournamentProgress)
+
+    fun getTournamentStatus(tournament: TournamentInfo<TournamentData>): String
+
+    fun unloadTournament(tournament: TournamentInfo<TournamentData>)
 }

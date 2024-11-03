@@ -13,6 +13,7 @@ include(
     "gempukku:gempukku-server",
     "gemp-core:gemp-db",
     "gemp-core:gemp-game",
+    "gemp-core:gemp-json",
     "gemp-core:gemp-player",
     "gemp-core:gemp-tournament",
     "gemp-lotr-assembly",

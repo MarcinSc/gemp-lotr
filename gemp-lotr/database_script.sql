@@ -107,6 +107,7 @@ CREATE TABLE `game_history` (
   PRIMARY KEY (`id`),
   KEY `index3` (`winner`),
   KEY `index4` (`loser`),
+  KEY `game_history_tournament_IDX` (`tournament`) USING HASH,
   KEY `game_history_win_id_index` (`win_recording_id`),
   KEY `game_history_lose_id_index` (`lose_recording_id`),
   KEY `fk_winnerId` (`winnerId`),
@@ -224,7 +225,11 @@ CREATE TABLE `player` (
   `new_email`            varchar(128) DEFAULT NULL,
   `change_email_token`   varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name_UNIQUE` (`name`)
+  UNIQUE KEY `name_UNIQUE` (`name`),
+  KEY `player_email` (`email`),
+  KEY `player_name` (`name`),
+  KEY `player_password_reset_tokan` (`password_reset_tokan`),
+  KEY `player_change_email_token` (`change_email_token`)
 ) ENGINE=InnoDB AUTO_INCREMENT=32845 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

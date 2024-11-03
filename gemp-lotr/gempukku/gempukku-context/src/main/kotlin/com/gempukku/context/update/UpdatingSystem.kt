@@ -16,7 +16,7 @@ class UpdatingSystem : LifecycleObserver {
     @Inject
     private lateinit var executor: ContextScheduledExecutor
 
-    @InjectList(priorityPrefix = "updating")
+    @InjectList(priorityPrefix = "updating", selectFromAncestors = false)
     private lateinit var updatedSystems: List<UpdatedSystem>
 
     private var scheduledTaskTurnOff: Runnable? = null

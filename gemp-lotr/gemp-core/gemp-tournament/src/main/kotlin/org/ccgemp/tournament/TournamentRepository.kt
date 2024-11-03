@@ -18,4 +18,6 @@ interface TournamentRepository {
         playerTwo: String,
         winner: String? = null,
     )
+
+    fun dropPlayer(tournamentId: String, player: String)
 }
