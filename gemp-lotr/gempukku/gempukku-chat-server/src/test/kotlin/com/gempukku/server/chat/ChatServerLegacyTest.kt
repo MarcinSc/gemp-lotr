@@ -46,15 +46,17 @@ class ChatServerLegacyTest {
                 null,
                 AnnotationSystemResolver(),
                 AnnotationSystemInjector(propertyResolver, workerThreadExecutorSystem),
-                lifecycleSystem,
-                chatSystem,
-                ChatApiSystem(),
-                LegacyChatEventSinkProducer(),
-                NettyServerSystem(),
-                loggedUser,
-                UpdatingSystem(),
-                LongPollingSystem(),
-                workerThreadExecutorSystem,
+                listOf(
+                    lifecycleSystem,
+                    chatSystem,
+                    ChatApiSystem(),
+                    LegacyChatEventSinkProducer(),
+                    NettyServerSystem(),
+                    loggedUser,
+                    UpdatingSystem(),
+                    LongPollingSystem(),
+                    workerThreadExecutorSystem,
+                ),
             )
         context.initialize()
 

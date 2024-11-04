@@ -34,11 +34,13 @@ class NettyServerSystemTest {
                 null,
                 AnnotationSystemResolver(),
                 AnnotationSystemInjector(propertyResolver),
-                nettyServerSystem,
-                workerThreadExecutorSystem,
-                ExampleRequestHandler(),
-                lifecycleSystem,
-                UpdatingSystem(),
+                listOf(
+                    nettyServerSystem,
+                    workerThreadExecutorSystem,
+                    ExampleRequestHandler(),
+                    lifecycleSystem,
+                    UpdatingSystem(),
+                ),
             )
 
         context.initialize()

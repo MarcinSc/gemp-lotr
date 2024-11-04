@@ -21,7 +21,7 @@ class AnnotationSystemInjector(
 ) : SystemProcessor {
     private val usedProperties = mutableSetOf<String>()
 
-    override fun processSystems(context: GempukkuContext, vararg systems: Any) {
+    override fun processSystems(context: GempukkuContext, systems: Collection<Any>) {
         systems.forEach { system ->
             system.javaClass.declaredFields.forEach { field ->
                 if (field.isAnnotationPresent(Inject::class.java)) {
@@ -35,10 +35,8 @@ class AnnotationSystemInjector(
                 }
             }
         }
-        if (propertyResolver != null) {
-            propertyResolver.getAllPropertyNames().filter { !usedProperties.contains(it) }.forEach { propertyName ->
-                log.warning("Property not used in context: $propertyName")
-            }
+        propertyResolver?.getAllPropertyNames()?.filter { !usedProperties.contains(it) }?.forEach { propertyName ->
+            log.warning("Property not used in context: $propertyName")
         }
         usedProperties.clear()
     }

@@ -1,9 +1,9 @@
 package org.ccgemp.tournament.composite.matches.kickoff
 
-import org.hjson.JsonObject
+import org.ccgemp.json.JsonWithConfig
 
 interface TournamentKickoffRegistry {
-    fun register(type: String, provider: (JsonObject.() -> Kickoff))
+    fun register(type: String, provider: (JsonWithConfig<KickoffConfig>.() -> Kickoff))
 
-    fun create(value: JsonObject): Kickoff
+    fun create(value: JsonWithConfig<KickoffConfig>): Kickoff
 }

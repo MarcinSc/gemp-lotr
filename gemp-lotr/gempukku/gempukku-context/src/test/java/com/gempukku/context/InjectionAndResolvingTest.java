@@ -4,6 +4,8 @@ import com.gempukku.context.processor.inject.AnnotationSystemInjector;
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InjectionAndResolvingTest {
@@ -14,7 +16,9 @@ public class InjectionAndResolvingTest {
 
         DefaultGempukkuContext context = new DefaultGempukkuContext(
                 null, new AnnotationSystemResolver(), new AnnotationSystemInjector(),
-                system, otherSystem);
+                Arrays.stream(
+                        new Object[]{system, otherSystem}
+                ).toList());
 
         context.initialize();
 

@@ -18,7 +18,7 @@ internal class AnnotationSystemProcessorTest {
         whenever(context.getSystems(InjectedSystem::class.java)).thenReturn(listOf(injectedSystem))
 
         val injectingSystem = SingleInjectingSystem()
-        injector.processSystems(context, injectingSystem)
+        injector.processSystems(context, listOf(injectingSystem))
 
         assertEquals(injectingSystem.injectedSystem, injectedSystem)
     }
@@ -36,7 +36,7 @@ internal class AnnotationSystemProcessorTest {
         whenever(parentContext.getSystems(InjectedSystem::class.java)).thenReturn(listOf(injectedSystem))
 
         val injectingSystem = FromAncestorsSingleInjectingSystem()
-        injector.processSystems(context, injectingSystem)
+        injector.processSystems(context, listOf(injectingSystem))
 
         assertEquals(injectingSystem.injectedSystem, injectedSystem)
     }
@@ -55,7 +55,7 @@ internal class AnnotationSystemProcessorTest {
 
         val injectingSystem = SingleInjectingSystem()
         assertThrows(InjectionException::class.java) {
-            injector.processSystems(context, injectingSystem)
+            injector.processSystems(context, listOf(injectingSystem))
         }
     }
 
@@ -72,7 +72,7 @@ internal class AnnotationSystemProcessorTest {
 
         val injectingSystem = FromAncestorsSingleInjectingSystem()
         assertThrows(InjectionException::class.java) {
-            injector.processSystems(context, injectingSystem)
+            injector.processSystems(context, listOf(injectingSystem))
         }
     }
 
@@ -86,7 +86,7 @@ internal class AnnotationSystemProcessorTest {
         val injectingSystem = SingleInjectingSystem()
 
         assertThrows(InjectionException::class.java) {
-            injector.processSystems(context, injectingSystem)
+            injector.processSystems(context, listOf(injectingSystem))
         }
     }
 
@@ -98,7 +98,7 @@ internal class AnnotationSystemProcessorTest {
         whenever(context.getSystems(InjectedSystem::class.java)).thenReturn(emptyList())
 
         val injectingSystem = NullableSingleInjectingSystem()
-        injector.processSystems(context, injectingSystem)
+        injector.processSystems(context, listOf(injectingSystem))
 
         assertNull(injectingSystem.injectedSystem)
     }
@@ -113,7 +113,7 @@ internal class AnnotationSystemProcessorTest {
         val injectingSystem = SingleInjectingSystem()
 
         assertThrows(InjectionException::class.java) {
-            injector.processSystems(context, injectingSystem)
+            injector.processSystems(context, listOf(injectingSystem))
         }
     }
 
@@ -125,7 +125,7 @@ internal class AnnotationSystemProcessorTest {
         whenever(context.getSystems(InjectedSystem::class.java)).thenReturn(emptyList())
 
         val injectingSystem = MultipleInjectingSystem()
-        injector.processSystems(context, injectingSystem)
+        injector.processSystems(context, listOf(injectingSystem))
 
         assertEquals(injectingSystem.injectedSystems, emptyList<InjectedSystem>())
     }
@@ -139,7 +139,7 @@ internal class AnnotationSystemProcessorTest {
         whenever(context.getSystems(InjectedSystem::class.java)).thenReturn(listOf(injectedSystem))
 
         val injectingSystem = MultipleInjectingSystem()
-        injector.processSystems(context, injectingSystem)
+        injector.processSystems(context, listOf(injectingSystem))
 
         assertEquals(injectingSystem.injectedSystems, listOf(injectedSystem))
     }
@@ -154,7 +154,7 @@ internal class AnnotationSystemProcessorTest {
         whenever(context.getSystems(InjectedSystem::class.java)).thenReturn(listOf(injectedSystem1, injectedSystem2))
 
         val injectingSystem = MultipleInjectingSystem()
-        injector.processSystems(context, injectingSystem)
+        injector.processSystems(context, listOf(injectingSystem))
 
         assertEquals(injectingSystem.injectedSystems, listOf(injectedSystem1, injectedSystem2))
     }
@@ -172,7 +172,7 @@ internal class AnnotationSystemProcessorTest {
         whenever(parentContext.getSystems(InjectedSystem::class.java)).thenReturn(listOf(injectedSystem2))
 
         val injectingSystem = MultipleInjectingSystem()
-        injector.processSystems(context, injectingSystem)
+        injector.processSystems(context, listOf(injectingSystem))
 
         assertEquals(injectingSystem.injectedSystems, listOf(injectedSystem1))
     }
@@ -190,7 +190,7 @@ internal class AnnotationSystemProcessorTest {
         whenever(parentContext.getSystems(InjectedSystem::class.java)).thenReturn(listOf(injectedSystem2))
 
         val injectingSystem = FromAncestorsMultipleInjectingSystem()
-        injector.processSystems(context, injectingSystem)
+        injector.processSystems(context, listOf(injectingSystem))
 
         assertEquals(injectingSystem.injectedSystems, listOf(injectedSystem1, injectedSystem2))
     }

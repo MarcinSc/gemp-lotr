@@ -1,15 +1,13 @@
 package org.ccgemp.json
 
-import org.hjson.JsonObject
+open class TypedRegistry<Config, Type> {
+    private val registry: MutableMap<String, (JsonWithConfig<Config>.() -> Type)> = mutableMapOf()
 
-open class TypedRegistry<Type> {
-    private val registry: MutableMap<String, (JsonObject.() -> Type)> = mutableMapOf()
-
-    fun register(type: String, provider: (JsonObject.() -> Type)) {
+    fun register(type: String, provider: (JsonWithConfig<Config>.() -> Type)) {
         registry[type.lowercase()] = provider
     }
 
-    fun create(value: JsonObject): Type {
-        return registry[value.getString("type", null)]!!.invoke(value)
+    fun create(value: JsonWithConfig<Config>): Type {
+        return registry[value.json.getString("type", null)]!!.invoke(value)
     }
 }

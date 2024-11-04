@@ -5,11 +5,14 @@ import com.gempukku.context.processor.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.game.GameSettings
 import org.ccgemp.game.GameTimer
+import org.ccgemp.json.JsonWithConfig
 import org.ccgemp.tournament.composite.TournamentProcess
+import org.ccgemp.tournament.composite.TournamentProcessConfig
 import org.ccgemp.tournament.composite.TournamentProcessRegistry
+import org.ccgemp.tournament.composite.matches.kickoff.KickoffConfig
 import org.ccgemp.tournament.composite.matches.kickoff.TournamentKickoffRegistry
+import org.ccgemp.tournament.composite.matches.pairing.PairingConfig
 import org.ccgemp.tournament.composite.matches.pairing.TournamentPairingRegistry
-import org.hjson.JsonObject
 
 @Exposes(LifecycleObserver::class)
 class MatchTournamentProcesses : LifecycleObserver {
@@ -23,10 +26,10 @@ class MatchTournamentProcesses : LifecycleObserver {
     private lateinit var pairingRegistry: TournamentPairingRegistry
 
     override fun afterContextStartup() {
-        val constructedProcess: (Pair<JsonObject, Int>) -> TournamentProcess = {
-            val def = it.first
+        val constructedProcess: (JsonWithConfig<TournamentProcessConfig>) -> TournamentProcess = {
+            val def = it.json
             ConstructedTournamentProcess(
-                it.second,
+                it.config.startRound,
                 def.getInt("rounds", 1),
                 def.getInt("deckIndex", 0),
                 GameSettings(
@@ -38,12 +41,12 @@ class MatchTournamentProcesses : LifecycleObserver {
                 ),
                 def.getString("pairingGroup", "1"),
                 def.getString("byeGroup", "1"),
-                kickoffRegistry.create(def.get("kickoff").asObject()),
-                pairingRegistry.create(def.get("pairing").asObject()),
+                kickoffRegistry.create(JsonWithConfig(def.get("kickoff").asObject(), KickoffConfig(it.config.tournamentId))),
+                pairingRegistry.create(JsonWithConfig(def.get("pairing").asObject(), PairingConfig(it.config.tournamentId))),
                 def.getBoolean("dropLosers", false),
             )
         }
-        processRegistry.registerProcess(
+        processRegistry.register(
             "constructed",
             constructedProcess,
         )

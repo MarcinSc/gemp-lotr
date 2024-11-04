@@ -29,10 +29,12 @@ class PeriodicUpdateTest {
                 null,
                 AnnotationSystemResolver(),
                 AnnotationSystemInjector(propertyResolver),
-                UpdatingSystem(),
-                workerExecutorSystem,
-                lifecycleSystem,
-                periodicallyUpdatedTestSystem,
+                listOf(
+                    UpdatingSystem(),
+                    workerExecutorSystem,
+                    lifecycleSystem,
+                    periodicallyUpdatedTestSystem,
+                ),
             )
         context.initialize()
 

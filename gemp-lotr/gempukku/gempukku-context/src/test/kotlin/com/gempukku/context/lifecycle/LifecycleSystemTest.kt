@@ -17,8 +17,10 @@ class LifecycleSystemTest {
                 null,
                 AnnotationSystemResolver(),
                 AnnotationSystemInjector(),
-                lifecycleSystem,
-                lifecycleObserver,
+                listOf(
+                    lifecycleSystem,
+                    lifecycleObserver,
+                ),
             )
 
         context.initialize()

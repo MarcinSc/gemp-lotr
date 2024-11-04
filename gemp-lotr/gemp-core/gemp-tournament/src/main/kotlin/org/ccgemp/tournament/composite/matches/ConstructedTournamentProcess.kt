@@ -35,21 +35,26 @@ class ConstructedTournamentProcess(
     ) {
         when (stage) {
             "" -> {
-                tournamentProgress.updateState(round + 1, AWAITING_KICKOFF)
+                tournamentProgress.updateState(startingRound, AWAITING_KICKOFF)
             }
 
             AWAITING_KICKOFF -> {
-                if (kickoff.isKickedOff(round)) {
-                    val roundPairing = pairing.createPairings(players, matches, pairingGroups, byeGroups)
-                    roundPairing.pairings.forEach {
-                        tournamentProgress.createMatch(
-                            TournamentGameRecipe(round, arrayOf(it.first, it.second), gameSettings),
-                        )
+                if (kickoff.isKickedOff(round) && pairing.isReady(round)) {
+                    val roundPairing = pairing.createPairings(round, players, matches, pairingGroups, byeGroups)
+                    if (roundPairing == null) {
+                        // Can't pair - just finish this stage
+                        tournamentProgress.updateState(startingRound + rounds - 1, FINISHED_STAGE)
+                    } else {
+                        roundPairing.pairings.forEach {
+                            tournamentProgress.createMatch(
+                                TournamentGameRecipe(round, arrayOf(it.first, it.second), gameSettings),
+                            )
+                        }
+                        roundPairing.byes.forEach {
+                            tournamentProgress.awardBye(round, it)
+                        }
+                        tournamentProgress.updateState(round, PLAYING_GAMES)
                     }
-                    roundPairing.byes.forEach {
-                        tournamentProgress.awardBye(round, it)
-                    }
-                    tournamentProgress.updateState(round, PLAYING_GAMES)
                 }
             }
 

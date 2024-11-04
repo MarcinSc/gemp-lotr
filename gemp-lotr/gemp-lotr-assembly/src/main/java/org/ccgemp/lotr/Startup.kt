@@ -8,18 +8,13 @@ import com.gempukku.context.processor.inject.decorator.WorkerThreadExecutorSyste
 import com.gempukku.context.processor.inject.property.YamlPropertyResolver
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
 import com.gempukku.context.update.UpdatingSystem
-import com.gempukku.server.chat.ChatApiSystem
-import com.gempukku.server.chat.ChatSystem
-import com.gempukku.server.chat.polling.legacy.LegacyChatEventSinkProducer
 import com.gempukku.server.login.CookieLoggedUserSystem
 import com.gempukku.server.netty.NettyServerSystem
 import com.gempukku.server.polling.LongPollingSystem
 import org.ccgemp.db.DbAccessSystem
-import org.ccgemp.server.player.DbPlayerRepository
-import org.ccgemp.server.player.PlayerApiSystem
-import org.ccgemp.server.player.PlayerSystem
-import org.ccgemp.server.player.admin.AdminPlayerApiSystem
-import org.ccgemp.server.player.admin.AdminPlayerSystem
+import org.ccgemp.game.createGameSystems
+import org.ccgemp.server.player.createPlayerSystems
+import org.ccgemp.tournament.createTournamentSystems
 import java.util.concurrent.Executors
 
 fun main() {
@@ -30,11 +25,8 @@ fun main() {
 
     val workerThreadExecutorSystem = WorkerThreadExecutorSystem(threadPoolFactory, executorService)
 
-    val serverContext =
-        DefaultGempukkuContext(
-            null,
-            AnnotationSystemResolver(),
-            AnnotationSystemInjector(propertyResolver, workerThreadExecutorSystem),
+    val baseSystems =
+        listOf(
             // Provides access to scheduling tasks
             workerThreadExecutorSystem,
             // Responsible for managing state of the Context
@@ -49,18 +41,28 @@ fun main() {
             LongPollingSystem(),
             // Allows access to database
             DbAccessSystem(),
-            // Responsible for chat server and its API
-            ChatSystem(),
-            ChatApiSystem(),
-            LegacyChatEventSinkProducer(),
+        )
+
+    val lotrSpecificSystems =
+        listOf(
+            // Provides access to card library, formats, etc
+            DefaultLegacyObjectProvider(),
+            // Legacy chat name display
             LegacyChatNameDisplayFormatter(),
-            // Responsible for player registration, login, etc.
-            PlayerSystem(),
-            PlayerApiSystem(),
-            DbPlayerRepository(),
-            // Responsible for administrating users
-            AdminPlayerSystem(),
-            AdminPlayerApiSystem(),
+            // Legacy game running
+            LegacyGameProducer(),
+        )
+
+    val serverContext =
+        DefaultGempukkuContext(
+            null,
+            AnnotationSystemResolver(),
+            AnnotationSystemInjector(propertyResolver, workerThreadExecutorSystem),
+            baseSystems +
+                createPlayerSystems() +
+                createTournamentSystems() +
+                createGameSystems() +
+                lotrSpecificSystems,
         )
 
     serverContext.initialize()

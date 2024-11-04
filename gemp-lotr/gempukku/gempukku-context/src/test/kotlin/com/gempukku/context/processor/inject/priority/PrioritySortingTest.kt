@@ -22,9 +22,11 @@ class PrioritySortingTest {
                 null,
                 AnnotationSystemResolver(),
                 AnnotationSystemInjector(propertyResolver),
-                aPrioritySystem,
-                bPrioritySystem,
-                testSystem,
+                listOf(
+                    aPrioritySystem,
+                    bPrioritySystem,
+                    testSystem,
+                ),
             )
 
         context.initialize()
@@ -51,9 +53,11 @@ class PrioritySortingTest {
                 null,
                 AnnotationSystemResolver(),
                 AnnotationSystemInjector(propertyResolver),
-                aPrioritySystem,
-                bPrioritySystem,
-                testSystem,
+                listOf(
+                    aPrioritySystem,
+                    bPrioritySystem,
+                    testSystem,
+                ),
             )
 
         context.initialize()

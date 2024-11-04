@@ -1,9 +1,9 @@
 package org.ccgemp.tournament.composite.matches.pairing
 
-import org.hjson.JsonObject
+import org.ccgemp.json.JsonWithConfig
 
 interface TournamentPairingRegistry {
-    fun register(type: String, provider: (JsonObject.() -> Pairing))
+    fun register(type: String, provider: (JsonWithConfig<PairingConfig>.() -> Pairing))
 
-    fun create(value: JsonObject): Pairing
+    fun create(value: JsonWithConfig<PairingConfig>): Pairing
 }

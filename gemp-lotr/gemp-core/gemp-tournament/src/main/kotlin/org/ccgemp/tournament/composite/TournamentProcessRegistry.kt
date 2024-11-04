@@ -1,7 +1,9 @@
 package org.ccgemp.tournament.composite
 
-import org.hjson.JsonObject
+import org.ccgemp.json.JsonWithConfig
 
 interface TournamentProcessRegistry {
-    fun registerProcess(type: String, provider: (Pair<JsonObject, Int>.() -> TournamentProcess))
+    fun register(type: String, provider: (JsonWithConfig<TournamentProcessConfig>.() -> TournamentProcess))
+
+    fun create(config: JsonWithConfig<TournamentProcessConfig>): TournamentProcess
 }

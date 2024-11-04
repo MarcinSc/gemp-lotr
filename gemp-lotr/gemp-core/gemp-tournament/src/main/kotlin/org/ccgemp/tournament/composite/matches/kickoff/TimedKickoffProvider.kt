@@ -2,24 +2,23 @@ package org.ccgemp.tournament.composite.matches.kickoff
 
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.processor.inject.Inject
-import org.hjson.JsonObject
+import com.gempukku.context.resolver.expose.Exposes
+import org.ccgemp.json.JsonWithConfig
 
-class TimedKickoff : LifecycleObserver {
+@Exposes(LifecycleObserver::class)
+class TimedKickoffProvider : LifecycleObserver {
     @Inject
     private lateinit var registry: TournamentKickoffRegistry
 
     override fun afterContextStartup() {
-        val kickoffProvider: (JsonObject) -> Kickoff = {
-            TimerKickoff(it.getLong("pause", 0))
+        val kickoffProvider: (JsonWithConfig<KickoffConfig>) -> Kickoff = {
+            TimedKickoff(it.json.getLong("pause", 0))
         }
-        registry.register(
-            "timed",
-            kickoffProvider,
-        )
+        registry.register("timed", kickoffProvider)
     }
 }
 
-class TimerKickoff(
+private class TimedKickoff(
     private val pause: Long,
 ) : Kickoff {
     private var firstInvocation: MutableMap<Int, Long> = mutableMapOf()

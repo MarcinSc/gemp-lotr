@@ -25,8 +25,10 @@ class WorkerThreadTest {
                 null,
                 AnnotationSystemResolver(),
                 AnnotationSystemInjector(null, workerExecutorSystem),
-                proxySystem,
-                callingSystem,
+                listOf(
+                    proxySystem,
+                    callingSystem,
+                ),
             )
 
         context.initialize()
@@ -56,8 +58,10 @@ class WorkerThreadTest {
                 null,
                 AnnotationSystemResolver(),
                 AnnotationSystemInjector(null, workerExecutorSystem),
-                proxySystem,
-                callingSystem,
+                listOf(
+                    proxySystem,
+                    callingSystem,
+                ),
             )
 
         context.initialize()
