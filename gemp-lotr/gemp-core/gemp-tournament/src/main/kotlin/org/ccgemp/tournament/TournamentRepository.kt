@@ -9,9 +9,7 @@ interface TournamentRepository {
 
     fun getTournamentPlayers(tournamentId: String): List<TournamentPlayer>
 
-    fun setStage(tournamentId: String, stage: String)
-
-    fun setRound(tournamentId: String, round: Int)
+    fun setRoundAndStage(tournamentId: String, round: Int, stage: String)
 
     fun createMatch(
         tournamentId: String,

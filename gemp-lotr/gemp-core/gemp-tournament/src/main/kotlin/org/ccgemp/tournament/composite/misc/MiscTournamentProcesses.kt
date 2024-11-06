@@ -12,7 +12,6 @@ import org.ccgemp.tournament.composite.matches.standing.StandingsConfig
 import org.ccgemp.tournament.composite.matches.standing.TournamentStandingsRegistry
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlin.math.sin
 
 @Exposes(LifecycleObserver::class)
 class MiscTournamentProcesses : LifecycleObserver {
@@ -56,19 +55,21 @@ class MiscTournamentProcesses : LifecycleObserver {
 
         val signup: (JsonWithConfig<TournamentProcessConfig>) -> TournamentProcess = {
             val def = it.json
-            val allowedPlayers = def.get("invitedPlayers")?.asArray()?.mapTo(mutableSetOf()) {
-                it.asString()
-            }
-            val formats = def.get("formats").asArray().map {
-                it.asString()
-            }
+            val allowedPlayers =
+                def.get("invitedPlayers")?.asArray()?.mapTo(mutableSetOf()) {
+                    it.asString()
+                }
+            val formats =
+                def.get("formats").asArray().map {
+                    it.asString()
+                }
             Signup(
                 allowedPlayers,
-                formats.map {deckInterface.getValidator(it)},
+                formats.map { deckInterface.getValidator(it) },
                 LocalDateTime.parse(
                     def.getString("until", null),
                     DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"),
-                )
+                ),
             )
         }
         processRegistry.register("signup", signup)

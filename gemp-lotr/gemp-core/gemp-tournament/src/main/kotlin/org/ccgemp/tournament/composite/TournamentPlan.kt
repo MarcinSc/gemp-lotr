@@ -43,13 +43,23 @@ class TournamentPlan {
         return roundMatchProcesses[round]!!.gameSettings
     }
 
-    fun canJoinTournament(tournament: TournamentInfo<TournamentPlan>, player: String, decks: List<GameDeck?>, forced: Boolean): Boolean {
+    fun canJoinTournament(
+        tournament: TournamentInfo<TournamentPlan>,
+        player: String,
+        decks: List<GameDeck?>,
+        forced: Boolean,
+    ): Boolean {
         val processStage = parseProcessStage(tournament)
         val stage = processes[processStage.first]
         return forced || (stage is SignupTournamentProcess && stage.canJoinTournament(tournament.players, player, decks))
     }
 
-    fun canRegisterDeck(tournament: TournamentInfo<TournamentPlan>, player: String, deck: GameDeck, forced: Boolean): Boolean {
+    fun canRegisterDeck(
+        tournament: TournamentInfo<TournamentPlan>,
+        player: String,
+        deck: GameDeck,
+        forced: Boolean,
+    ): Boolean {
         val processStage = parseProcessStage(tournament)
         val stage = processes[processStage.first]
         return forced || (stage is RegisterDeckTournamentProcess && stage.canRegisterDeck(tournament.players, player, deck))

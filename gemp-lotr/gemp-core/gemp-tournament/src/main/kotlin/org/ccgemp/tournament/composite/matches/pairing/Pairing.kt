@@ -2,7 +2,6 @@ package org.ccgemp.tournament.composite.matches.pairing
 
 import org.ccgemp.tournament.TournamentMatch
 import org.ccgemp.tournament.TournamentParticipant
-import org.ccgemp.tournament.TournamentPlayer
 
 interface Pairing {
     fun isReady(round: Int): Boolean

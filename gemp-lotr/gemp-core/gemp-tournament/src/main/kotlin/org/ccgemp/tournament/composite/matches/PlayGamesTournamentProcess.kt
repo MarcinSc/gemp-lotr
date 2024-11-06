@@ -5,7 +5,6 @@ import org.ccgemp.tournament.FINISHED_STAGE
 import org.ccgemp.tournament.TournamentGameRecipe
 import org.ccgemp.tournament.TournamentMatch
 import org.ccgemp.tournament.TournamentParticipant
-import org.ccgemp.tournament.TournamentPlayer
 import org.ccgemp.tournament.TournamentProgress
 import org.ccgemp.tournament.composite.MatchesTournamentProcess
 import org.ccgemp.tournament.composite.matches.kickoff.Kickoff
@@ -14,7 +13,7 @@ import org.ccgemp.tournament.composite.matches.pairing.Pairing
 const val PLAYING_GAMES = "PLAYING_GAMES"
 const val AWAITING_KICKOFF = "AWAITING_KICKOFF"
 
-class ConstructedTournamentProcess(
+class PlayGamesTournamentProcess(
     private val startingRound: Int,
     override val rounds: Int,
     override val deckIndex: Int,

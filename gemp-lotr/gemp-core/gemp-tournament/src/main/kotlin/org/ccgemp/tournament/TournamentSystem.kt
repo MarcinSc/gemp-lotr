@@ -7,10 +7,9 @@ import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.context.update.UpdatedSystem
 import com.gempukku.server.HttpProcessingException
 import org.ccgemp.deck.DeckInterface
-import org.ccgemp.game.GameContainerInterface
-import org.ccgemp.deck.GameDeck
 import org.ccgemp.deck.toDecksString
 import org.ccgemp.deck.toMultipleDecks
+import org.ccgemp.game.GameContainerInterface
 import org.ccgemp.game.GameParticipant
 import java.time.LocalDateTime
 
@@ -94,14 +93,21 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
         return loadedTournaments[tournamentId]
     }
 
-    override fun joinTournament(tournamentId: String, player: String, deckNames: List<String>, forced: Boolean) {
+    override fun joinTournament(
+        tournamentId: String,
+        player: String,
+        deckNames: List<String>,
+        forced: Boolean,
+    ) {
         val tournament = loadedTournaments[tournamentId]
-        if (tournament == null || tournament.finished)
+        if (tournament == null || tournament.finished) {
             throw HttpProcessingException(404)
+        }
 
-        val decks = deckNames.map {
-            deckInterface.findDeck(player, it)
-        }.toMutableList()
+        val decks =
+            deckNames.map {
+                deckInterface.findDeck(player, it)
+            }.toMutableList()
 
         if (tournament.handler.canJoinTournament(tournament, player, decks, forced)) {
             repository.addPlayer(tournamentId, player, decks.toDecksString())
@@ -113,23 +119,31 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
 
     override fun leaveTournament(tournamentId: String, player: String) {
         val tournament = loadedTournaments[tournamentId]
-        if (tournament == null || tournament.finished)
+        if (tournament == null || tournament.finished) {
             throw HttpProcessingException(404)
+        }
 
         repository.dropPlayer(tournamentId, player)
         tournament.players.firstOrNull { it.player == player }?.dropped = true
     }
 
-    override fun registerDeck(tournamentId: String, player: String, deckName: String, forced: Boolean) {
+    override fun registerDeck(
+        tournamentId: String,
+        player: String,
+        deckName: String,
+        forced: Boolean,
+    ) {
         val tournament = loadedTournaments[tournamentId]
-        if (tournament == null || tournament.finished)
+        if (tournament == null || tournament.finished) {
             throw HttpProcessingException(404)
+        }
 
         val deck = deckInterface.findDeck(player, deckName) ?: throw HttpProcessingException(404)
 
         val participant = tournament.players.firstOrNull { it.player == player }
-        if (participant == null)
+        if (participant == null) {
             throw HttpProcessingException(404)
+        }
 
         if (tournament.handler.canRegisterDeck(tournament, player, deck, forced)) {
             val deckIndex = tournament.handler.getPlayerDeckIndex(tournament, player, tournament.round)
@@ -198,8 +212,7 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
         private val info: DefaultTournamentInfo<Any>,
     ) : TournamentProgress {
         override fun updateState(round: Int, stage: String) {
-            repository.setStage(info.id, stage)
-            repository.setRound(info.id, round)
+            repository.setRoundAndStage(info.id, round, stage)
             info.stage = stage
             info.round = round
         }
@@ -213,13 +226,13 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
 
             startMatch(round, playerOne, playerTwo, info)
 
-            info.matches.add(TournamentMatch(info.id, recipe.round, playerOne, playerTwo, null))
+            info.matches.add(TournamentMatch(recipe.round, playerOne, playerTwo, null))
         }
 
         override fun awardBye(round: Int, player: String) {
             repository.createMatch(info.id, round, player, BYE_NAME, player)
 
-            info.matches.add(TournamentMatch(info.id, round, player, BYE_NAME, player))
+            info.matches.add(TournamentMatch(round, player, BYE_NAME, player))
         }
 
         override fun dropPlayer(player: String) {

@@ -58,16 +58,28 @@ class CompositeTournamentHandlerSystem :
         return plan.getGameSettings(round)
     }
 
-    override fun canJoinTournament(tournament: TournamentInfo<TournamentPlan>, player: String, decks: List<GameDeck?>, forced: Boolean): Boolean {
-        if (tournament.stage == FINISHED_STAGE)
+    override fun canJoinTournament(
+        tournament: TournamentInfo<TournamentPlan>,
+        player: String,
+        decks: List<GameDeck?>,
+        forced: Boolean,
+    ): Boolean {
+        if (tournament.stage == FINISHED_STAGE) {
             return false
+        }
         val plan = tournament.data
         return plan.canJoinTournament(tournament, player, decks, forced)
     }
 
-    override fun canRegisterDeck(tournament: TournamentInfo<TournamentPlan>, player: String, deck: GameDeck, forced: Boolean): Boolean {
-        if (tournament.stage == FINISHED_STAGE)
+    override fun canRegisterDeck(
+        tournament: TournamentInfo<TournamentPlan>,
+        player: String,
+        deck: GameDeck,
+        forced: Boolean,
+    ): Boolean {
+        if (tournament.stage == FINISHED_STAGE) {
             return false
+        }
         val plan = tournament.data
         return plan.canRegisterDeck(tournament, player, deck, forced)
     }

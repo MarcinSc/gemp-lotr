@@ -8,8 +8,8 @@ import com.gempukku.lotro.logic.decisions.AwaitingDecision
 import com.gempukku.lotro.logic.decisions.DecisionResultInvalidException
 import com.gempukku.lotro.logic.timing.DefaultLotroGame
 import com.gempukku.lotro.logic.vo.LotroDeck
-import org.ccgemp.game.Game
 import org.ccgemp.deck.GameDeck
+import org.ccgemp.game.Game
 import org.ccgemp.game.GameParticipant
 import org.ccgemp.game.GameProducer
 import org.ccgemp.game.GameSettings
@@ -42,21 +42,6 @@ class LegacyGameProducer : GameProducer {
                 null,
             )
         return LegacyGame(gameParticipants, gameSettings, game, userFeedback)
-    }
-
-    private fun GameDeck.toLotroDeck(): LotroDeck {
-        val result = LotroDeck(name)
-        result.notes = notes
-        result.ring = deckParts["ring"]?.firstOrNull()
-        result.ringBearer = deckParts["ringBearer"]?.firstOrNull()
-        result.map = deckParts["map"]?.firstOrNull()
-        deckParts["sites"]?.forEach {
-            result.addSite(it)
-        }
-        deckParts["deck"]?.forEach {
-            result.addCard(it)
-        }
-        return result
     }
 }
 

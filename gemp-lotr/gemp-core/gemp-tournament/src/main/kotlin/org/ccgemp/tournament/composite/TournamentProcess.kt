@@ -2,7 +2,6 @@ package org.ccgemp.tournament.composite
 
 import org.ccgemp.tournament.TournamentMatch
 import org.ccgemp.tournament.TournamentParticipant
-import org.ccgemp.tournament.TournamentPlayer
 import org.ccgemp.tournament.TournamentProgress
 
 interface TournamentProcess {

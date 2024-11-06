@@ -28,7 +28,7 @@ class MatchTournamentProcesses : LifecycleObserver {
     override fun afterContextStartup() {
         val constructedProcess: (JsonWithConfig<TournamentProcessConfig>) -> TournamentProcess = {
             val def = it.json
-            ConstructedTournamentProcess(
+            PlayGamesTournamentProcess(
                 it.config.startRound,
                 def.getInt("rounds", 1),
                 def.getInt("deckIndex", 0),

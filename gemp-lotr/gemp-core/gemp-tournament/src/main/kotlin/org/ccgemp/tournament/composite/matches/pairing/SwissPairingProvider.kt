@@ -6,7 +6,6 @@ import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.json.JsonWithConfig
 import org.ccgemp.tournament.TournamentMatch
 import org.ccgemp.tournament.TournamentParticipant
-import org.ccgemp.tournament.TournamentPlayer
 import org.ccgemp.tournament.composite.matches.standing.PlayerStanding
 import org.ccgemp.tournament.composite.matches.standing.Standings
 import org.ccgemp.tournament.composite.matches.standing.StandingsConfig

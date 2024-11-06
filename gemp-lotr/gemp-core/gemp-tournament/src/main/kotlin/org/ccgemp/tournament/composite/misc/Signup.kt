@@ -1,7 +1,7 @@
 package org.ccgemp.tournament.composite.misc
 
-import org.ccgemp.deck.GameDeck
 import org.ccgemp.deck.DeckValidator
+import org.ccgemp.deck.GameDeck
 import org.ccgemp.tournament.FINISHED_STAGE
 import org.ccgemp.tournament.TournamentMatch
 import org.ccgemp.tournament.TournamentParticipant
@@ -17,13 +17,13 @@ class Signup(
     private val until: LocalDateTime,
 ) : SignupTournamentProcess {
     override fun canJoinTournament(players: List<TournamentParticipant>, player: String, decks: List<GameDeck?>): Boolean {
-        return players.none { it.player == player }
-                && (allowedPlayers == null || allowedPlayers.contains(player))
-                && run {
-            validators.withIndex().all {
-                it.value.isValid(decks[it.index])
+        return players.none { it.player == player } &&
+            (allowedPlayers == null || allowedPlayers.contains(player)) &&
+            run {
+                validators.withIndex().all {
+                    it.value.isValid(decks[it.index])
+                }
             }
-        }
     }
 
     override fun processTournament(

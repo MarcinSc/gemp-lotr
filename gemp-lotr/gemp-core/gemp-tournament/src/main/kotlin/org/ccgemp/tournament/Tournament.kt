@@ -3,7 +3,6 @@ package org.ccgemp.tournament
 import java.time.LocalDateTime
 
 data class Tournament(
-    val id: Int = 0,
     val tournamentId: String,
     val name: String,
     val startDate: LocalDateTime,

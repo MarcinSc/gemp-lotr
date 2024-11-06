@@ -15,6 +15,7 @@ import org.ccgemp.tournament.composite.misc.MiscTournamentProcesses
 fun createTournamentSystems(): List<Any> {
     return listOf(
         TournamentSystem(),
+        DbTournamentRepository(),
         CompositeTournamentHandlerSystem(),
         MatchTournamentProcesses(),
         MiscTournamentProcesses(),

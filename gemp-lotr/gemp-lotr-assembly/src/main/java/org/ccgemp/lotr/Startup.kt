@@ -12,6 +12,7 @@ import com.gempukku.server.login.CookieLoggedUserSystem
 import com.gempukku.server.netty.NettyServerSystem
 import com.gempukku.server.polling.LongPollingSystem
 import org.ccgemp.db.DbAccessSystem
+import org.ccgemp.deck.createDeckSystems
 import org.ccgemp.game.createGameSystems
 import org.ccgemp.server.player.createPlayerSystems
 import org.ccgemp.tournament.createTournamentSystems
@@ -51,6 +52,9 @@ fun main() {
             LegacyChatNameDisplayFormatter(),
             // Legacy game running
             LegacyGameProducer(),
+            // Deck related
+            LotrDeckSerialization(),
+            LotrDeckValidation(),
         )
 
     val serverContext =
@@ -59,10 +63,11 @@ fun main() {
             AnnotationSystemResolver(),
             AnnotationSystemInjector(propertyResolver, workerThreadExecutorSystem),
             baseSystems +
-                createPlayerSystems() +
-                createTournamentSystems() +
-                createGameSystems() +
-                lotrSpecificSystems,
+                    createPlayerSystems() +
+                    createDeckSystems() +
+                    createTournamentSystems() +
+                    createGameSystems() +
+                    lotrSpecificSystems,
         )
 
     serverContext.initialize()
