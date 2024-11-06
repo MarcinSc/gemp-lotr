@@ -1,4 +1,4 @@
-package org.ccgemp.tournament.composite
+package org.ccgemp.deck
 
 fun split(text: String, joinCharacter: Char = ',', escapeChar: Char = '\\'): List<String> {
     val result = mutableListOf<String>()

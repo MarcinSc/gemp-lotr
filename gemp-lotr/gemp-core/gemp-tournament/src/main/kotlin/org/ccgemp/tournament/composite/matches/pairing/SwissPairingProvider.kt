@@ -5,6 +5,7 @@ import com.gempukku.context.processor.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.json.JsonWithConfig
 import org.ccgemp.tournament.TournamentMatch
+import org.ccgemp.tournament.TournamentParticipant
 import org.ccgemp.tournament.TournamentPlayer
 import org.ccgemp.tournament.composite.matches.standing.PlayerStanding
 import org.ccgemp.tournament.composite.matches.standing.Standings
@@ -37,7 +38,7 @@ class SwissPairing(
 
     override fun createPairings(
         round: Int,
-        players: List<TournamentPlayer>,
+        players: List<TournamentParticipant>,
         matches: List<TournamentMatch>,
         pairingGroups: Map<Int, String>,
         byeGroups: Map<Int, String>,

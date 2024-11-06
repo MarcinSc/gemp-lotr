@@ -1,6 +1,7 @@
 package org.ccgemp.tournament.composite.matches.pairing
 
 import org.ccgemp.tournament.TournamentMatch
+import org.ccgemp.tournament.TournamentParticipant
 import org.ccgemp.tournament.TournamentPlayer
 
 interface Pairing {
@@ -8,7 +9,7 @@ interface Pairing {
 
     fun createPairings(
         round: Int,
-        players: List<TournamentPlayer>,
+        players: List<TournamentParticipant>,
         matches: List<TournamentMatch>,
         pairingGroups: Map<Int, String>,
         byeGroups: Map<Int, String>,

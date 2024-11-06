@@ -5,6 +5,7 @@ import com.gempukku.context.processor.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.json.JsonWithConfig
 import org.ccgemp.tournament.TournamentMatch
+import org.ccgemp.tournament.TournamentParticipant
 import org.ccgemp.tournament.TournamentPlayer
 
 const val MEDIAN_SCORE = "medianScore"
@@ -32,7 +33,7 @@ private class ModifiedMedianStandings(
     private val pointsForWin: Int = 1,
     private val pointsForLoss: Int = 0,
 ) : Standings {
-    override fun createStandings(round: Int, players: List<TournamentPlayer>, matches: List<TournamentMatch>): List<PlayerStanding> {
+    override fun createStandings(round: Int, players: List<TournamentParticipant>, matches: List<TournamentMatch>): List<PlayerStanding> {
         val playerOpponents = mutableMapOf<String, MutableList<String>>()
         val playerWinCounts = mutableMapOf<String, Int>()
         val playerLossCounts = mutableMapOf<String, Int>()

@@ -5,8 +5,12 @@ import com.gempukku.context.processor.inject.Inject
 import com.gempukku.context.processor.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.context.update.UpdatedSystem
+import com.gempukku.server.HttpProcessingException
+import org.ccgemp.deck.DeckInterface
 import org.ccgemp.game.GameContainerInterface
-import org.ccgemp.game.GameDeck
+import org.ccgemp.deck.GameDeck
+import org.ccgemp.deck.toDecksString
+import org.ccgemp.deck.toMultipleDecks
 import org.ccgemp.game.GameParticipant
 import java.time.LocalDateTime
 
@@ -16,6 +20,9 @@ const val FINISHED_STAGE = "FINISHED"
 class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
     @Inject
     private lateinit var repository: TournamentRepository
+
+    @Inject
+    private lateinit var deckInterface: DeckInterface
 
     @Inject
     private lateinit var gameContainerInterface: GameContainerInterface<*>
@@ -49,7 +56,7 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
 
             val tournamentPlayers = repository.getTournamentPlayers(tournament.tournamentId)
             tournamentPlayers.forEach {
-                tournamentInfo.players.add(it)
+                tournamentInfo.players.add(it.toParticipant())
             }
             val tournamentMatches = repository.getTournamentMatches(tournament.tournamentId)
             tournamentMatches.forEach {
@@ -87,8 +94,50 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
         return loadedTournaments[tournamentId]
     }
 
-    override fun getDecks(tournamentId: String, player: String): List<GameDeck> {
-        TODO("Not yet implemented")
+    override fun joinTournament(tournamentId: String, player: String, deckNames: List<String>, forced: Boolean) {
+        val tournament = loadedTournaments[tournamentId]
+        if (tournament == null || tournament.finished)
+            throw HttpProcessingException(404)
+
+        val decks = deckNames.map {
+            deckInterface.findDeck(player, it)
+        }.toMutableList()
+
+        if (tournament.handler.canJoinTournament(tournament, player, decks, forced)) {
+            repository.addPlayer(tournamentId, player, decks.toDecksString())
+            tournament.players.add(TournamentParticipant(player, decks))
+        } else {
+            throw HttpProcessingException(403)
+        }
+    }
+
+    override fun leaveTournament(tournamentId: String, player: String) {
+        val tournament = loadedTournaments[tournamentId]
+        if (tournament == null || tournament.finished)
+            throw HttpProcessingException(404)
+
+        repository.dropPlayer(tournamentId, player)
+        tournament.players.firstOrNull { it.player == player }?.dropped = true
+    }
+
+    override fun registerDeck(tournamentId: String, player: String, deckName: String, forced: Boolean) {
+        val tournament = loadedTournaments[tournamentId]
+        if (tournament == null || tournament.finished)
+            throw HttpProcessingException(404)
+
+        val deck = deckInterface.findDeck(player, deckName) ?: throw HttpProcessingException(404)
+
+        val participant = tournament.players.firstOrNull { it.player == player }
+        if (participant == null)
+            throw HttpProcessingException(404)
+
+        if (tournament.handler.canRegisterDeck(tournament, player, deck, forced)) {
+            val deckIndex = tournament.handler.getPlayerDeckIndex(tournament, player, tournament.round)
+            participant.decks.expandToSet(deckIndex, deck)
+            repository.updateDecks(tournamentId, player, participant.decks.toDecksString())
+        } else {
+            throw HttpProcessingException(403)
+        }
     }
 
     override fun update() {
@@ -115,13 +164,34 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
         tournament: DefaultTournamentInfo<Any>,
     ) {
         val handler = tournament.handler
+
+        val deckOne = tournament.players.firstOrNull { it.player == playerOne }!!.decks[handler.getPlayerDeckIndex(tournament, playerOne, round)]!!
+        val deckTwo = tournament.players.firstOrNull { it.player == playerTwo }!!.decks[handler.getPlayerDeckIndex(tournament, playerTwo, round)]!!
         val participants =
             arrayOf(
-                GameParticipant(playerOne, handler.getPlayerDeck(tournament, playerOne, round)),
-                GameParticipant(playerTwo, handler.getPlayerDeck(tournament, playerTwo, round)),
+                GameParticipant(playerOne, deckOne),
+                GameParticipant(playerTwo, deckTwo),
             )
         val gameId = gameContainerInterface.createNewGame(participants, handler.getGameSettings(tournament, round))
         tournament.runningGames.add(gameId)
+    }
+
+    private fun TournamentPlayer.toParticipant(): TournamentParticipant {
+        return TournamentParticipant(
+            player,
+            decks.toMultipleDecks().toMutableList(),
+            dropped,
+        )
+    }
+
+    private fun <T> MutableList<T?>.expandToSet(index: Int, value: T) {
+        if (index < size) {
+            set(index, value)
+        } else {
+            val toCreate = size - index + 1
+            (1..toCreate).forEach { _ -> add(null) }
+            set(index, value)
+        }
     }
 
     inner class DefaultTournamentProgress(
@@ -166,7 +236,7 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
         override val name: String,
         override var stage: String,
         override var round: Int,
-        override val players: MutableList<TournamentPlayer>,
+        override val players: MutableList<TournamentParticipant>,
         override val matches: MutableList<TournamentMatch>,
         val runningGames: MutableSet<String>,
     ) : TournamentInfo<TournamentData>, TournamentClientInfo {

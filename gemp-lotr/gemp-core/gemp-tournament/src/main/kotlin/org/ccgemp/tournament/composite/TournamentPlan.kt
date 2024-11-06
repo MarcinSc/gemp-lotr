@@ -1,5 +1,6 @@
 package org.ccgemp.tournament.composite
 
+import org.ccgemp.deck.GameDeck
 import org.ccgemp.game.GameSettings
 import org.ccgemp.tournament.FINISHED_STAGE
 import org.ccgemp.tournament.TournamentGameRecipe
@@ -40,6 +41,18 @@ class TournamentPlan {
 
     fun getGameSettings(round: Int): GameSettings {
         return roundMatchProcesses[round]!!.gameSettings
+    }
+
+    fun canJoinTournament(tournament: TournamentInfo<TournamentPlan>, player: String, decks: List<GameDeck?>, forced: Boolean): Boolean {
+        val processStage = parseProcessStage(tournament)
+        val stage = processes[processStage.first]
+        return forced || (stage is SignupTournamentProcess && stage.canJoinTournament(tournament.players, player, decks))
+    }
+
+    fun canRegisterDeck(tournament: TournamentInfo<TournamentPlan>, player: String, deck: GameDeck, forced: Boolean): Boolean {
+        val processStage = parseProcessStage(tournament)
+        val stage = processes[processStage.first]
+        return forced || (stage is RegisterDeckTournamentProcess && stage.canRegisterDeck(tournament.players, player, deck))
     }
 
     fun progressTournament(tournament: TournamentInfo<TournamentPlan>, tournamentProgress: TournamentProgress) {

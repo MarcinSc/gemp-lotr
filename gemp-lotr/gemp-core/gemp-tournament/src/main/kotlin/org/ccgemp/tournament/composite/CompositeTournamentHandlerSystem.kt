@@ -5,7 +5,7 @@ import com.gempukku.context.processor.inject.Inject
 import com.gempukku.context.processor.inject.InjectList
 import com.gempukku.context.processor.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
-import org.ccgemp.game.GameDeck
+import org.ccgemp.deck.GameDeck
 import org.ccgemp.game.GameSettings
 import org.ccgemp.json.JsonProvider
 import org.ccgemp.json.JsonWithConfig
@@ -48,20 +48,28 @@ class CompositeTournamentHandlerSystem :
         return tournamentPlan
     }
 
-    override fun getPlayerDeck(tournament: TournamentInfo<TournamentPlan>, player: String, round: Int): GameDeck {
+    override fun getPlayerDeckIndex(tournament: TournamentInfo<TournamentPlan>, player: String, round: Int): Int {
         val plan = tournament.data
-        val deckIndex = plan.getDeckIndex(round)
-        return getDeck(
-            tournament.players.first {
-                it.player == player
-            }.deck,
-            deckIndex,
-        )
+        return plan.getDeckIndex(round)
     }
 
     override fun getGameSettings(tournament: TournamentInfo<TournamentPlan>, round: Int): GameSettings {
         val plan = tournament.data
         return plan.getGameSettings(round)
+    }
+
+    override fun canJoinTournament(tournament: TournamentInfo<TournamentPlan>, player: String, decks: List<GameDeck?>, forced: Boolean): Boolean {
+        if (tournament.stage == FINISHED_STAGE)
+            return false
+        val plan = tournament.data
+        return plan.canJoinTournament(tournament, player, decks, forced)
+    }
+
+    override fun canRegisterDeck(tournament: TournamentInfo<TournamentPlan>, player: String, deck: GameDeck, forced: Boolean): Boolean {
+        if (tournament.stage == FINISHED_STAGE)
+            return false
+        val plan = tournament.data
+        return plan.canRegisterDeck(tournament, player, deck, forced)
     }
 
     override fun progressTournament(tournament: TournamentInfo<TournamentPlan>, tournamentProgress: TournamentProgress) {

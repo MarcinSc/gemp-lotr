@@ -21,5 +21,9 @@ interface TournamentRepository {
         winner: String? = null,
     )
 
+    fun addPlayer(tournamentId: String, player: String, deck: String)
+
     fun dropPlayer(tournamentId: String, player: String)
+
+    fun updateDecks(tournamentId: String, player: String, deck: String)
 }

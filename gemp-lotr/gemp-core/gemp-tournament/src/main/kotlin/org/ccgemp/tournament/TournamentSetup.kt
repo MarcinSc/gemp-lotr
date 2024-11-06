@@ -29,5 +29,8 @@ fun createTournamentSystems(): List<Any> {
         // Standings
         TournamentStandingsSystem(),
         ModifiedMedianStandingsProvider(),
+        // API
+        TournamentApiSystem(),
+        PrivateTournamentApiSystem(),
     )
 }
