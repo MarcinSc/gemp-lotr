@@ -6,13 +6,18 @@ import org.ccgemp.deck.DeckSerialization
 import org.ccgemp.deck.GameDeck
 
 @Exposes(DeckSerialization::class)
-class LotrDeckSerialization: DeckSerialization {
+class LotrDeckSerialization : DeckSerialization {
     override fun serializeDeck(deck: GameDeck): String {
         val lotroDeck = deck.toLotroDeck()
         return com.gempukku.lotro.db.DeckSerialization.buildContentsFromDeck(lotroDeck)
     }
 
-    override fun deserializeDeck(name: String, notes: String, targetFormat: String, deck: String): GameDeck {
+    override fun deserializeDeck(
+        name: String,
+        notes: String,
+        targetFormat: String,
+        deck: String,
+    ): GameDeck {
         val lotroDeck = com.gempukku.lotro.db.DeckSerialization.buildDeckFromContents(name, deck, targetFormat, notes)
         return lotroDeck.toGameDeck()
     }
@@ -40,7 +45,12 @@ class LotrDeckSerialization: DeckSerialization {
         return sb.toString()
     }
 
-    fun buildDeckFromContents(deckName: String?, contents: String, targetFormat: String?, notes: String?): LotroDeck {
+    fun buildDeckFromContents(
+        deckName: String?,
+        contents: String,
+        targetFormat: String?,
+        notes: String?,
+    ): LotroDeck {
         // New format
         val parts = contents.split("\\|".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
@@ -49,17 +59,22 @@ class LotrDeckSerialization: DeckSerialization {
         deck.notes = notes
         if (parts.size > 0 && parts[0] != "") deck.ringBearer = parts[0]
         if (parts.size > 1 && parts[1] != "") deck.ring = parts[1]
-        if (parts.size > 2) for (site in parts[2].split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
-            if (site != "") deck.addSite(site)
+        if (parts.size > 2) {
+            for (site in parts[2].split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
+                if (site != "") deck.addSite(site)
+            }
         }
-        if (parts.size > 3) for (card in parts[3].split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
-            if (card != "") deck.addCard(card)
+        if (parts.size > 3) {
+            for (card in parts[3].split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
+                if (card != "") deck.addCard(card)
+            }
         }
-        if (parts.size > 4) for (card in parts[4].split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
-            if (card != "") deck.map = card
+        if (parts.size > 4) {
+            for (card in parts[4].split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
+                if (card != "") deck.map = card
+            }
         }
 
         return deck
     }
-
 }

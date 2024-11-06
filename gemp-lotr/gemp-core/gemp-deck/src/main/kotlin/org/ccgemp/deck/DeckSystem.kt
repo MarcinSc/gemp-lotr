@@ -4,7 +4,7 @@ import com.gempukku.context.processor.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
 
 @Exposes(DeckInterface::class)
-class DeckSystem: DeckInterface {
+class DeckSystem : DeckInterface {
     @Inject
     private lateinit var deckSerialization: DeckSerialization
 

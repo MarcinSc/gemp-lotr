@@ -63,11 +63,11 @@ fun main() {
             AnnotationSystemResolver(),
             AnnotationSystemInjector(propertyResolver, workerThreadExecutorSystem),
             baseSystems +
-                    createPlayerSystems() +
-                    createDeckSystems() +
-                    createTournamentSystems() +
-                    createGameSystems() +
-                    lotrSpecificSystems,
+                createPlayerSystems() +
+                createDeckSystems() +
+                createTournamentSystems() +
+                createGameSystems() +
+                lotrSpecificSystems,
         )
 
     serverContext.initialize()

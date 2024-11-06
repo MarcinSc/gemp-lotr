@@ -7,8 +7,6 @@ import com.gempukku.lotro.game.state.GameEvent
 import com.gempukku.lotro.logic.decisions.AwaitingDecision
 import com.gempukku.lotro.logic.decisions.DecisionResultInvalidException
 import com.gempukku.lotro.logic.timing.DefaultLotroGame
-import com.gempukku.lotro.logic.vo.LotroDeck
-import org.ccgemp.deck.GameDeck
 import org.ccgemp.game.Game
 import org.ccgemp.game.GameParticipant
 import org.ccgemp.game.GameProducer
