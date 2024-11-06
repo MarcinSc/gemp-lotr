@@ -60,6 +60,7 @@ public class RootUriRequestHandler implements UriRequestHandler {
         _gameHistoryRequestHandler = new GameHistoryRequestHandler(context);
         _serverStatsRequestHandler = new ServerStatsRequestHandler(context);
         _playerStatsRequestHandler = new PlayerStatsRequestHandler(context);
+        /* migrated */
         _tournamentRequestHandler = new TournamentRequestHandler(context);
         _soloDraftRequestHandler = new SoloDraftRequestHandler(context);
         _playtestRequestHandler = new PlaytestRequestHandler(context);

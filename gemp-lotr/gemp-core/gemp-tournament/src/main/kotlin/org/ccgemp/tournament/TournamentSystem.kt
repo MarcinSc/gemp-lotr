@@ -2,9 +2,11 @@ package org.ccgemp.tournament
 
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.processor.inject.Inject
+import com.gempukku.context.processor.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.context.update.UpdatedSystem
 import org.ccgemp.game.GameContainerInterface
+import org.ccgemp.game.GameDeck
 import org.ccgemp.game.GameParticipant
 import java.time.LocalDateTime
 
@@ -18,11 +20,15 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
     @Inject
     private lateinit var gameContainerInterface: GameContainerInterface<*>
 
+    @InjectValue(value = "tournament.linger.hours")
+    private var tournamentLingerHours: Long = 12
+
     private val handlerMap = mutableMapOf<String, TournamentHandler<Any>>()
+
     private val loadedTournaments = mutableMapOf<String, DefaultTournamentInfo<Any>>()
 
     override fun afterContextStartup() {
-        repository.getUnfinishedTournaments().forEach { tournament ->
+        repository.getUnfinishedOrStartAfter(LocalDateTime.now().minusHours(tournamentLingerHours)).forEach { tournament ->
             val tournamentHandler = findHandler(tournament.type)
 
             val data = tournamentHandler.initializeTournament(tournament)
@@ -33,6 +39,7 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
                     tournament.startDate,
                     data,
                     tournament.tournamentId,
+                    tournament.name,
                     tournament.stage,
                     tournament.round,
                     mutableListOf(),
@@ -68,14 +75,30 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
         handlerMap[type.lowercase()] = tournamentHandler
     }
 
+    override fun getLiveTournaments(): List<TournamentClientInfo> {
+        return loadedTournaments.values.filter { it.status != FINISHED_STAGE }.toList()
+    }
+
+    override fun getHistoricTournaments(): List<TournamentClientInfo> {
+        return loadedTournaments.values.filter { it.status == FINISHED_STAGE }.toList()
+    }
+
+    override fun getTournament(tournamentId: String): TournamentClientInfo? {
+        return loadedTournaments[tournamentId]
+    }
+
+    override fun getDecks(tournamentId: String, player: String): List<GameDeck> {
+        TODO("Not yet implemented")
+    }
+
     override fun update() {
         val tournamentsToUnload = mutableSetOf<String>()
         loadedTournaments.forEach { (tournamentId, tournamentInfo) ->
             val handler = tournamentInfo.handler
-            if (tournamentInfo.stage != FINISHED_STAGE && tournamentInfo.startDate.isBefore(LocalDateTime.now())) {
+            if (tournamentInfo.stage != FINISHED_STAGE) {
                 handler.progressTournament(tournamentInfo, DefaultTournamentProgress(tournamentInfo))
             }
-            if (tournamentInfo.stage == FINISHED_STAGE) {
+            if (tournamentInfo.stage == FINISHED_STAGE && tournamentInfo.startDate.isBefore(LocalDateTime.now().minusHours(tournamentLingerHours))) {
                 handler.unloadTournament(tournamentInfo)
                 tournamentsToUnload.add(tournamentId)
             }
@@ -137,13 +160,19 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
 
     data class DefaultTournamentInfo<TournamentData>(
         val handler: TournamentHandler<TournamentData>,
-        val startDate: LocalDateTime,
+        override val startDate: LocalDateTime,
         override val data: TournamentData,
         override val id: String,
+        override val name: String,
         override var stage: String,
         override var round: Int,
         override val players: MutableList<TournamentPlayer>,
         override val matches: MutableList<TournamentMatch>,
         val runningGames: MutableSet<String>,
-    ) : TournamentInfo<TournamentData>
+    ) : TournamentInfo<TournamentData>, TournamentClientInfo {
+        override val status: String
+            get() = handler.getTournamentStatus(this)
+        override val finished: Boolean
+            get() = stage == FINISHED_STAGE
+    }
 }

@@ -1,7 +1,9 @@
 package org.ccgemp.tournament
 
+import java.time.LocalDateTime
+
 interface TournamentRepository {
-    fun getUnfinishedTournaments(): List<Tournament>
+    fun getUnfinishedOrStartAfter(time: LocalDateTime): List<Tournament>
 
     fun getTournamentMatches(tournamentId: String): List<TournamentMatch>
 
