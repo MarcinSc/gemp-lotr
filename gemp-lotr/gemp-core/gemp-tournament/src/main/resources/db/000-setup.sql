@@ -29,7 +29,8 @@ CREATE TABLE `tournament_player`
     `tournament_id` varchar(255) NOT NULL,
     `player`        varchar(30) DEFAULT NULL,
     `dropped`       binary(1) NOT NULL DEFAULT '0',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `player_tournament` (`tournament_id`,`player`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE `tournament_deck`
@@ -43,5 +44,5 @@ CREATE TABLE `tournament_deck`
     `contents`      text          NOT NULL,
     `notes`         varchar(5000) NOT NULL DEFAULT '',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `player_tournament_deck` (`tournament_id`,`player`,`type`),
+    UNIQUE KEY `player_tournament_deck` (`tournament_id`,`player`,`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;

@@ -8,7 +8,7 @@ import java.sql.DriverManager
 class DbTest {
     companion object {
         @JvmStatic
-        fun withDB(migrationsPath: File): AutoCloseable {
+        fun withDB(vararg migrationsPaths: File): AutoCloseable {
             val configBuilder = DBConfigurationBuilder.newBuilder()
             configBuilder.port = 13579
             val db = DB.newEmbeddedDB(configBuilder.build())
@@ -16,16 +16,20 @@ class DbTest {
 
             Class.forName("com.mysql.cj.jdbc.Driver")
 
-            val migrations = migrationsPath.listFiles()
-            migrations.sortWith { o1, o2 -> o1.name.compareTo(o2.name) }
             val connection = DriverManager.getConnection("jdbc:mysql://localhost:13579/test", "root", "")
             connection.use {
                 val statement = connection.createStatement()
-                statement.use {
-                    migrations.forEach { migration ->
-                        val sql = migration.readText()
-                        sql.split(";").filter { it.trim().isNotEmpty() }.forEach {
-                            statement.execute(it)
+
+                migrationsPaths.forEach { migrationsPath ->
+                    val migrations = migrationsPath.listFiles()
+                    migrations.sortWith { o1, o2 -> o1.name.compareTo(o2.name) }
+
+                    statement.use {
+                        migrations.forEach { migration ->
+                            val sql = migration.readText()
+                            sql.split(";").filter { it.trim().isNotEmpty() }.forEach {
+                                statement.execute(it)
+                            }
                         }
                     }
                 }
