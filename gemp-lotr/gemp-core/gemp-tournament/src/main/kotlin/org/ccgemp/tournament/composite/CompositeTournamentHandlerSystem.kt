@@ -63,11 +63,7 @@ class CompositeTournamentHandlerSystem :
         return plan.getGameSettings(round)
     }
 
-    override fun canJoinTournament(
-        tournament: TournamentInfo<TournamentPlan>,
-        player: String,
-        forced: Boolean,
-    ): Boolean {
+    override fun canJoinTournament(tournament: TournamentInfo<TournamentPlan>, player: String, forced: Boolean): Boolean {
         if (tournament.stage == FINISHED_STAGE) {
             return false
         }

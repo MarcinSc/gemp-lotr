@@ -19,7 +19,7 @@ class Signup(
 ) : SignupTournamentProcess {
     override fun canJoinTournament(players: List<TournamentParticipant>, player: String): Boolean {
         return players.none { it.player == player } &&
-                (allowedPlayers == null || allowedPlayers.contains(player))
+            (allowedPlayers == null || allowedPlayers.contains(player))
     }
 
     override fun canRegisterDecks(players: List<TournamentParticipant>, player: String, decks: List<GameDeck>): Boolean {

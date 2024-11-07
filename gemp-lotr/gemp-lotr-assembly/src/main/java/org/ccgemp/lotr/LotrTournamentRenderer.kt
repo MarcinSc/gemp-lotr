@@ -183,9 +183,9 @@ class LotrTournamentRenderer : TournamentRenderer {
             displayName += " (Errata)"
         }
         val result = (
-                "<span class=\"tooltip\">" + displayName +
-                        "<span><img class=\"ttimage\" src=\"https://wiki.lotrtcgpc.net/images/" + id + "_card.jpg\" ></span></span>"
-                )
+            "<span class=\"tooltip\">" + displayName +
+                "<span><img class=\"ttimage\" src=\"https://wiki.lotrtcgpc.net/images/" + id + "_card.jpg\" ></span></span>"
+        )
 
         return result
     }

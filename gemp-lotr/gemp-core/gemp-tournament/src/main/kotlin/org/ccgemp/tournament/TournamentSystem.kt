@@ -98,7 +98,12 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
         tournament.players.firstOrNull { it.player == player }?.dropped = true
     }
 
-    override fun registerDecks(tournamentId: String, player: String, deckNames: List<String>, forced: Boolean) {
+    override fun registerDecks(
+        tournamentId: String,
+        player: String,
+        deckNames: List<String>,
+        forced: Boolean,
+    ) {
         val tournament = loadedTournaments[tournamentId]
         if (tournament == null || tournament.finished) {
             throw HttpProcessingException(404)

@@ -25,5 +25,13 @@ interface TournamentRepository {
 
     fun dropPlayer(tournamentId: String, player: String)
 
-    fun upsertDeck(tournamentId: String, player: String, type: String, name: String, notes: String, targetFormat: String, contents: String)
+    fun upsertDeck(
+        tournamentId: String,
+        player: String,
+        type: String,
+        name: String,
+        notes: String,
+        targetFormat: String,
+        contents: String,
+    )
 }

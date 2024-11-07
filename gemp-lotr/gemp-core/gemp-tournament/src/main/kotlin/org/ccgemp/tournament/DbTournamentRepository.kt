@@ -44,7 +44,7 @@ class DbTournamentRepository : TournamentRepository {
             StatementRunnableWithResult { connection, _ ->
                 val sql: String =
                     selectTournament +
-                            """
+                        """
                         WHERE stage <> :stage or start_date > :time
                         """.trimIndent()
                 connection
@@ -60,7 +60,7 @@ class DbTournamentRepository : TournamentRepository {
             StatementRunnableWithResult { connection, _ ->
                 val sql: String =
                     selectTournamentMatch +
-                            """
+                        """
                         WHERE tournament_id = :tournamentId
                         """.trimIndent()
                 connection
@@ -75,7 +75,7 @@ class DbTournamentRepository : TournamentRepository {
             StatementRunnableWithResult { connection, _ ->
                 val sql: String =
                     selectTournamentPlayer +
-                            """
+                        """
                         WHERE tournament_id = :tournamentId
                         """.trimIndent()
                 connection
@@ -90,7 +90,7 @@ class DbTournamentRepository : TournamentRepository {
             StatementRunnableWithResult { connection, _ ->
                 val sql: String =
                     selectTournamentDeck +
-                            """
+                        """
                         WHERE tournament_id = :tournamentId
                         """.trimIndent()
                 connection
@@ -165,7 +165,15 @@ class DbTournamentRepository : TournamentRepository {
                 .executeUpdate()
         }
 
-    override fun upsertDeck(tournamentId: String, player: String, type: String, name: String, notes: String, targetFormat: String, contents: String) {
+    override fun upsertDeck(
+        tournamentId: String,
+        player: String,
+        type: String,
+        name: String,
+        notes: String,
+        targetFormat: String,
+        contents: String,
+    ) {
         dbAccess.openDB().runInTransaction { connection, _ ->
             val sql =
                 """

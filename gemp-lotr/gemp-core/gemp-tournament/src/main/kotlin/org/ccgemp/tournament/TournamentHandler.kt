@@ -14,11 +14,7 @@ interface TournamentHandler<TournamentData> {
 
     fun unloadTournament(tournament: TournamentInfo<TournamentData>)
 
-    fun canJoinTournament(
-        tournament: TournamentInfo<TournamentData>,
-        player: String,
-        forced: Boolean,
-    ): Boolean
+    fun canJoinTournament(tournament: TournamentInfo<TournamentData>, player: String, forced: Boolean): Boolean
 
     fun canRegisterDecks(
         tournament: TournamentInfo<TournamentData>,
@@ -27,12 +23,7 @@ interface TournamentHandler<TournamentData> {
         forced: Boolean,
     ): Boolean
 
-    fun getRegisterDeckTypes(
-        tournament: TournamentInfo<TournamentData>,
-    ): List<String>
+    fun getRegisterDeckTypes(tournament: TournamentInfo<TournamentData>): List<String>
 
-    fun getPlayedDeckType(
-        tournament: TournamentInfo<TournamentData>,
-        round: Int,
-    ): String
+    fun getPlayedDeckType(tournament: TournamentInfo<TournamentData>, round: Int): String
 }

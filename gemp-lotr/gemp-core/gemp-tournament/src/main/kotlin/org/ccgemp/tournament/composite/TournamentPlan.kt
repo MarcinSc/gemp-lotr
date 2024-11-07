@@ -36,9 +36,7 @@ class TournamentPlan {
         processes.add(process)
     }
 
-    fun getRegisterDeckTypes(
-        tournament: TournamentInfo<TournamentPlan>,
-    ): List<String> {
+    fun getRegisterDeckTypes(tournament: TournamentInfo<TournamentPlan>): List<String> {
         val processStage = parseProcessStage(tournament)
         val stage = processes[processStage.first]
         return if (stage is RegisterDeckTournamentProcess) {
@@ -56,11 +54,7 @@ class TournamentPlan {
         return roundMatchProcesses[round]!!.gameSettings
     }
 
-    fun canJoinTournament(
-        tournament: TournamentInfo<TournamentPlan>,
-        player: String,
-        forced: Boolean,
-    ): Boolean {
+    fun canJoinTournament(tournament: TournamentInfo<TournamentPlan>, player: String, forced: Boolean): Boolean {
         val processStage = parseProcessStage(tournament)
         val stage = processes[processStage.first]
         return forced || (stage is SignupTournamentProcess && stage.canJoinTournament(tournament.players, player))
