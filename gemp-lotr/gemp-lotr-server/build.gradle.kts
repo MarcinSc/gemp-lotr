@@ -25,4 +25,7 @@ dependencies {
     implementation("com.alibaba.fastjson2:fastjson2:2.0.53")
     // https://mvnrepository.com/artifact/org.apache.commons/commons-text
     implementation("org.apache.commons:commons-text:1.12.0")
+
+    // https://mvnrepository.com/artifact/junit/junit
+    testImplementation("junit:junit:4.13.2")
 }

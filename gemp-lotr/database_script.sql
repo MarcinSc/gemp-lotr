@@ -25,9 +25,9 @@ DROP TABLE IF EXISTS `collection`;
 CREATE TABLE `collection` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `player_id` int(11) NOT NULL,
-  `collection` mediumblob DEFAULT NULL,
+  `collection` text DEFAULT NULL,
   `type` varchar(45) NOT NULL,
-  `extra_info` varchar(5000) DEFAULT NULL,
+  `currency` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_collection_player_type` (`player_id`,`type`),
   KEY `player_collection` (`player_id`,`type`),

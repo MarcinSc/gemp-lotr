@@ -1,5 +1,6 @@
 package org.ccgemp.tournament.composite
 
+import org.ccgemp.common.splitText
 import org.ccgemp.deck.GameDeck
 import org.ccgemp.game.GameSettings
 import org.ccgemp.tournament.FINISHED_STAGE
@@ -35,8 +36,20 @@ class TournamentPlan {
         processes.add(process)
     }
 
-    fun getDeckIndex(round: Int): Int {
-        return roundMatchProcesses[round]!!.deckIndex
+    fun getRegisterDeckTypes(
+        tournament: TournamentInfo<TournamentPlan>,
+    ): List<String> {
+        val processStage = parseProcessStage(tournament)
+        val stage = processes[processStage.first]
+        return if (stage is RegisterDeckTournamentProcess) {
+            stage.deckTypes
+        } else {
+            emptyList()
+        }
+    }
+
+    fun getPlayedDeckType(round: Int): String {
+        return roundMatchProcesses[round]!!.deckType
     }
 
     fun getGameSettings(round: Int): GameSettings {
@@ -46,23 +59,22 @@ class TournamentPlan {
     fun canJoinTournament(
         tournament: TournamentInfo<TournamentPlan>,
         player: String,
-        decks: List<GameDeck?>,
         forced: Boolean,
     ): Boolean {
         val processStage = parseProcessStage(tournament)
         val stage = processes[processStage.first]
-        return forced || (stage is SignupTournamentProcess && stage.canJoinTournament(tournament.players, player, decks))
+        return forced || (stage is SignupTournamentProcess && stage.canJoinTournament(tournament.players, player))
     }
 
     fun canRegisterDeck(
         tournament: TournamentInfo<TournamentPlan>,
         player: String,
-        deck: GameDeck,
+        decks: List<GameDeck>,
         forced: Boolean,
     ): Boolean {
         val processStage = parseProcessStage(tournament)
         val stage = processes[processStage.first]
-        return forced || (stage is RegisterDeckTournamentProcess && stage.canRegisterDeck(tournament.players, player, deck))
+        return forced || (stage is RegisterDeckTournamentProcess && stage.canRegisterDecks(tournament.players, player, decks))
     }
 
     fun progressTournament(tournament: TournamentInfo<TournamentPlan>, tournamentProgress: TournamentProgress) {
@@ -107,7 +119,7 @@ class TournamentPlan {
         return if (tournament.stage == "") {
             0 to ""
         } else {
-            val stageSplit = tournament.stage.split(delimiters = arrayOf(":"), limit = 2)
+            val stageSplit = tournament.stage.splitText(':', 2)
             stageSplit[0].toInt() to stageSplit[1]
         }
     }

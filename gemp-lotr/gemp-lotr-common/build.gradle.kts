@@ -15,4 +15,7 @@ dependencies {
     implementation("org.sql2o:sql2o:1.8.0")
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     implementation("org.apache.commons:commons-lang3:3.17.0")
+
+    // https://mvnrepository.com/artifact/junit/junit
+    testImplementation("junit:junit:4.13.2")
 }

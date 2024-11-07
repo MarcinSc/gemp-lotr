@@ -68,14 +68,14 @@ fun main() {
             AnnotationSystemResolver(),
             AnnotationSystemInjector(propertyResolver, workerThreadExecutorSystem),
             baseSystems +
-                    createJsonSystems() +
-                    createPlayerSystems() +
-                    createChatSystems() +
-                    createCollectionSystems() +
-                    createDeckSystems() +
-                    createTournamentSystems() +
-                    createGameSystems() +
-                    lotrSpecificSystems,
+                createJsonSystems() +
+                createPlayerSystems() +
+                createChatSystems() +
+                createCollectionSystems() +
+                createDeckSystems() +
+                createTournamentSystems() +
+                createGameSystems() +
+                lotrSpecificSystems,
         )
 
     serverContext.initialize()

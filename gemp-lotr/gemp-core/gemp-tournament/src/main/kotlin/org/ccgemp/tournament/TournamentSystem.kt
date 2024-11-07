@@ -7,8 +7,9 @@ import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.context.update.UpdatedSystem
 import com.gempukku.server.HttpProcessingException
 import org.ccgemp.deck.DeckInterface
-import org.ccgemp.deck.toDecksString
-import org.ccgemp.deck.toMultipleDecks
+import org.ccgemp.deck.GameDeck
+import org.ccgemp.deck.toDeckParts
+import org.ccgemp.deck.toDeckString
 import org.ccgemp.game.GameContainerInterface
 import org.ccgemp.game.GameParticipant
 import java.time.LocalDateTime
@@ -69,13 +70,19 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
         }
 
         val decks =
-            deckNames.map {
+            deckNames.mapNotNull {
                 deckInterface.findDeck(player, it)
             }.toMutableList()
 
-        if (tournament.handler.canJoinTournament(tournament, player, decks, forced)) {
-            repository.addPlayer(tournamentId, player, decks.toDecksString())
-            tournament.players.add(TournamentParticipant(player, decks))
+        if (tournament.handler.canJoinTournament(tournament, player, forced) && tournament.handler.canRegisterDecks(tournament, player, decks, forced)) {
+            repository.addPlayer(tournamentId, player)
+            val deckMap = mutableMapOf<String, GameDeck>()
+            tournament.handler.getRegisterDeckTypes(tournament).forEachIndexed { index, type ->
+                val deck = decks[index]
+                deckMap[type] = deck
+                repository.upsertDeck(tournamentId, player, type, deck.name, deck.notes, deck.targetFormat, deck.toDeckString())
+            }
+            tournament.players.add(TournamentParticipant(player, deckMap))
         } else {
             throw HttpProcessingException(403)
         }
@@ -91,28 +98,28 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
         tournament.players.firstOrNull { it.player == player }?.dropped = true
     }
 
-    override fun registerDeck(
-        tournamentId: String,
-        player: String,
-        deckName: String,
-        forced: Boolean,
-    ) {
+    override fun registerDecks(tournamentId: String, player: String, deckNames: List<String>, forced: Boolean) {
         val tournament = loadedTournaments[tournamentId]
         if (tournament == null || tournament.finished) {
             throw HttpProcessingException(404)
         }
 
-        val deck = deckInterface.findDeck(player, deckName) ?: throw HttpProcessingException(404)
+        val decks =
+            deckNames.mapNotNull {
+                deckInterface.findDeck(player, it)
+            }.toMutableList()
 
         val participant = tournament.players.firstOrNull { it.player == player }
         if (participant == null) {
             throw HttpProcessingException(404)
         }
 
-        if (tournament.handler.canRegisterDeck(tournament, player, deck, forced)) {
-            val deckIndex = tournament.handler.getPlayerDeckIndex(tournament, player, tournament.round)
-            participant.decks.expandToSet(deckIndex, deck)
-            repository.updateDecks(tournamentId, player, participant.decks.toDecksString())
+        if (tournament.handler.canRegisterDecks(tournament, player, decks, forced)) {
+            tournament.handler.getRegisterDeckTypes(tournament).forEachIndexed { index, type ->
+                val deck = decks[index]
+                repository.upsertDeck(tournamentId, player, type, deck.name, deck.notes, deck.targetFormat, deck.toDeckString())
+                participant.decks[type] = deck
+            }
         } else {
             throw HttpProcessingException(403)
         }
@@ -159,9 +166,11 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
                     mutableSetOf(),
                 )
 
+            val tournamentDecks = repository.getTournamentDecks(tournament.tournamentId).groupBy { it.player }
+
             val tournamentPlayers = repository.getTournamentPlayers(tournament.tournamentId)
             tournamentPlayers.forEach {
-                tournamentInfo.players.add(it.toParticipant())
+                tournamentInfo.players.add(it.toParticipant(tournamentDecks[it.player].orEmpty()))
             }
             val tournamentMatches = repository.getTournamentMatches(tournament.tournamentId)
             tournamentMatches.forEach {
@@ -185,8 +194,9 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
     ) {
         val handler = tournament.handler
 
-        val deckOne = tournament.players.firstOrNull { it.player == playerOne }!!.decks[handler.getPlayerDeckIndex(tournament, playerOne, round)]!!
-        val deckTwo = tournament.players.firstOrNull { it.player == playerTwo }!!.decks[handler.getPlayerDeckIndex(tournament, playerTwo, round)]!!
+        val type = handler.getPlayedDeckType(tournament, round)
+        val deckOne = tournament.players.firstOrNull { it.player == playerOne }!!.decks[type]!!
+        val deckTwo = tournament.players.firstOrNull { it.player == playerTwo }!!.decks[type]!!
         val participants =
             arrayOf(
                 GameParticipant(playerOne, deckOne),
@@ -196,22 +206,14 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
         tournament.runningGames.add(gameId)
     }
 
-    private fun TournamentPlayer.toParticipant(): TournamentParticipant {
+    private fun TournamentPlayer.toParticipant(decks: List<TournamentDeck>): TournamentParticipant {
         return TournamentParticipant(
             player,
-            decks.toMultipleDecks().toMutableList(),
+            decks.associate {
+                it.type to GameDeck(it.name, it.notes, it.targetFormat, toDeckParts(it.contents))
+            }.toMutableMap(),
             dropped,
         )
-    }
-
-    private fun <T> MutableList<T?>.expandToSet(index: Int, value: T) {
-        if (index < size) {
-            set(index, value)
-        } else {
-            val toCreate = size - index + 1
-            (1..toCreate).forEach { _ -> add(null) }
-            set(index, value)
-        }
     }
 
     inner class DefaultTournamentProgress(

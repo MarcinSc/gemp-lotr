@@ -13,17 +13,19 @@ const val SIGNUP_OPEN = "SIGNUP_OPEN"
 
 class Signup(
     private val allowedPlayers: Set<String>?,
+    override val deckTypes: List<String>,
     private val validators: List<DeckValidator>,
     private val until: LocalDateTime,
 ) : SignupTournamentProcess {
-    override fun canJoinTournament(players: List<TournamentParticipant>, player: String, decks: List<GameDeck?>): Boolean {
+    override fun canJoinTournament(players: List<TournamentParticipant>, player: String): Boolean {
         return players.none { it.player == player } &&
-            (allowedPlayers == null || allowedPlayers.contains(player)) &&
-            run {
-                validators.withIndex().all {
-                    it.value.isValid(decks[it.index])
-                }
-            }
+                (allowedPlayers == null || allowedPlayers.contains(player))
+    }
+
+    override fun canRegisterDecks(players: List<TournamentParticipant>, player: String, decks: List<GameDeck>): Boolean {
+        return validators.withIndex().all {
+            it.value.isValid(decks[it.index])
+        }
     }
 
     override fun processTournament(

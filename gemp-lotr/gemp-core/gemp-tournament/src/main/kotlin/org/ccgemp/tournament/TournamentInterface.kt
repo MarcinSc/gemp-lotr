@@ -18,10 +18,10 @@ interface TournamentInterface {
 
     fun leaveTournament(tournamentId: String, player: String)
 
-    fun registerDeck(
+    fun registerDecks(
         tournamentId: String,
         player: String,
-        deckName: String,
+        deckNames: List<String>,
         forced: Boolean = false,
     )
 }

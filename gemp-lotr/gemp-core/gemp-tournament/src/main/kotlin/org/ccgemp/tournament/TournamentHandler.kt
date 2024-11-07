@@ -6,8 +6,6 @@ import org.ccgemp.game.GameSettings
 interface TournamentHandler<TournamentData> {
     fun initializeTournament(tournament: Tournament): TournamentData
 
-    fun getPlayerDeckIndex(tournament: TournamentInfo<TournamentData>, player: String, round: Int): Int
-
     fun getGameSettings(tournament: TournamentInfo<TournamentData>, round: Int): GameSettings
 
     fun progressTournament(tournament: TournamentInfo<TournamentData>, tournamentProgress: TournamentProgress)
@@ -19,14 +17,22 @@ interface TournamentHandler<TournamentData> {
     fun canJoinTournament(
         tournament: TournamentInfo<TournamentData>,
         player: String,
-        decks: List<GameDeck?>,
         forced: Boolean,
     ): Boolean
 
-    fun canRegisterDeck(
+    fun canRegisterDecks(
         tournament: TournamentInfo<TournamentData>,
         player: String,
-        deck: GameDeck,
+        decks: List<GameDeck>,
         forced: Boolean,
     ): Boolean
+
+    fun getRegisterDeckTypes(
+        tournament: TournamentInfo<TournamentData>,
+    ): List<String>
+
+    fun getPlayedDeckType(
+        tournament: TournamentInfo<TournamentData>,
+        round: Int,
+    ): String
 }

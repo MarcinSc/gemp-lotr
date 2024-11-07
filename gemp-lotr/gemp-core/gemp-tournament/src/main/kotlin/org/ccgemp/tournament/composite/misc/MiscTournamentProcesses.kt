@@ -63,8 +63,13 @@ class MiscTournamentProcesses : LifecycleObserver {
                 def.get("formats").asArray().map {
                     it.asString()
                 }
+            val deckTypes =
+                def.get("deckTypes").asArray().map {
+                    it.asString()
+                }
             Signup(
                 allowedPlayers,
+                deckTypes,
                 formats.map { deckInterface.getValidator(it) },
                 LocalDateTime.parse(
                     def.getString("until", null),

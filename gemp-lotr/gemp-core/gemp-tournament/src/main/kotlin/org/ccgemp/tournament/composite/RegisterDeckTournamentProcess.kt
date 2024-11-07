@@ -4,5 +4,7 @@ import org.ccgemp.deck.GameDeck
 import org.ccgemp.tournament.TournamentParticipant
 
 interface RegisterDeckTournamentProcess : TournamentProcess {
-    fun canRegisterDeck(players: List<TournamentParticipant>, player: String, deck: GameDeck): Boolean
+    val deckTypes: List<String>
+
+    fun canRegisterDecks(players: List<TournamentParticipant>, player: String, decks: List<GameDeck>): Boolean
 }

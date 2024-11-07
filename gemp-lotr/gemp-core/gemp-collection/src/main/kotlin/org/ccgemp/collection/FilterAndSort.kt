@@ -1,5 +1,5 @@
 package org.ccgemp.collection
 
-interface FilterAndSort {
-    fun process(filter: String, cards: Iterable<String>): List<String>
+interface FilterAndSort<CardCollection> {
+    fun <T : CardCollection> process(filter: String, sort: String?, cards: Iterable<T>): List<T>
 }

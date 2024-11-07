@@ -1,0 +1,8 @@
+db:
+  connection:
+    class: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:13579/test
+    username: root
+    password:
+    validateQuery: /* ping */ select 1
+    batch: false

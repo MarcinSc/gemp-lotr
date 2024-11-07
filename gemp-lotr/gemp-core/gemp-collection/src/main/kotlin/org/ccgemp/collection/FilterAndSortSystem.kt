@@ -2,26 +2,26 @@ package org.ccgemp.collection
 
 import com.gempukku.context.processor.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
+import org.ccgemp.common.splitText
 
 @Exposes(FilterAndSort::class)
-class FilterAndSortSystem : FilterAndSort {
+class FilterAndSortSystem<CollectionItem> : FilterAndSort<CollectionItem> {
     @Inject
-    private lateinit var cardFilterAndSortProvider: CardFilterAndSortRegistry
+    private lateinit var cardFilterAndSortProvider: CardFilterAndSortRegistry<CollectionItem>
 
-    override fun process(filter: String, cards: Iterable<String>): List<String> {
-        val filterParams = filter.split(" ").map {
-            val parts = it.split(delimiters = arrayOf(":"), limit = 2)
-            parts[0] to parts[1]
-        }
-        val nonSortFilters = filterParams.filterNot { it.first.equals("sort", true) }
-        val sort = filterParams.firstOrNull { it.first.equals("sort", true) }
+    override fun <T : CollectionItem> process(filter: String, sort: String?, cards: Iterable<T>): List<T> {
+        val filterParams =
+            filter.splitText(' ').map {
+                val parts = it.splitText(':', 2)
+                parts[0] to parts[1]
+            }
 
+        val comparator =
+            sort?.let {
+                cardFilterAndSortProvider.createSort(sort.splitText(','))
+            } ?: cardFilterAndSortProvider.defaultSort
 
-        val comparator = sort?.let {
-            cardFilterAndSortProvider.createSort(sort.second.split(","))
-        } ?: cardFilterAndSortProvider.defaultSort
-
-        val predicates = nonSortFilters.map { cardFilterAndSortProvider.createPredicate(it.first, it.second) }
+        val predicates = filterParams.map { cardFilterAndSortProvider.createPredicate(it.first, it.second) }
         val filterResult = cards.filter { card -> predicates.all { it.test(card) } }
 
         return filterResult.sortedWith(comparator)

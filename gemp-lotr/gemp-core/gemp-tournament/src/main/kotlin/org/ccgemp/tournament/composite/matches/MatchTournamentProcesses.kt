@@ -31,7 +31,7 @@ class MatchTournamentProcesses : LifecycleObserver {
             PlayGamesTournamentProcess(
                 it.config.startRound,
                 def.getInt("rounds", 1),
-                def.getInt("deckIndex", 0),
+                def.getString("deckType", null),
                 GameSettings(
                     def.getString("format", null),
                     true,

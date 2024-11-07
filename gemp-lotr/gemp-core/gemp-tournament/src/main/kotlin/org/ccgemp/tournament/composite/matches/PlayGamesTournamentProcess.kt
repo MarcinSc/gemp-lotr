@@ -16,7 +16,7 @@ const val AWAITING_KICKOFF = "AWAITING_KICKOFF"
 class PlayGamesTournamentProcess(
     private val startingRound: Int,
     override val rounds: Int,
-    override val deckIndex: Int,
+    override val deckType: String,
     override val gameSettings: GameSettings,
     override val pairingGroup: String,
     override val byeGroup: String,

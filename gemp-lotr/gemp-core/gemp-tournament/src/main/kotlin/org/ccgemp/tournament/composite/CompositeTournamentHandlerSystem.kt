@@ -48,9 +48,14 @@ class CompositeTournamentHandlerSystem :
         return tournamentPlan
     }
 
-    override fun getPlayerDeckIndex(tournament: TournamentInfo<TournamentPlan>, player: String, round: Int): Int {
+    override fun getRegisterDeckTypes(tournament: TournamentInfo<TournamentPlan>): List<String> {
         val plan = tournament.data
-        return plan.getDeckIndex(round)
+        return plan.getRegisterDeckTypes(tournament)
+    }
+
+    override fun getPlayedDeckType(tournament: TournamentInfo<TournamentPlan>, round: Int): String {
+        val plan = tournament.data
+        return plan.getPlayedDeckType(round)
     }
 
     override fun getGameSettings(tournament: TournamentInfo<TournamentPlan>, round: Int): GameSettings {
@@ -61,27 +66,26 @@ class CompositeTournamentHandlerSystem :
     override fun canJoinTournament(
         tournament: TournamentInfo<TournamentPlan>,
         player: String,
-        decks: List<GameDeck?>,
         forced: Boolean,
     ): Boolean {
         if (tournament.stage == FINISHED_STAGE) {
             return false
         }
         val plan = tournament.data
-        return plan.canJoinTournament(tournament, player, decks, forced)
+        return plan.canJoinTournament(tournament, player, forced)
     }
 
-    override fun canRegisterDeck(
+    override fun canRegisterDecks(
         tournament: TournamentInfo<TournamentPlan>,
         player: String,
-        deck: GameDeck,
+        decks: List<GameDeck>,
         forced: Boolean,
     ): Boolean {
         if (tournament.stage == FINISHED_STAGE) {
             return false
         }
         val plan = tournament.data
-        return plan.canRegisterDeck(tournament, player, deck, forced)
+        return plan.canRegisterDeck(tournament, player, decks, forced)
     }
 
     override fun progressTournament(tournament: TournamentInfo<TournamentPlan>, tournamentProgress: TournamentProgress) {

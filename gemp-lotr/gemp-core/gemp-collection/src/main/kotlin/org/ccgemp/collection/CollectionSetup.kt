@@ -2,7 +2,9 @@ package org.ccgemp.collection
 
 fun createCollectionSystems(): List<Any> {
     return listOf(
-        FilterAndSortSystem(),
-        CardFilterAndSortSystem(),
+        CollectionSystem(),
+        DbCollectionRepository(),
+        FilterAndSortSystem<Any>(),
+        CardFilterAndSortSystem<Any>(),
     )
 }

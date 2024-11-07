@@ -16,28 +16,35 @@ class DbTournamentRepository : TournamentRepository {
         SELECT 
             tournament_id, name, start_date, type, parameters, stage, round
         FROM tournament 
-        """.trimIndent()
+        """
 
     private val selectTournamentPlayer =
         """
         SELECT
             player, deck, dropped
         FROM tournament_player
-        """.trimIndent()
+        """
 
     private val selectTournamentMatch =
         """
         SELECT
             round, player_one, player_two, winner
         FROM tournament_match
-        """.trimIndent()
+        """
+
+    private val selectTournamentDeck =
+        """
+        SELECT
+            tournament_id, player, type, name, notes, target_format, contents
+        FROM tournament_deck
+        """
 
     override fun getUnfinishedOrStartAfter(time: LocalDateTime): List<Tournament> =
         dbAccess.openDB().withConnection(
             StatementRunnableWithResult { connection, _ ->
                 val sql: String =
                     selectTournament +
-                        """
+                            """
                         WHERE stage <> :stage or start_date > :time
                         """.trimIndent()
                 connection
@@ -53,7 +60,7 @@ class DbTournamentRepository : TournamentRepository {
             StatementRunnableWithResult { connection, _ ->
                 val sql: String =
                     selectTournamentMatch +
-                        """
+                            """
                         WHERE tournament_id = :tournamentId
                         """.trimIndent()
                 connection
@@ -68,13 +75,28 @@ class DbTournamentRepository : TournamentRepository {
             StatementRunnableWithResult { connection, _ ->
                 val sql: String =
                     selectTournamentPlayer +
-                        """
+                            """
                         WHERE tournament_id = :tournamentId
                         """.trimIndent()
                 connection
                     .createQuery(sql)
                     .addParameter("tournamentId", tournamentId)
                     .executeAndFetch(TournamentPlayer::class.java)
+            },
+        )
+
+    override fun getTournamentDecks(tournamentId: String): List<TournamentDeck> =
+        dbAccess.openDB().withConnection(
+            StatementRunnableWithResult { connection, _ ->
+                val sql: String =
+                    selectTournamentDeck +
+                            """
+                        WHERE tournament_id = :tournamentId
+                        """.trimIndent()
+                connection
+                    .createQuery(sql)
+                    .addParameter("tournamentId", tournamentId)
+                    .executeAndFetch(TournamentDeck::class.java)
             },
         )
 
@@ -114,18 +136,17 @@ class DbTournamentRepository : TournamentRepository {
             .executeUpdate()
     }
 
-    override fun addPlayer(tournamentId: String, player: String, deck: String) =
+    override fun addPlayer(tournamentId: String, player: String) =
         dbAccess.openDB().runInTransaction { connection, _ ->
             val sql =
                 """
-                INSERT INTO tournament_player (tournament_id, player, deck, dropped) 
-                VALUES (:tournamentId, :player, :deck)
+                INSERT INTO tournament_player (tournament_id, player, dropped) 
+                VALUES (:tournamentId, :player, :dropped)
                 """.trimIndent()
             connection
                 .createQuery(sql)
                 .addParameter("tournamentId", tournamentId)
                 .addParameter("player", player)
-                .addParameter("deck", deck)
                 .addParameter("dropped", false)
                 .executeUpdate()
         }
@@ -144,18 +165,24 @@ class DbTournamentRepository : TournamentRepository {
                 .executeUpdate()
         }
 
-    override fun updateDecks(tournamentId: String, player: String, deck: String) =
+    override fun upsertDeck(tournamentId: String, player: String, type: String, name: String, notes: String, targetFormat: String, contents: String) {
         dbAccess.openDB().runInTransaction { connection, _ ->
             val sql =
                 """
-                UPDATE tournament_player set deck = :deck
-                WHERE tournament_id = :tournamentId and player = :player
+                INSERT INTO tournament_deck(tournament_id, player, type, name, notes, target_format, contents)
+                VALUES (:tournamentId, :player, :type, :name, :notes, :targetFormat, :contents)
+                ON DUPLICATE KEY UPDATE name = :name, notes = :notes, target_format = :targetFormat, contents = :contents;
                 """.trimIndent()
             connection
                 .createQuery(sql)
-                .addParameter("deck", deck)
                 .addParameter("tournamentId", tournamentId)
                 .addParameter("player", player)
+                .addParameter("type", type)
+                .addParameter("name", name)
+                .addParameter("notes", notes)
+                .addParameter("targetFormat", targetFormat)
+                .addParameter("contents", contents)
                 .executeUpdate()
         }
+    }
 }

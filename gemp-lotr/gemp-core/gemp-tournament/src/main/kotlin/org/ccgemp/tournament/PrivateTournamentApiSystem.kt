@@ -11,6 +11,7 @@ import com.gempukku.server.HttpServer
 import com.gempukku.server.ResponseWriter
 import com.gempukku.server.login.LoggedUserInterface
 import com.gempukku.server.login.getActingAsUser
+import org.ccgemp.common.splitText
 import java.util.regex.Pattern
 
 @Exposes(LifecycleObserver::class)
@@ -69,7 +70,7 @@ class PrivateTournamentApiSystem : LifecycleObserver {
             val actAsUser =
                 getActingAsUser(loggedUserInterface, request, adminRole, request.getParameter(actAsParameter))
 
-            tournamentInterface.joinTournament(tournamentId, actAsUser.userId, deckName?.split("\n").orEmpty())
+            tournamentInterface.joinTournament(tournamentId, actAsUser.userId, deckName?.splitText('\n').orEmpty())
 
             responseWriter.writeXmlResponse(null)
         }
@@ -98,7 +99,7 @@ class PrivateTournamentApiSystem : LifecycleObserver {
             val actAsUser =
                 getActingAsUser(loggedUserInterface, request, adminRole, request.getParameter(actAsParameter))
 
-            tournamentInterface.registerDeck(tournamentId, actAsUser.userId, deckName)
+            tournamentInterface.registerDecks(tournamentId, actAsUser.userId, deckName.splitText('\n'))
 
             responseWriter.writeXmlResponse(null)
         }

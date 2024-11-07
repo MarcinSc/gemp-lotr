@@ -9,6 +9,8 @@ interface TournamentRepository {
 
     fun getTournamentPlayers(tournamentId: String): List<TournamentPlayer>
 
+    fun getTournamentDecks(tournamentId: String): List<TournamentDeck>
+
     fun setRoundAndStage(tournamentId: String, round: Int, stage: String)
 
     fun createMatch(
@@ -19,9 +21,9 @@ interface TournamentRepository {
         winner: String? = null,
     )
 
-    fun addPlayer(tournamentId: String, player: String, deck: String)
+    fun addPlayer(tournamentId: String, player: String)
 
     fun dropPlayer(tournamentId: String, player: String)
 
-    fun updateDecks(tournamentId: String, player: String, deck: String)
+    fun upsertDeck(tournamentId: String, player: String, type: String, name: String, notes: String, targetFormat: String, contents: String)
 }

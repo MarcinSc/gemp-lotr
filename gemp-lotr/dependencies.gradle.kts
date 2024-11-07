@@ -8,9 +8,9 @@ dependencies {
     implementation("commons-io:commons-io:2.17.0")
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     implementation("org.apache.commons:commons-lang3:3.17.0")
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-text
+    implementation("org.apache.commons:commons-text:1.12.0")
 
-    // https://mvnrepository.com/artifact/junit/junit
-    testImplementation("junit:junit:4.13.2")
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.3")
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params
