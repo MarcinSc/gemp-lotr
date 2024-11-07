@@ -42,5 +42,5 @@ fun LotroDeck.toGameDeck(): GameDeck {
         deckParts.put(DECK_PART, it)
     }
 
-    return GameDeck(deckName, notes, deckParts)
+    return GameDeck(deckName, notes, targetFormat, deckParts)
 }

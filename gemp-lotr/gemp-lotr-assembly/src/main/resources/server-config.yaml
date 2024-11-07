@@ -38,6 +38,8 @@ server:
     url: /gemp-lotr-server/getPlayerRoles
   setPlayerRoles:
     url: /gemp-lotr-server/setPlayerRoles
+  tournament:
+    urlPrefix: /gemp-lotr-server/tournament
 
 parameterNames:
   actAsParameter: participantId
@@ -64,6 +66,16 @@ roles:
   unbanned: n
   user: u
 
+collection:
+  filter:
+    defaultSort: name
+
 games:
   threadCount: 5
   lingerTime: 300000 # 5 minutes
+
+tournament:
+  linger:
+    hours: 48
+  composite:
+    type: composite

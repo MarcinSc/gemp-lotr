@@ -5,6 +5,7 @@ plugins {
 dependencies {
     implementation(project(":gemp-lotr-server"))
 
+    api(project(":gemp-core:gemp-collection"))
     api(project(":gemp-core:gemp-db"))
     api(project(":gemp-core:gemp-game"))
     api(project(":gemp-core:gemp-player"))

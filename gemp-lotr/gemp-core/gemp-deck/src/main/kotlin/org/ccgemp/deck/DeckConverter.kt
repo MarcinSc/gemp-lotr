@@ -15,7 +15,7 @@ fun String.toDeck(): GameDeck? {
         return null
     }
     val deckValues = split(this, DECK_VALUES_JOIN)
-    return GameDeck(deckValues[0], deckValues[1], toDeckParts(deckValues[2]))
+    return GameDeck(deckValues[0], deckValues[1], deckValues[2], toDeckParts(deckValues[3]))
 }
 
 fun List<GameDeck?>.toDecksString(): String {
@@ -26,7 +26,7 @@ fun GameDeck?.toDeckString(): String {
     if (this == null) {
         return ""
     }
-    return merge(listOf(name, notes, toString(deckParts)))
+    return merge(listOf(name, notes, targetFormat, toString(deckParts)))
 }
 
 private fun toDeckParts(text: String): Map<String, List<String>> {

@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 
 const val FINISHED_STAGE = "FINISHED"
 
-@Exposes(UpdatedSystem::class, LifecycleObserver::class, TournamentInterface::class)
+@Exposes(UpdatedSystem::class, TournamentInterface::class)
 class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
     @Inject
     private lateinit var repository: TournamentRepository
@@ -29,47 +29,11 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
     @InjectValue(value = "tournament.linger.hours")
     private var tournamentLingerHours: Long = 12
 
+    private var initialized: Boolean = false
+
     private val handlerMap = mutableMapOf<String, TournamentHandler<Any>>()
 
     private val loadedTournaments = mutableMapOf<String, DefaultTournamentInfo<Any>>()
-
-    override fun afterContextStartup() {
-        repository.getUnfinishedOrStartAfter(LocalDateTime.now().minusHours(tournamentLingerHours)).forEach { tournament ->
-            val tournamentHandler = findHandler(tournament.type)
-
-            val data = tournamentHandler.initializeTournament(tournament)
-
-            val tournamentInfo =
-                DefaultTournamentInfo(
-                    tournamentHandler,
-                    tournament.startDate,
-                    data,
-                    tournament.tournamentId,
-                    tournament.name,
-                    tournament.stage,
-                    tournament.round,
-                    mutableListOf(),
-                    mutableListOf(),
-                    mutableSetOf(),
-                )
-
-            val tournamentPlayers = repository.getTournamentPlayers(tournament.tournamentId)
-            tournamentPlayers.forEach {
-                tournamentInfo.players.add(it.toParticipant())
-            }
-            val tournamentMatches = repository.getTournamentMatches(tournament.tournamentId)
-            tournamentMatches.forEach {
-                tournamentInfo.matches.add(it)
-            }
-
-            loadedTournaments[tournament.tournamentId] = tournamentInfo
-
-            // Start all the matches that are not finished
-            tournamentMatches.filter { !it.finished && !it.bye }.forEach { match ->
-                startMatch(match.round, match.playerOne, match.playerTwo, tournamentInfo)
-            }
-        }
-    }
 
     private fun findHandler(type: String): TournamentHandler<Any> {
         val tournamentHandler =
@@ -155,6 +119,10 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
     }
 
     override fun update() {
+        if (!initialized) {
+            initialize()
+            initialized = true
+        }
         val tournamentsToUnload = mutableSetOf<String>()
         loadedTournaments.forEach { (tournamentId, tournamentInfo) ->
             val handler = tournamentInfo.handler
@@ -168,6 +136,44 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
         }
         tournamentsToUnload.forEach {
             loadedTournaments.remove(it)
+        }
+    }
+
+    private fun initialize() {
+        repository.getUnfinishedOrStartAfter(LocalDateTime.now().minusHours(tournamentLingerHours)).forEach { tournament ->
+            val tournamentHandler = findHandler(tournament.type)
+
+            val data = tournamentHandler.initializeTournament(tournament)
+
+            val tournamentInfo =
+                DefaultTournamentInfo(
+                    tournamentHandler,
+                    tournament.startDate,
+                    data,
+                    tournament.tournamentId,
+                    tournament.name,
+                    tournament.stage,
+                    tournament.round,
+                    mutableListOf(),
+                    mutableListOf(),
+                    mutableSetOf(),
+                )
+
+            val tournamentPlayers = repository.getTournamentPlayers(tournament.tournamentId)
+            tournamentPlayers.forEach {
+                tournamentInfo.players.add(it.toParticipant())
+            }
+            val tournamentMatches = repository.getTournamentMatches(tournament.tournamentId)
+            tournamentMatches.forEach {
+                tournamentInfo.matches.add(it)
+            }
+
+            loadedTournaments[tournament.tournamentId] = tournamentInfo
+
+            // Start all the matches that are not finished
+            tournamentMatches.filter { !it.finished && !it.bye }.forEach { match ->
+                startMatch(match.round, match.playerOne, match.playerTwo, tournamentInfo)
+            }
         }
     }
 

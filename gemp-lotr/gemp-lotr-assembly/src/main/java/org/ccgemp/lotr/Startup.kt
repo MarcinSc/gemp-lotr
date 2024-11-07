@@ -8,12 +8,15 @@ import com.gempukku.context.processor.inject.decorator.WorkerThreadExecutorSyste
 import com.gempukku.context.processor.inject.property.YamlPropertyResolver
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
 import com.gempukku.context.update.UpdatingSystem
+import com.gempukku.server.chat.createChatSystems
 import com.gempukku.server.login.CookieLoggedUserSystem
 import com.gempukku.server.netty.NettyServerSystem
 import com.gempukku.server.polling.LongPollingSystem
+import org.ccgemp.collection.createCollectionSystems
 import org.ccgemp.db.DbAccessSystem
 import org.ccgemp.deck.createDeckSystems
 import org.ccgemp.game.createGameSystems
+import org.ccgemp.json.createJsonSystems
 import org.ccgemp.server.player.createPlayerSystems
 import org.ccgemp.tournament.createTournamentSystems
 import java.util.concurrent.Executors
@@ -55,6 +58,8 @@ fun main() {
             // Deck related
             LotrDeckSerialization(),
             LotrDeckValidation(),
+            // Tournament related
+            LotrTournamentRenderer(),
         )
 
     val serverContext =
@@ -63,11 +68,14 @@ fun main() {
             AnnotationSystemResolver(),
             AnnotationSystemInjector(propertyResolver, workerThreadExecutorSystem),
             baseSystems +
-                createPlayerSystems() +
-                createDeckSystems() +
-                createTournamentSystems() +
-                createGameSystems() +
-                lotrSpecificSystems,
+                    createJsonSystems() +
+                    createPlayerSystems() +
+                    createChatSystems() +
+                    createCollectionSystems() +
+                    createDeckSystems() +
+                    createTournamentSystems() +
+                    createGameSystems() +
+                    lotrSpecificSystems,
         )
 
     serverContext.initialize()

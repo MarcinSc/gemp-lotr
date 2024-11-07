@@ -11,6 +11,7 @@ include(
     "gempukku:gempukku-context",
     "gempukku:gempukku-netty-server",
     "gempukku:gempukku-server",
+    "gemp-core:gemp-collection",
     "gemp-core:gemp-db",
     "gemp-core:gemp-deck",
     "gemp-core:gemp-game",

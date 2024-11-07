@@ -7,5 +7,6 @@ interface TournamentClientInfo {
     val startDate: LocalDateTime
     val name: String
     val status: String
+    val players: List<TournamentParticipant>
     val finished: Boolean
 }
