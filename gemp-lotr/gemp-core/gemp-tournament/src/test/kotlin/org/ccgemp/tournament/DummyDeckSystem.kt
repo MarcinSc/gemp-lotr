@@ -18,8 +18,9 @@ class DummyDeckSystem : DeckInterface {
     }
 
     override fun addDeck(player: String, deck: GameDeck): Boolean {
-        if (findDeck(player, deck.name) != null)
+        if (findDeck(player, deck.name) != null) {
             return false
+        }
         playerDecks.compute(player) { key, value ->
             value?.let {
                 it.add(deck)
@@ -30,7 +31,7 @@ class DummyDeckSystem : DeckInterface {
     }
 
     override fun getValidator(format: String): DeckValidator {
-        return object: DeckValidator {
+        return object : DeckValidator {
             override fun isValid(deck: GameDeck?): Boolean {
                 return true
             }

@@ -27,14 +27,15 @@ class PeriodicUpdateTest {
         val context =
             DefaultGempukkuContext(
                 null,
-                AnnotationSystemResolver(),
-                AnnotationSystemInjector(propertyResolver),
-                listOf(
-                    UpdatingSystem(),
-                    workerExecutorSystem,
-                    lifecycleSystem,
-                    periodicallyUpdatedTestSystem,
+                AnnotationSystemResolver(
+                    listOf(
+                        UpdatingSystem(),
+                        workerExecutorSystem,
+                        lifecycleSystem,
+                        periodicallyUpdatedTestSystem,
+                    ),
                 ),
+                AnnotationSystemInjector(propertyResolver),
             )
         context.initialize()
 

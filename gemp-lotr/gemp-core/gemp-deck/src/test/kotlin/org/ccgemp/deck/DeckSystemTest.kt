@@ -42,16 +42,17 @@ class DeckSystemTest {
         val context =
             DefaultGempukkuContext(
                 null,
-                AnnotationSystemResolver(),
-                AnnotationSystemInjector(propertyResolver),
-                setOf(
-                    DeckSystem(),
-                    DbDeckRepository(),
-                    SimpleDeckSerialization(),
-                    NoopDeckValidation(),
-                    DbAccessSystem(),
-                    lifecycleSystem,
+                AnnotationSystemResolver(
+                    setOf(
+                        DeckSystem(),
+                        DbDeckRepository(),
+                        SimpleDeckSerialization(),
+                        NoopDeckValidation(),
+                        DbAccessSystem(),
+                        lifecycleSystem,
+                    ),
                 ),
+                AnnotationSystemInjector(propertyResolver),
             )
         context.initialize()
 

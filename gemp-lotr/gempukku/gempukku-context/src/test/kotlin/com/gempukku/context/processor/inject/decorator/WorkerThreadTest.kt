@@ -23,12 +23,13 @@ class WorkerThreadTest {
         val context =
             DefaultGempukkuContext(
                 null,
-                AnnotationSystemResolver(),
-                AnnotationSystemInjector(null, workerExecutorSystem),
-                listOf(
-                    proxySystem,
-                    callingSystem,
+                AnnotationSystemResolver(
+                    listOf(
+                        proxySystem,
+                        callingSystem,
+                    ),
                 ),
+                AnnotationSystemInjector(null, workerExecutorSystem),
             )
 
         context.initialize()
@@ -56,12 +57,13 @@ class WorkerThreadTest {
         val context =
             DefaultGempukkuContext(
                 null,
-                AnnotationSystemResolver(),
-                AnnotationSystemInjector(null, workerExecutorSystem),
-                listOf(
-                    proxySystem,
-                    callingSystem,
+                AnnotationSystemResolver(
+                    listOf(
+                        proxySystem,
+                        callingSystem,
+                    ),
                 ),
+                AnnotationSystemInjector(null, workerExecutorSystem),
             )
 
         context.initialize()

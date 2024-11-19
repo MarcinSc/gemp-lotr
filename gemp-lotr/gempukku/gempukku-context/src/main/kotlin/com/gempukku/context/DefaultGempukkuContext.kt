@@ -7,12 +7,11 @@ class DefaultGempukkuContext(
     override val parent: GempukkuContext? = null,
     private val systemResolver: SystemResolver,
     private val systemProcessor: SystemProcessor,
-    private val systems: Collection<Any>,
 ) : GempukkuContext {
-    override fun <T> getSystems(clazz: Class<T>): List<T> = systemResolver.resolveValues(systems, clazz)
+    override fun <T> getSystems(clazz: Class<T>): List<T> = systemResolver.getSystemsOfType(clazz)
 
     fun initialize(): GempukkuContext {
-        systemProcessor.processSystems(this, systems)
+        systemProcessor.processSystems(this, systemResolver.allSystems)
         return this
     }
 }

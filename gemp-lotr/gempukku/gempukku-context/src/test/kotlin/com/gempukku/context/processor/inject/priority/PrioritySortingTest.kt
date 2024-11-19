@@ -20,13 +20,14 @@ class PrioritySortingTest {
         val context =
             DefaultGempukkuContext(
                 null,
-                AnnotationSystemResolver(),
-                AnnotationSystemInjector(propertyResolver),
-                listOf(
-                    aPrioritySystem,
-                    bPrioritySystem,
-                    testSystem,
+                AnnotationSystemResolver(
+                    listOf(
+                        aPrioritySystem,
+                        bPrioritySystem,
+                        testSystem,
+                    ),
                 ),
+                AnnotationSystemInjector(propertyResolver),
             )
 
         context.initialize()
@@ -51,13 +52,14 @@ class PrioritySortingTest {
         val context =
             DefaultGempukkuContext(
                 null,
-                AnnotationSystemResolver(),
-                AnnotationSystemInjector(propertyResolver),
-                listOf(
-                    aPrioritySystem,
-                    bPrioritySystem,
-                    testSystem,
+                AnnotationSystemResolver(
+                    listOf(
+                        aPrioritySystem,
+                        bPrioritySystem,
+                        testSystem,
+                    ),
                 ),
+                AnnotationSystemInjector(propertyResolver),
             )
 
         context.initialize()

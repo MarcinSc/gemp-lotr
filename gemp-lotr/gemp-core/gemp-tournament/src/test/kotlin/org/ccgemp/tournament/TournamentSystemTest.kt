@@ -38,22 +38,22 @@ class TournamentSystemTest {
         val context =
             DefaultGempukkuContext(
                 null,
-                AnnotationSystemResolver(),
-                AnnotationSystemInjector(propertyResolver),
-                setOf(
-                    TournamentSystem(),
-                    DbTournamentRepository(),
-                    DummyDeckSystem(),
-                    DummyGameContainer(),
-                    DbAccessSystem(),
-                    lifecycleSystem,
+                AnnotationSystemResolver(
+                    setOf(
+                        TournamentSystem(),
+                        DbTournamentRepository(),
+                        DummyDeckSystem(),
+                        DummyGameContainer(),
+                        DbAccessSystem(),
+                        lifecycleSystem,
+                    ),
                 ),
+                AnnotationSystemInjector(propertyResolver),
             )
         context.initialize()
 
         lifecycleSystem.start()
 
         val tournamentSystem = context.getSystems(TournamentInterface::class.java).first()
-        
     }
 }

@@ -44,19 +44,20 @@ class ChatServerLegacyTest {
         val context =
             DefaultGempukkuContext(
                 null,
-                AnnotationSystemResolver(),
-                AnnotationSystemInjector(propertyResolver, workerThreadExecutorSystem),
-                listOf(
-                    lifecycleSystem,
-                    chatSystem,
-                    ChatApiSystem(),
-                    LegacyChatEventSinkProducer(),
-                    NettyServerSystem(),
-                    loggedUser,
-                    UpdatingSystem(),
-                    LongPollingSystem(),
-                    workerThreadExecutorSystem,
+                AnnotationSystemResolver(
+                    listOf(
+                        lifecycleSystem,
+                        chatSystem,
+                        ChatApiSystem(),
+                        LegacyChatEventSinkProducer(),
+                        NettyServerSystem(),
+                        loggedUser,
+                        UpdatingSystem(),
+                        LongPollingSystem(),
+                        workerThreadExecutorSystem,
+                    ),
                 ),
+                AnnotationSystemInjector(propertyResolver, workerThreadExecutorSystem),
             )
         context.initialize()
 

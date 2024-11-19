@@ -32,15 +32,16 @@ class NettyServerSystemTest {
         val context =
             DefaultGempukkuContext(
                 null,
-                AnnotationSystemResolver(),
-                AnnotationSystemInjector(propertyResolver),
-                listOf(
-                    nettyServerSystem,
-                    workerThreadExecutorSystem,
-                    ExampleRequestHandler(),
-                    lifecycleSystem,
-                    UpdatingSystem(),
+                AnnotationSystemResolver(
+                    listOf(
+                        nettyServerSystem,
+                        workerThreadExecutorSystem,
+                        ExampleRequestHandler(),
+                        lifecycleSystem,
+                        UpdatingSystem(),
+                    ),
                 ),
+                AnnotationSystemInjector(propertyResolver),
             )
 
         context.initialize()

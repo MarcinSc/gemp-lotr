@@ -15,12 +15,13 @@ class LifecycleSystemTest {
         val context =
             DefaultGempukkuContext(
                 null,
-                AnnotationSystemResolver(),
-                AnnotationSystemInjector(),
-                listOf(
-                    lifecycleSystem,
-                    lifecycleObserver,
+                AnnotationSystemResolver(
+                    listOf(
+                        lifecycleSystem,
+                        lifecycleObserver,
+                    ),
                 ),
+                AnnotationSystemInjector(),
             )
 
         context.initialize()

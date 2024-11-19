@@ -42,14 +42,15 @@ class CollectionSystemTest {
         val context =
             DefaultGempukkuContext(
                 null,
-                AnnotationSystemResolver(),
-                AnnotationSystemInjector(propertyResolver),
-                setOf(
-                    CollectionSystem(),
-                    DbCollectionRepository(),
-                    DbAccessSystem(),
-                    lifecycleSystem,
+                AnnotationSystemResolver(
+                    setOf(
+                        CollectionSystem(),
+                        DbCollectionRepository(),
+                        DbAccessSystem(),
+                        lifecycleSystem,
+                    ),
                 ),
+                AnnotationSystemInjector(propertyResolver),
             )
         context.initialize()
 

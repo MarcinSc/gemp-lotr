@@ -50,53 +50,64 @@ class AnnotationSystemInjector(
         val fieldType = field.type
         when (fieldType) {
             String::class.java -> {
-                field.trySetAccessible()
-                field.set(system, resolveProperty(injectAnnotation.value, ""))
+                resolveProperty(injectAnnotation.value)?.let {
+                    field.trySetAccessible()
+                    field.set(system, it)
+                }
             }
 
             Int::class.java -> {
-                field.trySetAccessible()
-                field.setInt(system, resolveProperty(injectAnnotation.value, "0").toInt())
+                resolveProperty(injectAnnotation.value)?.let {
+                    field.trySetAccessible()
+                    field.set(system, it.toInt())
+                }
             }
 
             Long::class.java -> {
-                field.trySetAccessible()
-                field.setLong(system, resolveProperty(injectAnnotation.value, "0").toLong())
+                resolveProperty(injectAnnotation.value)?.let {
+                    field.trySetAccessible()
+                    field.set(system, it.toLong())
+                }
             }
 
             Float::class.java -> {
-                field.trySetAccessible()
-                field.setFloat(system, resolveProperty(injectAnnotation.value, "0").toFloat())
+                resolveProperty(injectAnnotation.value)?.let {
+                    field.trySetAccessible()
+                    field.set(system, it.toFloat())
+                }
             }
 
             Double::class.java -> {
-                field.trySetAccessible()
-                field.setDouble(system, resolveProperty(injectAnnotation.value, "0").toDouble())
+                resolveProperty(injectAnnotation.value)?.let {
+                    field.trySetAccessible()
+                    field.set(system, it.toDouble())
+                }
             }
 
             Boolean::class.java -> {
-                field.trySetAccessible()
-                field.setBoolean(system, resolveProperty(injectAnnotation.value, "0").toBoolean())
+                resolveProperty(injectAnnotation.value)?.let {
+                    field.trySetAccessible()
+                    field.set(system, it.toBoolean())
+                }
             }
 
             FileResource::class.java -> {
-                field.trySetAccessible()
-                field.set(
-                    system,
-                    fileResourceResolver.resolveFileResource(resolveProperty(injectAnnotation.value, "missing:")),
-                )
+                resolveProperty(injectAnnotation.value)?.let {
+                    field.trySetAccessible()
+                    field.set(system, fileResourceResolver.resolveFileResource(it))
+                }
             }
         }
     }
 
-    private fun resolveProperty(propertyName: String, default: String): String {
+    private fun resolveProperty(propertyName: String): String? {
         val propertyValue = propertyResolver!!.resolveProperty(propertyName)
         if (propertyValue == null) {
             log.warning("Unable to resolve property: $propertyName")
         } else {
             usedProperties.add(propertyName)
         }
-        return propertyValue ?: default
+        return propertyValue
     }
 
     private fun processInjectList(field: Field, context: GempukkuContext, system: Any) {
@@ -204,6 +215,6 @@ class AnnotationSystemInjector(
 
     private fun getPriority(key: String): Int =
         propertyResolver?.let {
-            Integer.parseInt(resolveProperty("priority.$key", "0"))
+            resolveProperty("priority.$key")?.toInt() ?: 0
         } ?: 0
 }

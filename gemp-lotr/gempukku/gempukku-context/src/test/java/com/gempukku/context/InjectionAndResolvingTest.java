@@ -15,10 +15,13 @@ public class InjectionAndResolvingTest {
         ExampleSystem system = new ExampleSystem();
 
         DefaultGempukkuContext context = new DefaultGempukkuContext(
-                null, new AnnotationSystemResolver(), new AnnotationSystemInjector(),
-                Arrays.stream(
-                        new Object[]{system, otherSystem}
-                ).toList());
+                null,
+                new AnnotationSystemResolver(
+                        Arrays.stream(
+                                new Object[]{system, otherSystem}
+                        ).toList()
+                ), new AnnotationSystemInjector()
+        );
 
         context.initialize();
 

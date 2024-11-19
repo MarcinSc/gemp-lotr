@@ -65,17 +65,18 @@ fun main() {
     val serverContext =
         DefaultGempukkuContext(
             null,
-            AnnotationSystemResolver(),
+            AnnotationSystemResolver(
+                baseSystems +
+                    createJsonSystems() +
+                    createPlayerSystems() +
+                    createChatSystems() +
+                    createCollectionSystems() +
+                    createDeckSystems() +
+                    createTournamentSystems() +
+                    createGameSystems() +
+                    lotrSpecificSystems,
+            ),
             AnnotationSystemInjector(propertyResolver, workerThreadExecutorSystem),
-            baseSystems +
-                createJsonSystems() +
-                createPlayerSystems() +
-                createChatSystems() +
-                createCollectionSystems() +
-                createDeckSystems() +
-                createTournamentSystems() +
-                createGameSystems() +
-                lotrSpecificSystems,
         )
 
     serverContext.initialize()

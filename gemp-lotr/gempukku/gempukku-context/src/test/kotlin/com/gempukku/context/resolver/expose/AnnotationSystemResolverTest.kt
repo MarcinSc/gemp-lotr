@@ -6,19 +6,19 @@ import org.junit.jupiter.api.Test
 internal class AnnotationSystemResolverTest {
     @Test
     fun testResolving() {
-        val resolver = AnnotationSystemResolver()
         val resolvingSystem = ResolvingSystem()
-        val resolvedSystems = resolver.resolveValues(listOf(resolvingSystem), ExposedInterface::class.java)
+        val resolver = AnnotationSystemResolver(listOf(resolvingSystem))
+        val resolvedSystems = resolver.getSystemsOfType(ExposedInterface::class.java)
         assertEquals(resolvedSystems, listOf(resolvingSystem))
     }
 
     @Test
     fun testResolvingMultiple() {
-        val resolver = AnnotationSystemResolver()
         val resolvingSystem1 = ResolvingSystem()
         val resolvingSystem2 = ResolvingSystem()
+        val resolver = AnnotationSystemResolver(listOf(resolvingSystem1, resolvingSystem2))
         val resolvedSystems =
-            resolver.resolveValues(listOf(resolvingSystem1, resolvingSystem2), ExposedInterface::class.java)
+            resolver.getSystemsOfType(ExposedInterface::class.java)
         assertEquals(resolvedSystems, listOf(resolvingSystem1, resolvingSystem2))
     }
 }
