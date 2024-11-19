@@ -57,7 +57,8 @@ class ChatServerLegacyTest {
                         workerThreadExecutorSystem,
                     ),
                 ),
-                AnnotationSystemInjector(propertyResolver, workerThreadExecutorSystem),
+                AnnotationSystemInjector(propertyResolver),
+                workerThreadExecutorSystem
             )
         context.initialize()
 

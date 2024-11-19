@@ -6,16 +6,18 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 
-internal class AnnotationSystemProcessorTest {
+internal class AnnotationSystemInitializerTest {
     @Test
     fun testInjectSuccess() {
         val injector = AnnotationSystemInjector()
 
         val context = Mockito.mock(GempukkuContext::class.java)
         val injectedSystem = InjectedSystem()
-        whenever(context.getSystems(InjectedSystem::class.java)).thenReturn(listOf(injectedSystem))
+        whenever(context.getDecoratedSystems(InjectedSystem::class.java)).thenReturn(listOf(injectedSystem))
 
         val injectingSystem = SingleInjectingSystem()
         injector.processSystems(context, listOf(injectingSystem))
@@ -31,9 +33,9 @@ internal class AnnotationSystemProcessorTest {
         val parentContext = Mockito.mock(GempukkuContext::class.java)
 
         val injectedSystem = InjectedSystem()
-        whenever(context.getSystems(InjectedSystem::class.java)).thenReturn(emptyList())
+        whenever(context.getDecoratedSystems(InjectedSystem::class.java)).thenReturn(emptyList())
         whenever(context.parent).thenReturn(parentContext)
-        whenever(parentContext.getSystems(InjectedSystem::class.java)).thenReturn(listOf(injectedSystem))
+        whenever(parentContext.getDecoratedSystems(InjectedSystem::class.java)).thenReturn(listOf(injectedSystem))
 
         val injectingSystem = FromAncestorsSingleInjectingSystem()
         injector.processSystems(context, listOf(injectingSystem))
@@ -137,6 +139,7 @@ internal class AnnotationSystemProcessorTest {
         val context = Mockito.mock(GempukkuContext::class.java)
         val injectedSystem = InjectedSystem()
         whenever(context.getSystems(InjectedSystem::class.java)).thenReturn(listOf(injectedSystem))
+        whenever(context.decorateSystem(injectedSystem, InjectedSystem::class.java)).thenReturn(injectedSystem)
 
         val injectingSystem = MultipleInjectingSystem()
         injector.processSystems(context, listOf(injectingSystem))
@@ -152,6 +155,8 @@ internal class AnnotationSystemProcessorTest {
         val injectedSystem1 = InjectedSystem()
         val injectedSystem2 = InjectedSystem()
         whenever(context.getSystems(InjectedSystem::class.java)).thenReturn(listOf(injectedSystem1, injectedSystem2))
+        whenever(context.decorateSystem(injectedSystem1, InjectedSystem::class.java)).thenReturn(injectedSystem1)
+        whenever(context.decorateSystem(injectedSystem2, InjectedSystem::class.java)).thenReturn(injectedSystem2)
 
         val injectingSystem = MultipleInjectingSystem()
         injector.processSystems(context, listOf(injectingSystem))
@@ -168,8 +173,10 @@ internal class AnnotationSystemProcessorTest {
         val injectedSystem1 = InjectedSystem()
         val injectedSystem2 = InjectedSystem()
         whenever(context.getSystems(InjectedSystem::class.java)).thenReturn(listOf(injectedSystem1))
+        whenever(context.decorateSystem(injectedSystem1, InjectedSystem::class.java)).thenReturn(injectedSystem1)
         whenever(context.parent).thenReturn(parentContext)
         whenever(parentContext.getSystems(InjectedSystem::class.java)).thenReturn(listOf(injectedSystem2))
+        whenever(parentContext.decorateSystem(injectedSystem2, InjectedSystem::class.java)).thenReturn(injectedSystem2)
 
         val injectingSystem = MultipleInjectingSystem()
         injector.processSystems(context, listOf(injectingSystem))
@@ -186,8 +193,10 @@ internal class AnnotationSystemProcessorTest {
         val injectedSystem1 = InjectedSystem()
         val injectedSystem2 = InjectedSystem()
         whenever(context.getSystems(InjectedSystem::class.java)).thenReturn(listOf(injectedSystem1))
+        whenever(context.decorateSystem(injectedSystem1, InjectedSystem::class.java)).thenReturn(injectedSystem1)
         whenever(context.parent).thenReturn(parentContext)
         whenever(parentContext.getSystems(InjectedSystem::class.java)).thenReturn(listOf(injectedSystem2))
+        whenever(parentContext.decorateSystem(injectedSystem2, InjectedSystem::class.java)).thenReturn(injectedSystem2)
 
         val injectingSystem = FromAncestorsMultipleInjectingSystem()
         injector.processSystems(context, listOf(injectingSystem))

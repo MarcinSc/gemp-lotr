@@ -76,7 +76,8 @@ fun main() {
                     createGameSystems() +
                     lotrSpecificSystems,
             ),
-            AnnotationSystemInjector(propertyResolver, workerThreadExecutorSystem),
+            AnnotationSystemInjector(propertyResolver),
+            workerThreadExecutorSystem,
         )
 
     serverContext.initialize()

@@ -1,8 +1,7 @@
 package com.gempukku.context.processor.inject
 
 import com.gempukku.context.GempukkuContext
-import com.gempukku.context.processor.SystemProcessor
-import com.gempukku.context.processor.inject.decorator.SystemDecorator
+import com.gempukku.context.processor.SystemInitializer
 import com.gempukku.context.processor.inject.property.PropertyResolver
 import com.gempukku.context.resource.FileResource
 import com.gempukku.context.resource.FileResourceResolver
@@ -16,9 +15,8 @@ private val log: Logger = Logger.getLogger(AnnotationSystemInjector::class.java.
 
 class AnnotationSystemInjector(
     private val propertyResolver: PropertyResolver? = null,
-    private val systemDecorator: SystemDecorator? = null,
     private val fileResourceResolver: FileResourceResolver = createDefaultFileResourceResolver(),
-) : SystemProcessor {
+) : SystemInitializer {
     private val usedProperties = mutableSetOf<String>()
 
     override fun processSystems(context: GempukkuContext, systems: Collection<Any>) {
@@ -126,12 +124,9 @@ class AnnotationSystemInjector(
                         DefaultPriorityPrefix::class.java,
                     )?.value
             val resolvedSystems =
-                findValues(context, typeClass, injectAnnotation, priorityPrefix)
+                findDecoratedValues(context, typeClass, injectAnnotation, priorityPrefix)
                     .sortedBy { -it.second }
                     .map { it.first }
-                    .map { system ->
-                        decorateIfNeeded(system, typeClass)
-                    }
             field.trySetAccessible()
             field.set(system, resolvedSystems)
         } else {
@@ -145,11 +140,11 @@ class AnnotationSystemInjector(
         val injectAnnotation = field.getAnnotation(Inject::class.java)
         val fieldType = field.type as Class<Any>
 
-        val resolvedValues = findValues(context, fieldType, injectAnnotation)
+        val resolvedValues = findDecoratedValues(context, fieldType, injectAnnotation)
         when (resolvedValues.size) {
             1 -> {
                 field.trySetAccessible()
-                field.set(system, decorateIfNeeded(resolvedValues.first(), fieldType))
+                field.set(system, resolvedValues.first())
             }
 
             0 -> {
@@ -170,20 +165,18 @@ class AnnotationSystemInjector(
         }
     }
 
-    private fun decorateIfNeeded(system: Any, typeClass: Class<Any>) = systemDecorator?.let { systemDecorator.decorate(system, typeClass) } ?: system
-
-    private fun findValues(context: GempukkuContext, clazz: Class<out Any>, injectAnnotation: Inject): List<Any> {
-        val systems = context.getSystems(clazz)
+    private fun findDecoratedValues(context: GempukkuContext, clazz: Class<out Any>, injectAnnotation: Inject): List<Any> {
+        val systems = context.getDecoratedSystems(clazz)
         return systems.ifEmpty {
             if (injectAnnotation.firstNotNullFromAncestors && context.parent != null) {
-                findValues(context.parent!!, clazz, injectAnnotation)
+                findDecoratedValues(context.parent!!, clazz, injectAnnotation)
             } else {
                 emptyList()
             }
         }
     }
 
-    private fun findValues(
+    private fun findDecoratedValues(
         context: GempukkuContext,
         clazz: Class<out Any>,
         injectAnnotation: InjectList,
@@ -203,11 +196,11 @@ class AnnotationSystemInjector(
                     } else {
                         0
                     }
-                system to priority
+                context.decorateSystem(system, clazz as Class<Any>) to priority
             }
 
         return if (injectAnnotation.selectFromAncestors && context.parent != null) {
-            systems + findValues(context.parent!!, clazz, injectAnnotation, priorityPrefix)
+            systems + findDecoratedValues(context.parent!!, clazz, injectAnnotation, priorityPrefix)
         } else {
             systems
         }

@@ -21,19 +21,19 @@ class DbAccessSystem :
     DbAccessInterface,
     LifecycleObserver {
     @InjectValue("db.connection.class")
-    private lateinit var connectionClass: String
+    private var connectionClass: String = "com.mysql.cj.jdbc.Driver"
 
     @InjectValue("db.connection.url")
-    private lateinit var connectionUrl: String
+    private var connectionUrl: String = "jdbc:mysql://localhost:3306/gemp"
 
     @InjectValue("db.connection.username")
-    private lateinit var username: String
+    private var username: String = "root"
 
     @InjectValue("db.connection.password")
-    private lateinit var password: String
+    private var password: String = ""
 
     @InjectValue("db.connection.validateQuery")
-    private lateinit var validateQuery: String
+    private var validateQuery: String = "/* ping */ select 1"
 
     @InjectValue("db.connection.batch")
     private var batch: Boolean = false

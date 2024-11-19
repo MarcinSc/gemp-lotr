@@ -29,7 +29,8 @@ class WorkerThreadTest {
                         callingSystem,
                     ),
                 ),
-                AnnotationSystemInjector(null, workerExecutorSystem),
+                AnnotationSystemInjector(null),
+                workerExecutorSystem,
             )
 
         context.initialize()
@@ -63,7 +64,8 @@ class WorkerThreadTest {
                         callingSystem,
                     ),
                 ),
-                AnnotationSystemInjector(null, workerExecutorSystem),
+                AnnotationSystemInjector(null),
+                workerExecutorSystem,
             )
 
         context.initialize()

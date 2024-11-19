@@ -122,8 +122,8 @@ class NettyServerSystem :
 
     override fun beforeContextStopped() {
         serverChannel?.close()?.sync()
-        workerGroup?.shutdownGracefully()
-        bossGroup?.shutdownGracefully()
+        workerGroup?.shutdownGracefully()?.sync()
+        bossGroup?.shutdownGracefully()?.sync()
     }
 
     override fun update() {

@@ -7,4 +7,8 @@ interface GempukkuContext {
     val parent: GempukkuContext?
 
     fun <T> getSystems(clazz: Class<T>): List<T>
+
+    fun <T> decorateSystem(system: T, clazz: Class<T>): T
+
+    fun <T> getDecoratedSystems(clazz: Class<T>): List<T>
 }

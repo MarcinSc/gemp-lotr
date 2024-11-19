@@ -13,24 +13,15 @@ class DbTest {
             configBuilder.port = 13579
             val db = DB.newEmbeddedDB(configBuilder.build())
             db.start()
+            db.createDB("test", "root", "")
 
-            Class.forName("com.mysql.cj.jdbc.Driver")
+            migrationsPaths.forEach { migrationsPath ->
+                val migrations = migrationsPath.listFiles()
+                migrations.sortWith { o1, o2 -> o1.name.compareTo(o2.name) }
 
-            val connection = DriverManager.getConnection("jdbc:mysql://localhost:13579/test", "root", "")
-            connection.use {
-                val statement = connection.createStatement()
-
-                migrationsPaths.forEach { migrationsPath ->
-                    val migrations = migrationsPath.listFiles()
-                    migrations.sortWith { o1, o2 -> o1.name.compareTo(o2.name) }
-
-                    statement.use {
-                        migrations.forEach { migration ->
-                            val sql = migration.readText()
-                            sql.split(";").filter { it.trim().isNotEmpty() }.forEach {
-                                statement.execute(it)
-                            }
-                        }
+                migrations.forEach { migration ->
+                    migration.inputStream().use {
+                        db.source(it, "root", "", "test")
                     }
                 }
             }

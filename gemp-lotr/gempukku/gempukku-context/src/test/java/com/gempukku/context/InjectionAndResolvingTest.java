@@ -20,7 +20,8 @@ public class InjectionAndResolvingTest {
                         Arrays.stream(
                                 new Object[]{system, otherSystem}
                         ).toList()
-                ), new AnnotationSystemInjector()
+                ), new AnnotationSystemInjector(),
+                null
         );
 
         context.initialize();
