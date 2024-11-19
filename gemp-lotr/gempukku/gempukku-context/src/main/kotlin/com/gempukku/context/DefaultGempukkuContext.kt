@@ -1,7 +1,7 @@
 package com.gempukku.context
 
-import com.gempukku.context.processor.SystemInitializer
-import com.gempukku.context.processor.inject.decorator.SystemDecorator
+import com.gempukku.context.decorator.SystemDecorator
+import com.gempukku.context.initializer.SystemInitializer
 import com.gempukku.context.resolver.SystemResolver
 
 class DefaultGempukkuContext(

@@ -1,11 +1,11 @@
 package com.gempukku.server.chat
 
 import com.gempukku.context.DefaultGempukkuContext
+import com.gempukku.context.decorator.SimpleThreadPoolFactory
+import com.gempukku.context.decorator.WorkerThreadExecutorSystem
+import com.gempukku.context.initializer.inject.AnnotationSystemInitializer
+import com.gempukku.context.initializer.inject.property.YamlPropertyResolver
 import com.gempukku.context.lifecycle.LifecycleSystem
-import com.gempukku.context.processor.inject.AnnotationSystemInjector
-import com.gempukku.context.processor.inject.decorator.SimpleThreadPoolFactory
-import com.gempukku.context.processor.inject.decorator.WorkerThreadExecutorSystem
-import com.gempukku.context.processor.inject.property.YamlPropertyResolver
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
 import com.gempukku.context.update.UpdatingSystem
 import com.gempukku.server.chat.polling.legacy.LegacyChatEventSinkProducer
@@ -57,8 +57,8 @@ class ChatServerLegacyTest {
                         workerThreadExecutorSystem,
                     ),
                 ),
-                AnnotationSystemInjector(propertyResolver),
-                workerThreadExecutorSystem
+                AnnotationSystemInitializer(propertyResolver),
+                workerThreadExecutorSystem,
             )
         context.initialize()
 

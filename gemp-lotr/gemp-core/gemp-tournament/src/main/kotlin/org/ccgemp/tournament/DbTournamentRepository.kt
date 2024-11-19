@@ -1,6 +1,6 @@
 package org.ccgemp.tournament
 
-import com.gempukku.context.processor.inject.Inject
+import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.db.DbAccessInterface
 import org.sql2o.StatementRunnableWithResult

@@ -1,6 +1,6 @@
 package com.gempukku.server.polling
 
-import com.gempukku.context.processor.inject.InjectValue
+import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.context.update.UpdatedSystem
 import com.gempukku.server.generateUniqueId

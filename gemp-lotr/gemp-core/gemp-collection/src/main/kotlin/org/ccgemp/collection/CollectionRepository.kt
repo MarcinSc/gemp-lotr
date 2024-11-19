@@ -7,7 +7,7 @@ interface CollectionRepository {
 
     fun createCollection(player: String, type: String): CollectionInfo
 
-    fun addToCollection(collectionInfo: CollectionInfo, collection: CardCollection)
+    fun addToCollection(collectionInfo: CollectionInfo, collectionChange: CollectionChange)
 
     fun findCollectionsByType(type: String): List<CollectionInfo>
 }

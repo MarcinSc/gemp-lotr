@@ -1,7 +1,7 @@
 package org.ccgemp.db
 
+import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.lifecycle.LifecycleObserver
-import com.gempukku.context.processor.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import org.apache.commons.dbcp2.ConnectionFactory
 import org.apache.commons.dbcp2.DriverManagerConnectionFactory

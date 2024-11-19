@@ -1,9 +1,9 @@
 package org.ccgemp.deck
 
 import com.gempukku.context.DefaultGempukkuContext
+import com.gempukku.context.initializer.inject.AnnotationSystemInitializer
+import com.gempukku.context.initializer.inject.property.YamlPropertyResolver
 import com.gempukku.context.lifecycle.LifecycleSystem
-import com.gempukku.context.processor.inject.AnnotationSystemInjector
-import com.gempukku.context.processor.inject.property.YamlPropertyResolver
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
 import org.ccgemp.db.DbAccessSystem
 import org.ccgemp.db.DbTest
@@ -52,7 +52,7 @@ class DeckSystemTest {
                         lifecycleSystem,
                     ),
                 ),
-                AnnotationSystemInjector(propertyResolver),
+                AnnotationSystemInitializer(propertyResolver),
             )
         context.initialize()
 

@@ -1,6 +1,6 @@
 package org.ccgemp.collection
 
-import com.gempukku.context.processor.inject.Inject
+import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
 
 @Exposes(CollectionInterface::class)
@@ -25,36 +25,24 @@ class CollectionSystem : CollectionInterface {
         }
     }
 
-    override fun addPlayerCollection(
-        player: String,
-        type: String,
-        notify: Boolean,
-        reason: String,
-        collection: CardCollection,
-    ): Boolean {
+    override fun addPlayerCollection(player: String, type: String, collectionChange: CollectionChange): Boolean {
         val collectionInfo = repository.findPlayerCollection(player, type)
         if (collectionInfo != null) {
             return false
         }
 
         val newCollectionInfo = repository.createCollection(player, type)
-        repository.addToCollection(newCollectionInfo, collection)
+        repository.addToCollection(newCollectionInfo, collectionChange)
 
         collectionCache.remove(CollectionCacheKey(player, type))
 
         return true
     }
 
-    override fun addToPlayerCollection(
-        player: String,
-        type: String,
-        notify: Boolean,
-        reason: String,
-        collection: CardCollection,
-    ): Boolean {
+    override fun addToPlayerCollection(player: String, type: String, collectionChange: CollectionChange): Boolean {
         val collectionInfo = repository.findPlayerCollection(player, type) ?: return false
 
-        repository.addToCollection(collectionInfo, collection)
+        repository.addToCollection(collectionInfo, collectionChange)
 
         collectionCache.remove(CollectionCacheKey(player, type))
 

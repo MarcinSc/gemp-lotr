@@ -1,10 +1,10 @@
 package com.gempukku.context.update
 
 import com.gempukku.context.ContextScheduledExecutor
+import com.gempukku.context.initializer.inject.Inject
+import com.gempukku.context.initializer.inject.InjectList
+import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.lifecycle.LifecycleObserver
-import com.gempukku.context.processor.inject.Inject
-import com.gempukku.context.processor.inject.InjectList
-import com.gempukku.context.processor.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import java.util.concurrent.TimeUnit
 

@@ -1,9 +1,9 @@
 package org.ccgemp.tournament.composite
 
+import com.gempukku.context.initializer.inject.Inject
+import com.gempukku.context.initializer.inject.InjectList
+import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.lifecycle.LifecycleObserver
-import com.gempukku.context.processor.inject.Inject
-import com.gempukku.context.processor.inject.InjectList
-import com.gempukku.context.processor.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.deck.GameDeck
 import org.ccgemp.game.GameSettings

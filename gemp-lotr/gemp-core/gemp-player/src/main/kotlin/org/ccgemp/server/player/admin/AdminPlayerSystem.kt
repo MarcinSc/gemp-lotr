@@ -1,6 +1,6 @@
 package org.ccgemp.server.player.admin
 
-import com.gempukku.context.processor.inject.Inject
+import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.server.player.PlayerRepository
 

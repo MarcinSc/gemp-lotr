@@ -1,8 +1,8 @@
 package org.ccgemp.server.player.admin
 
+import com.gempukku.context.initializer.inject.Inject
+import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.lifecycle.LifecycleObserver
-import com.gempukku.context.processor.inject.Inject
-import com.gempukku.context.processor.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException

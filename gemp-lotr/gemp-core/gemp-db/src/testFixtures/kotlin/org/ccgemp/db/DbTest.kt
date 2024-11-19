@@ -3,7 +3,6 @@ package org.ccgemp.db
 import ch.vorburger.mariadb4j.DB
 import ch.vorburger.mariadb4j.DBConfigurationBuilder
 import java.io.File
-import java.sql.DriverManager
 
 class DbTest {
     companion object {

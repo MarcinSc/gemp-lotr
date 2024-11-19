@@ -1,7 +1,7 @@
 package com.gempukku.context;
 
-import com.gempukku.context.processor.inject.Inject;
-import com.gempukku.context.processor.inject.InjectList;
+import com.gempukku.context.initializer.inject.Inject;
+import com.gempukku.context.initializer.inject.InjectList;
 
 import java.util.List;
 

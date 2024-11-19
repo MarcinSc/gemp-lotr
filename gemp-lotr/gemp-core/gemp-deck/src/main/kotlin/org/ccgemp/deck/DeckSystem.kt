@@ -1,6 +1,6 @@
 package org.ccgemp.deck
 
-import com.gempukku.context.processor.inject.Inject
+import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
 
 @Exposes(DeckInterface::class)

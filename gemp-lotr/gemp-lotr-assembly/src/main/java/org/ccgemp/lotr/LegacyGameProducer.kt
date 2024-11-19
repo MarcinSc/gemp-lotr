@@ -1,6 +1,6 @@
 package org.ccgemp.lotr
 
-import com.gempukku.context.processor.inject.Inject
+import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.lotro.game.DefaultUserFeedback
 import com.gempukku.lotro.game.state.GameEvent

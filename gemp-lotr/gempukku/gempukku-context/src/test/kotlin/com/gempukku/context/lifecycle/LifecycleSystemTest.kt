@@ -1,7 +1,7 @@
 package com.gempukku.context.lifecycle
 
 import com.gempukku.context.DefaultGempukkuContext
-import com.gempukku.context.processor.inject.AnnotationSystemInjector
+import com.gempukku.context.initializer.inject.AnnotationSystemInitializer
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -21,7 +21,7 @@ class LifecycleSystemTest {
                         lifecycleObserver,
                     ),
                 ),
-                AnnotationSystemInjector(),
+                AnnotationSystemInitializer(),
             )
 
         context.initialize()

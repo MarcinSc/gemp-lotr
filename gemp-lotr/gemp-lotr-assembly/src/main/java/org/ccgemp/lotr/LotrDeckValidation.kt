@@ -1,6 +1,6 @@
 package org.ccgemp.lotr
 
-import com.gempukku.context.processor.inject.Inject
+import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.deck.DeckValidation
 import org.ccgemp.deck.DeckValidator

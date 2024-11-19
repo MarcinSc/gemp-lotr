@@ -1,6 +1,6 @@
 package com.gempukku.context.lifecycle
 
-import com.gempukku.context.processor.inject.InjectList
+import com.gempukku.context.initializer.inject.InjectList
 
 class LifecycleSystem {
     @InjectList(priorityPrefix = "lifecycle.start", selectFromAncestors = false)

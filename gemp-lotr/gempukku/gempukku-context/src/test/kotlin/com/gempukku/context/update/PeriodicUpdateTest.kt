@@ -1,11 +1,11 @@
 package com.gempukku.context.update
 
 import com.gempukku.context.DefaultGempukkuContext
+import com.gempukku.context.decorator.SimpleThreadPoolFactory
+import com.gempukku.context.decorator.WorkerThreadExecutorSystem
+import com.gempukku.context.initializer.inject.AnnotationSystemInitializer
+import com.gempukku.context.initializer.inject.property.YamlPropertyResolver
 import com.gempukku.context.lifecycle.LifecycleSystem
-import com.gempukku.context.processor.inject.AnnotationSystemInjector
-import com.gempukku.context.processor.inject.decorator.SimpleThreadPoolFactory
-import com.gempukku.context.processor.inject.decorator.WorkerThreadExecutorSystem
-import com.gempukku.context.processor.inject.property.YamlPropertyResolver
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -35,7 +35,7 @@ class PeriodicUpdateTest {
                         periodicallyUpdatedTestSystem,
                     ),
                 ),
-                AnnotationSystemInjector(propertyResolver),
+                AnnotationSystemInitializer(propertyResolver),
             )
         context.initialize()
 

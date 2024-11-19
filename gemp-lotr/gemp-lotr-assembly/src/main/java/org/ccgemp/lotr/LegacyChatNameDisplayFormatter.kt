@@ -1,7 +1,7 @@
 package org.ccgemp.lotr
 
-import com.gempukku.context.processor.inject.Inject
-import com.gempukku.context.processor.inject.InjectValue
+import com.gempukku.context.initializer.inject.Inject
+import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.server.chat.ChatNameDisplayFormatter
 import org.ccgemp.server.player.PlayerInterface

@@ -1,6 +1,6 @@
 package org.ccgemp.collection
 
-import com.gempukku.context.processor.inject.InjectValue
+import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.common.splitText
 import java.util.function.Predicate

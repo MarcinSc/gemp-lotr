@@ -1,7 +1,7 @@
 package org.ccgemp.server.player
 
-import com.gempukku.context.processor.inject.Inject
-import com.gempukku.context.processor.inject.InjectValue
+import com.gempukku.context.initializer.inject.Inject
+import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.server.generateUniqueId
 import com.gempukku.server.login.UserRolesProvider

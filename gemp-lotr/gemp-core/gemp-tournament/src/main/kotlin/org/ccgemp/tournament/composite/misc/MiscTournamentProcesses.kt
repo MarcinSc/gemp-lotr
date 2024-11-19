@@ -1,7 +1,7 @@
 package org.ccgemp.tournament.composite.misc
 
+import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.lifecycle.LifecycleObserver
-import com.gempukku.context.processor.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.deck.DeckInterface
 import org.ccgemp.json.JsonWithConfig

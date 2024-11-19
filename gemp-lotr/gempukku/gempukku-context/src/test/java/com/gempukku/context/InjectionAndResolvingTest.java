@@ -1,6 +1,6 @@
 package com.gempukku.context;
 
-import com.gempukku.context.processor.inject.AnnotationSystemInjector;
+import com.gempukku.context.initializer.inject.AnnotationSystemInitializer;
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +20,7 @@ public class InjectionAndResolvingTest {
                         Arrays.stream(
                                 new Object[]{system, otherSystem}
                         ).toList()
-                ), new AnnotationSystemInjector(),
+                ), new AnnotationSystemInitializer(),
                 null
         );
 
