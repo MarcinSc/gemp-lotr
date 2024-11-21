@@ -1,14 +1,14 @@
 package org.ccgemp.common
 
-class DefaultCardCollection : CardCollection {
-    override val all: Iterable<CardCollectionItem>
+class DefaultGempCollection : GempCollection {
+    override val all: Iterable<GempCollectionItem>
         get() = items.values
 
-    private val items: MutableMap<String, CardCollectionItem> = mutableMapOf()
+    private val items: MutableMap<String, GempCollectionItem> = mutableMapOf()
 
     constructor()
 
-    constructor(collection: CardCollection) {
+    constructor(collection: GempCollection) {
         collection.all.forEach {
             addItem(it.product, it.count)
         }
@@ -20,7 +20,7 @@ class DefaultCardCollection : CardCollection {
 
     fun addItem(product: String, quantity: Int) {
         items.compute(product) { _, oldValue ->
-            DefaultCardCollectionItem(product, (oldValue?.count ?: 0) + quantity)
+            DefaultGempCollectionItem(product, (oldValue?.count ?: 0) + quantity)
         }
     }
 
@@ -33,7 +33,7 @@ class DefaultCardCollection : CardCollection {
             items.remove(product)
         } else {
             items.compute(product) { _, oldValue ->
-                DefaultCardCollectionItem(product, oldValue!!.count - quantity)
+                DefaultGempCollectionItem(product, oldValue!!.count - quantity)
             }
         }
         return true

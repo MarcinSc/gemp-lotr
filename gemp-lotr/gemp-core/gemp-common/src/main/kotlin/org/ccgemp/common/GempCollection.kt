@@ -1,7 +1,7 @@
 package org.ccgemp.common
 
-interface CardCollection {
-    val all: Iterable<CardCollectionItem>
+interface GempCollection {
+    val all: Iterable<GempCollectionItem>
 
     fun getItemCount(identifier: String): Int
 }

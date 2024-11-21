@@ -5,12 +5,11 @@ import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.lotro.common.CardType
 import com.gempukku.lotro.common.Side
 import com.gempukku.lotro.game.LotroCardBlueprint
-import org.ccgemp.collection.CollectionContentsSerializer
-import org.ccgemp.common.CardCollection
-import org.ccgemp.common.CardCollectionItem
+import org.ccgemp.common.CollectionContentsSerializer
+import org.ccgemp.common.GempCollection
+import org.ccgemp.common.GempCollectionItem
 import org.w3c.dom.Document
 import org.w3c.dom.Element
-import javax.xml.parsers.DocumentBuilderFactory
 
 @Exposes(CollectionContentsSerializer::class)
 class LotrCollectionContentsSerializer : CollectionContentsSerializer {
@@ -24,42 +23,30 @@ class LotrCollectionContentsSerializer : CollectionContentsSerializer {
         legacyObjectsProvider.productLibrary
     }
 
-    override fun serializePackToXml(packCollection: CardCollection): Document {
-        val documentBuilderFactory = DocumentBuilderFactory.newInstance()
-        val documentBuilder = documentBuilderFactory.newDocumentBuilder()
+    override fun serializeCollectionToXml(document: Document, collection: GempCollection): Element {
+        val collectionElem = document.createElement("collection")
 
-        val doc = documentBuilder.newDocument()
-
-        val collectionElem = doc.createElement("pack")
-
-        for (collectionItem in packCollection.all) {
+        for (collectionItem in collection.all) {
             val product = collectionItem.product
             val item = product.toItem(collectionItem.count)
             if (item.type == com.gempukku.lotro.game.CardCollection.Item.Type.CARD) {
-                val card = doc.createElement("card")
+                val card = document.createElement("card")
                 card.setAttribute("count", item.count.toString())
                 card.setAttribute("blueprintId", item.blueprintId)
                 appendCardSide(card, cardLibrary.getLotroCardBlueprint(item.blueprintId))
                 collectionElem.appendChild(card)
             } else {
-                val pack = doc.createElement("pack")
+                val pack = document.createElement("pack")
                 pack.setAttribute("count", item.count.toString())
                 pack.setAttribute("blueprintId", item.blueprintId)
                 collectionElem.appendChild(pack)
             }
         }
-        doc.appendChild(collectionElem)
-
-        return doc
+        return collectionElem
     }
 
-    override fun serializeCardListToXml(cardList: List<CardCollectionItem>, start: Int, count: Int): Document {
-        val documentBuilderFactory = DocumentBuilderFactory.newInstance()
-        val documentBuilder = documentBuilderFactory.newDocumentBuilder()
-
-        val doc = documentBuilder.newDocument()
-
-        val collectionElem = doc.createElement("collection")
+    override fun serializeCardListToXml(document: Document, cardList: List<GempCollectionItem>, start: Int, count: Int): Element {
+        val collectionElem = document.createElement("collection")
         collectionElem.setAttribute("count", cardList.size.toString())
 
         for (i in start until start + count) {
@@ -68,7 +55,7 @@ class LotrCollectionContentsSerializer : CollectionContentsSerializer {
                 val item = collectionItem.product.toItem(collectionItem.count)
                 val blueprintId = item.blueprintId
                 if (item.type == com.gempukku.lotro.game.CardCollection.Item.Type.CARD) {
-                    val card = doc.createElement("card")
+                    val card = document.createElement("card")
                     card.setAttribute("count", item.count.toString())
                     card.setAttribute("blueprintId", blueprintId)
                     val blueprint = cardLibrary.getLotroCardBlueprint(blueprintId)
@@ -76,7 +63,7 @@ class LotrCollectionContentsSerializer : CollectionContentsSerializer {
                     appendCardGroup(card, blueprint)
                     collectionElem.appendChild(card)
                 } else {
-                    val pack = doc.createElement("pack")
+                    val pack = document.createElement("pack")
                     pack.setAttribute("count", item.count.toString())
                     pack.setAttribute("blueprintId", blueprintId)
                     if (item.type == com.gempukku.lotro.game.CardCollection.Item.Type.SELECTION) {
@@ -90,9 +77,7 @@ class LotrCollectionContentsSerializer : CollectionContentsSerializer {
                 }
             }
         }
-        doc.appendChild(collectionElem)
-
-        return doc
+        return collectionElem
     }
 
     private fun appendCardSide(card: Element, blueprint: LotroCardBlueprint) {

@@ -2,8 +2,8 @@ package org.ccgemp.collection
 
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
-import org.ccgemp.common.CardCollection
-import org.ccgemp.common.DefaultCardCollection
+import org.ccgemp.common.GempCollection
+import org.ccgemp.common.DefaultGempCollection
 import org.ccgemp.transfer.TransferInterface
 
 @Exposes(CollectionInterface::class)
@@ -17,14 +17,14 @@ class CollectionSystem : CollectionInterface {
     @Inject(allowsNull = true)
     private var transferInterface: TransferInterface? = null
 
-    private val collectionCache: MutableMap<CollectionCacheKey, CardCollection> = mutableMapOf()
+    private val collectionCache: MutableMap<CollectionCacheKey, GempCollection> = mutableMapOf()
 
-    override fun findPlayerCollection(player: String, type: String): CardCollection? {
+    override fun findPlayerCollection(player: String, type: String): GempCollection? {
         val collectionCacheKey = CollectionCacheKey(player, type)
         return collectionCache.getOrPut(collectionCacheKey) {
             val collection = repository.findPlayerCollection(player, type) ?: return null
             val entries = repository.getPlayerCollectionEntries(setOf(collection))
-            val result = DefaultCardCollection()
+            val result = DefaultGempCollection()
             entries.forEach {
                 result.addItem(it.product!!, it.quantity)
             }
@@ -56,12 +56,12 @@ class CollectionSystem : CollectionInterface {
         return true
     }
 
-    override fun getPlayerCollection(player: String, type: String): CardCollection? {
+    override fun getPlayerCollection(player: String, type: String): GempCollection? {
         val collectionCacheKey = CollectionCacheKey(player, type)
         return collectionCache.getOrPut(collectionCacheKey) {
             val collectionInfo = repository.findPlayerCollection(player, type) ?: return null
             val entries = repository.getPlayerCollectionEntries(setOf(collectionInfo)).groupBy { it.collection_id }[collectionInfo.id]
-            val result = DefaultCardCollection()
+            val result = DefaultGempCollection()
             entries?.forEach {
                 result.addItem(it.product!!, it.quantity)
             }
@@ -69,13 +69,13 @@ class CollectionSystem : CollectionInterface {
         }
     }
 
-    override fun getPlayerCollections(type: String): Map<String, CardCollection> {
+    override fun getPlayerCollections(type: String): Map<String, GempCollection> {
         val collectionInfos = repository.findCollectionsByType(type)
         val entries = repository.getPlayerCollectionEntries(collectionInfos.toSet()).groupBy { it.collection_id }
         return collectionInfos.associate { collection ->
             collection.player!! to
                     run {
-                        val result = DefaultCardCollection()
+                        val result = DefaultGempCollection()
                         entries[collection.id]?.forEach {
                             result.addItem(it.product!!, it.quantity)
                         }
@@ -91,14 +91,14 @@ class CollectionSystem : CollectionInterface {
         type: String,
         packId: String,
         selection: String?,
-    ): CardCollection? {
+    ): GempCollection? {
         val collectionInfo = repository.findPlayerCollection(player, type) ?: return null
         val count = repository.getItemCount(player, type, packId)
         if (count < 1) {
             return null
         }
 
-        val removeCollection = DefaultCardCollection()
+        val removeCollection = DefaultGempCollection()
         removeCollection.addItem(packId, 1)
 
         val productBox = productLibrary.getProductBox(packId) ?: return null
@@ -108,7 +108,7 @@ class CollectionSystem : CollectionInterface {
                 return null
             }
 
-            val addCollection = DefaultCardCollection()
+            val addCollection = DefaultGempCollection()
             addCollection.addItem(selection, 1)
 
             internalRemoveFromCollection(collectionInfo, CollectionChange(false, "Opened pack", removeCollection))
@@ -118,7 +118,7 @@ class CollectionSystem : CollectionInterface {
 
             return addCollection
         } else {
-            val addCollection = DefaultCardCollection()
+            val addCollection = DefaultGempCollection()
             openedPack.forEach {
                 addCollection.addItem(it, 1)
             }

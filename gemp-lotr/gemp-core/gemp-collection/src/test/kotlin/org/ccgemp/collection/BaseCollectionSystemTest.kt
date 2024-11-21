@@ -5,7 +5,7 @@ import com.gempukku.context.initializer.inject.AnnotationSystemInitializer
 import com.gempukku.context.initializer.inject.property.YamlPropertyResolver
 import com.gempukku.context.lifecycle.LifecycleSystem
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
-import org.ccgemp.common.DefaultCardCollection
+import org.ccgemp.common.DefaultGempCollection
 import org.ccgemp.db.DbAccessSystem
 import org.ccgemp.db.DbTest
 import org.junit.jupiter.api.AfterAll
@@ -72,7 +72,7 @@ class BaseCollectionSystemTest {
                 CollectionChange(
                     false,
                     "",
-                    DefaultCardCollection().also {
+                    DefaultGempCollection().also {
                         it.addItem("pack", 2)
                         it.addItem("selection", 1)
                     },
@@ -94,7 +94,7 @@ class BaseCollectionSystemTest {
                 CollectionChange(
                     false,
                     "",
-                    DefaultCardCollection().also {
+                    DefaultGempCollection().also {
                         it.addItem("pack", 1)
                     },
                 ),

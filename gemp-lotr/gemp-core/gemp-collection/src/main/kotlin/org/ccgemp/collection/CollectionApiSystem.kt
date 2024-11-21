@@ -12,7 +12,8 @@ import com.gempukku.server.HttpServer
 import com.gempukku.server.ResponseWriter
 import com.gempukku.server.login.LoggedUserInterface
 import com.gempukku.server.login.getActingAsUser
-import org.ccgemp.common.CardCollectionItem
+import org.ccgemp.common.GempCollectionItem
+import org.ccgemp.common.CollectionContentsSerializer
 import javax.xml.parsers.DocumentBuilderFactory
 
 @Exposes(LifecycleObserver::class)
@@ -30,7 +31,7 @@ class CollectionApiSystem : LifecycleObserver {
     private lateinit var loggedUserInterface: LoggedUserInterface
 
     @Inject
-    private lateinit var filterAndSort: FilterAndSort<CardCollectionItem>
+    private lateinit var filterAndSort: FilterAndSort<GempCollectionItem>
 
     @Inject
     private lateinit var collectionContentsSerializer: CollectionContentsSerializer
@@ -104,7 +105,14 @@ class CollectionApiSystem : LifecycleObserver {
 
             val packContents = collectionInterface.openPackInCollection(actAsUser.userId, collectionType, packId, selection) ?: throw HttpProcessingException(404)
 
-            responseWriter.writeXmlResponse(collectionContentsSerializer.serializePackToXml(packContents))
+            val documentBuilderFactory = DocumentBuilderFactory.newInstance()
+            val documentBuilder = documentBuilderFactory.newDocumentBuilder()
+
+            val doc = documentBuilder.newDocument()
+
+            doc.appendChild(collectionContentsSerializer.serializeCollectionToXml(doc, packContents))
+
+            responseWriter.writeXmlResponse(doc)
         }
 
     private fun executeGetCollection(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
@@ -120,7 +128,14 @@ class CollectionApiSystem : LifecycleObserver {
             val filteredResult =
                 filterAndSort.process(filter, null, collection.all)
 
-            responseWriter.writeXmlResponse(collectionContentsSerializer.serializeCardListToXml(filteredResult, start, count))
+            val documentBuilderFactory = DocumentBuilderFactory.newInstance()
+            val documentBuilder = documentBuilderFactory.newDocumentBuilder()
+
+            val doc = documentBuilder.newDocument()
+
+            doc.appendChild(collectionContentsSerializer.serializeCardListToXml(doc, filteredResult, start, count))
+
+            responseWriter.writeXmlResponse(doc)
         }
 
     override fun beforeContextStopped() {

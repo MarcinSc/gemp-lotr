@@ -1,6 +1,6 @@
 package org.ccgemp.common
 
-interface CardCollectionItem {
+interface GempCollectionItem {
     val product: String
     val count: Int
 }

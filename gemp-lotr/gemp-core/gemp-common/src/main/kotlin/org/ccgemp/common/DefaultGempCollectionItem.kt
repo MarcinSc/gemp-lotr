@@ -1,6 +1,6 @@
 package org.ccgemp.common
 
-data class DefaultCardCollectionItem(
+data class DefaultGempCollectionItem(
     override val product: String,
     override val count: Int,
-) : CardCollectionItem
+) : GempCollectionItem

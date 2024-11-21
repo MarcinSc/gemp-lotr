@@ -1,22 +1,22 @@
 package org.ccgemp.collection
 
-import org.ccgemp.common.CardCollection
+import org.ccgemp.common.GempCollection
 
 interface CollectionInterface {
-    fun findPlayerCollection(player: String, type: String): CardCollection?
+    fun findPlayerCollection(player: String, type: String): GempCollection?
 
     fun addPlayerCollection(player: String, type: String, collectionChange: CollectionChange): Boolean
 
     fun addToPlayerCollection(player: String, type: String, collectionChange: CollectionChange): Boolean
 
-    fun getPlayerCollection(player: String, type: String): CardCollection?
+    fun getPlayerCollection(player: String, type: String): GempCollection?
 
-    fun getPlayerCollections(type: String): Map<String, CardCollection>
+    fun getPlayerCollections(type: String): Map<String, GempCollection>
 
     fun openPackInCollection(
         player: String,
         type: String,
         packId: String,
         selection: String?,
-    ): CardCollection?
+    ): GempCollection?
 }

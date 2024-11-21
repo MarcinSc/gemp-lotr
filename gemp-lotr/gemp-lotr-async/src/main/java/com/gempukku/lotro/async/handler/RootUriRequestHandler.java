@@ -48,8 +48,11 @@ public class RootUriRequestHandler implements UriRequestHandler {
         _loginRequestHandler = new LoginRequestHandler(context);
         _statusRequestHandler = new StatusRequestHandler(context);
         _adminRequestHandler = new AdminRequestHandler(context);
+        /* migrated */
         _chatRequestHandler = new ChatRequestHandler(context, longPollingSystem);
+        /* migrated */
         _collectionRequestHandler = new CollectionRequestHandler(context);
+        /* migrated */
         _deliveryRequestHandler = new DeliveryRequestHandler(context);
         _gameRequestHandler = new GameRequestHandler(context, longPollingSystem);
         _leagueRequestHandler = new LeagueRequestHandler(context);
