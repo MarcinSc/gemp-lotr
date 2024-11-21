@@ -1,6 +1,4 @@
-package org.ccgemp.collection
-
-import org.ccgemp.common.CardCollectionItem
+package org.ccgemp.common
 
 data class DefaultCardCollectionItem(
     override val product: String,

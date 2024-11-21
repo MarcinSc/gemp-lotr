@@ -19,6 +19,7 @@ import org.ccgemp.game.createGameSystems
 import org.ccgemp.json.createJsonSystems
 import org.ccgemp.server.player.createPlayerSystems
 import org.ccgemp.tournament.createTournamentSystems
+import org.ccgemp.transfer.createTransferSystems
 import java.util.concurrent.Executors
 
 fun main() {
@@ -70,14 +71,15 @@ fun main() {
             null,
             AnnotationSystemResolver(
                 baseSystems +
-                    createJsonSystems() +
-                    createPlayerSystems() +
-                    createChatSystems() +
-                    createCollectionSystems() +
-                    createDeckSystems() +
-                    createTournamentSystems() +
-                    createGameSystems() +
-                    lotrSpecificSystems,
+                        createJsonSystems() +
+                        createPlayerSystems() +
+                        createChatSystems() +
+                        createTransferSystems() +
+                        createCollectionSystems() +
+                        createDeckSystems() +
+                        createTournamentSystems() +
+                        createGameSystems() +
+                        lotrSpecificSystems,
             ),
             AnnotationSystemInitializer(propertyResolver),
             workerThreadExecutorSystem,

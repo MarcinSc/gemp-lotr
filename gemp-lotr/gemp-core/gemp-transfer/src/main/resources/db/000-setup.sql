@@ -5,7 +5,6 @@ CREATE TABLE `transfer`
     `player`        varchar(45)    NOT NULL,
     `reason`        varchar(255)   NOT NULL,
     `name`          varchar(255)   NOT NULL,
-    `currency`      int(11) NOT NULL,
     `collection`    text           NOT NULL,
     `transfer_date` decimal(20, 0) NOT NULL,
     `direction`     varchar(45)    NOT NULL,

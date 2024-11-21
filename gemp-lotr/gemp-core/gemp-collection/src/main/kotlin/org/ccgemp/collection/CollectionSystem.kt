@@ -3,6 +3,8 @@ package org.ccgemp.collection
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.common.CardCollection
+import org.ccgemp.common.DefaultCardCollection
+import org.ccgemp.transfer.TransferInterface
 
 @Exposes(CollectionInterface::class)
 class CollectionSystem : CollectionInterface {
@@ -11,6 +13,9 @@ class CollectionSystem : CollectionInterface {
 
     @Inject
     private lateinit var productLibrary: ProductLibrary
+
+    @Inject(allowsNull = true)
+    private var transferInterface: TransferInterface? = null
 
     private val collectionCache: MutableMap<CollectionCacheKey, CardCollection> = mutableMapOf()
 
@@ -34,7 +39,7 @@ class CollectionSystem : CollectionInterface {
         }
 
         val newCollectionInfo = repository.createCollection(player, type)
-        repository.addToCollection(newCollectionInfo, collectionChange)
+        internalAddToCollection(newCollectionInfo, collectionChange)
 
         collectionCache.remove(CollectionCacheKey(player, type))
 
@@ -44,7 +49,7 @@ class CollectionSystem : CollectionInterface {
     override fun addToPlayerCollection(player: String, type: String, collectionChange: CollectionChange): Boolean {
         val collectionInfo = repository.findPlayerCollection(player, type) ?: return false
 
-        repository.addToCollection(collectionInfo, collectionChange)
+        internalAddToCollection(collectionInfo, collectionChange)
 
         collectionCache.remove(CollectionCacheKey(player, type))
 
@@ -69,13 +74,13 @@ class CollectionSystem : CollectionInterface {
         val entries = repository.getPlayerCollectionEntries(collectionInfos.toSet()).groupBy { it.collection_id }
         return collectionInfos.associate { collection ->
             collection.player!! to
-                run {
-                    val result = DefaultCardCollection()
-                    entries[collection.id]?.forEach {
-                        result.addItem(it.product!!, it.quantity)
+                    run {
+                        val result = DefaultCardCollection()
+                        entries[collection.id]?.forEach {
+                            result.addItem(it.product!!, it.quantity)
+                        }
+                        result
                     }
-                    result
-                }
         }.onEach { (player, collection) ->
             collectionCache[CollectionCacheKey(player, type)] = collection
         }
@@ -106,8 +111,8 @@ class CollectionSystem : CollectionInterface {
             val addCollection = DefaultCardCollection()
             addCollection.addItem(selection, 1)
 
-            repository.removeFromCollection(collectionInfo, CollectionChange(false, "Opened pack", removeCollection))
-            repository.addToCollection(collectionInfo, CollectionChange(true, "Opened pack", addCollection))
+            internalRemoveFromCollection(collectionInfo, CollectionChange(false, "Opened pack", removeCollection))
+            internalAddToCollection(collectionInfo, CollectionChange(true, "Opened pack", addCollection))
 
             collectionCache.remove(CollectionCacheKey(player, type))
 
@@ -118,13 +123,29 @@ class CollectionSystem : CollectionInterface {
                 addCollection.addItem(it, 1)
             }
 
-            repository.removeFromCollection(collectionInfo, CollectionChange(false, "Opened pack", removeCollection))
-            repository.addToCollection(collectionInfo, CollectionChange(true, "Opened pack", addCollection))
+            internalRemoveFromCollection(collectionInfo, CollectionChange(false, "Opened pack", removeCollection))
+            internalAddToCollection(collectionInfo, CollectionChange(true, "Opened pack", addCollection))
 
             collectionCache.remove(CollectionCacheKey(player, type))
 
             return addCollection
         }
+    }
+
+    private fun internalRemoveFromCollection(
+        collectionInfo: CollectionInfo,
+        collectionChange: CollectionChange,
+    ) {
+        repository.removeFromCollection(collectionInfo, collectionChange)
+        transferInterface?.addTransferFrom(collectionInfo.player!!, collectionChange.reason, collectionInfo.type!!, collectionChange.collection)
+    }
+
+    private fun internalAddToCollection(
+        collectionInfo: CollectionInfo,
+        collectionChange: CollectionChange,
+    ) {
+        repository.addToCollection(collectionInfo, collectionChange)
+        transferInterface?.addTransferTo(collectionInfo.player!!, collectionChange.reason, collectionChange.notify, collectionInfo.type!!, collectionChange.collection)
     }
 }
 

@@ -5,6 +5,7 @@ plugins {
 dependencies {
     api(project(":gemp-core:gemp-common"))
     api(project(":gemp-core:gemp-db"))
+    api(project(":gemp-core:gemp-transfer"))
     api(project(":gempukku:gempukku-server"))
 
     // https://mvnrepository.com/artifact/org.sql2o/sql2o
