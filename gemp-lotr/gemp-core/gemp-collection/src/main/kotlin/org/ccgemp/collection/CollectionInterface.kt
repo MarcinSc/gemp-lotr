@@ -1,5 +1,7 @@
 package org.ccgemp.collection
 
+import org.ccgemp.common.CardCollection
+
 interface CollectionInterface {
     fun findPlayerCollection(player: String, type: String): CardCollection?
 

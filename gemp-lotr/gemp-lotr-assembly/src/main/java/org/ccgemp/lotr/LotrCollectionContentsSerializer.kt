@@ -5,9 +5,9 @@ import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.lotro.common.CardType
 import com.gempukku.lotro.common.Side
 import com.gempukku.lotro.game.LotroCardBlueprint
-import org.ccgemp.collection.CardCollection
-import org.ccgemp.collection.CardCollectionItem
 import org.ccgemp.collection.CollectionContentsSerializer
+import org.ccgemp.common.CardCollection
+import org.ccgemp.common.CardCollectionItem
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import javax.xml.parsers.DocumentBuilderFactory
@@ -24,7 +24,7 @@ class LotrCollectionContentsSerializer : CollectionContentsSerializer {
         legacyObjectsProvider.productLibrary
     }
 
-    override fun serializePackToXml(pack: CardCollection): Document {
+    override fun serializePackToXml(packCollection: CardCollection): Document {
         val documentBuilderFactory = DocumentBuilderFactory.newInstance()
         val documentBuilder = documentBuilderFactory.newDocumentBuilder()
 
@@ -32,7 +32,7 @@ class LotrCollectionContentsSerializer : CollectionContentsSerializer {
 
         val collectionElem = doc.createElement("pack")
 
-        for (collectionItem in pack.all) {
+        for (collectionItem in packCollection.all) {
             val product = collectionItem.product
             val item = product.toItem(collectionItem.count)
             if (item.type == com.gempukku.lotro.game.CardCollection.Item.Type.CARD) {

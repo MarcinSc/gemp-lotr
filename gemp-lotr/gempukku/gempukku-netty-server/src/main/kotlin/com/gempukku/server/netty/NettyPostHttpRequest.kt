@@ -14,6 +14,8 @@ import java.util.LinkedList
 class NettyPostHttpRequest(
     private val request: io.netty.handler.codec.http.HttpRequest,
     private val loggedUserInterface: LoggedUserInterface?,
+    override val uri: String,
+    override val remoteIp: String,
 ) : HttpRequest {
     private val requestDecoder = HttpPostRequestDecoder(request)
 

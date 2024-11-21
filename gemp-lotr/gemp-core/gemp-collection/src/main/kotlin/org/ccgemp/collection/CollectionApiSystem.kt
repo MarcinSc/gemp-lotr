@@ -12,6 +12,7 @@ import com.gempukku.server.HttpServer
 import com.gempukku.server.ResponseWriter
 import com.gempukku.server.login.LoggedUserInterface
 import com.gempukku.server.login.getActingAsUser
+import org.ccgemp.common.CardCollectionItem
 import javax.xml.parsers.DocumentBuilderFactory
 
 @Exposes(LifecycleObserver::class)
@@ -69,8 +70,8 @@ class CollectionApiSystem : LifecycleObserver {
         )
     }
 
-    private fun executeGetCollectionTypes(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
-        { uri, request, remoteIp, responseWriter ->
+    private fun executeGetCollectionTypes(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
+        { request, responseWriter ->
             val actAsUser = getActingAsUser(loggedUserInterface, request, adminRole, actAsParameter)
 
             val documentBuilderFactory = DocumentBuilderFactory.newInstance()
@@ -94,10 +95,10 @@ class CollectionApiSystem : LifecycleObserver {
             responseWriter.writeXmlResponse(doc)
         }
 
-    private fun executeOpenPack(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
-        { uri, request, remoteIp, responseWriter ->
+    private fun executeOpenPack(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
+        { request, responseWriter ->
             val actAsUser = getActingAsUser(loggedUserInterface, request, adminRole, actAsParameter)
-            val collectionType = uri.substring(urlPrefix.length + 1)
+            val collectionType = request.uri.substring(urlPrefix.length + 1)
             val selection = request.getParameter("selection")
             val packId = request.getParameter("pack") ?: throw HttpProcessingException(400)
 
@@ -106,10 +107,10 @@ class CollectionApiSystem : LifecycleObserver {
             responseWriter.writeXmlResponse(collectionContentsSerializer.serializePackToXml(packContents))
         }
 
-    private fun executeGetCollection(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
-        { uri, request, remoteIp, responseWriter ->
+    private fun executeGetCollection(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
+        { request, responseWriter ->
             val actAsUser = getActingAsUser(loggedUserInterface, request, adminRole, actAsParameter)
-            val collectionType = uri.substring(urlPrefix.length + 1)
+            val collectionType = request.uri.substring(urlPrefix.length + 1)
             val filter = request.getParameter("filter") ?: ""
             val start = request.getParameter("start")?.toInt() ?: 0
             val count = request.getParameter("count")?.toInt() ?: 10

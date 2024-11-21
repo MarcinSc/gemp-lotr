@@ -1,4 +1,4 @@
-package org.ccgemp.collection
+package org.ccgemp.common
 
 interface CardCollectionItem {
     val product: String

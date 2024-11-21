@@ -3,7 +3,9 @@ package com.gempukku.server
 import com.gempukku.server.login.LoggedUser
 
 interface HttpRequest {
+    val uri: String
     val method: HttpMethod
+    val remoteIp: String
 
     fun getCookie(cookieName: String): String?
 

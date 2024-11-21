@@ -2,6 +2,7 @@ package org.ccgemp.collection
 
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
+import org.ccgemp.common.CardCollection
 
 @Exposes(CollectionInterface::class)
 class CollectionSystem : CollectionInterface {

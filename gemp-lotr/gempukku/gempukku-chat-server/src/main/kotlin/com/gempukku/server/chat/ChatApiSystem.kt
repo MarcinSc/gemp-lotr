@@ -62,9 +62,9 @@ class ChatApiSystem : LifecycleObserver {
         )
     }
 
-    private fun executeGetChat(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
-        { uri, request, _, responseWriter ->
-            val roomName = uri.substring(urlPrefix.length + 1)
+    private fun executeGetChat(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
+        { request, responseWriter ->
+            val roomName = request.uri.substring(urlPrefix.length + 1)
             val actAsUser =
                 getActingAsUser(loggedUserInterface, request, adminRole, actAsParameter)
             val gatheringChatStream = GatheringChatStream()
@@ -85,9 +85,9 @@ class ChatApiSystem : LifecycleObserver {
             )
         }
 
-    private fun executePostChat(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
-        { uri, request, _, responseWriter ->
-            val roomName = uri.substring(urlPrefix.length + 1)
+    private fun executePostChat(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
+        { request, responseWriter ->
+            val roomName = request.uri.substring(urlPrefix.length + 1)
             val actAsUserSystem =
                 getActingAsUser(loggedUserInterface, request, adminRole, actAsParameter)
             val message = request.getParameter("message")

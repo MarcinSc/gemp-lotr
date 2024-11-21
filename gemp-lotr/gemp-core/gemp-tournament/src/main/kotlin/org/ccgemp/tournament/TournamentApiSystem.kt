@@ -73,24 +73,24 @@ class TournamentApiSystem : LifecycleObserver {
         )
     }
 
-    private fun executeGetCurrentTournaments(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
-        { _, _, _, responseWriter ->
+    private fun executeGetCurrentTournaments(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
+        { request, responseWriter ->
             val liveTournaments = tournamentInterface.getLiveTournaments()
 
             sendTournamentInfo(liveTournaments, responseWriter)
         }
 
-    private fun executeGetHistoricTournaments(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
-        { _, _, _, responseWriter ->
+    private fun executeGetHistoricTournaments(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
+        { request, responseWriter ->
             val historicTournaments = tournamentInterface.getHistoricTournaments()
 
             sendTournamentInfo(historicTournaments, responseWriter)
         }
 
-    private fun executeGetTournamentDecks(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
-        { uri, _, _, responseWriter ->
+    private fun executeGetTournamentDecks(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
+        { request, responseWriter ->
             val pattern = Pattern.compile("^$urlPrefix/([^/]*)/deck/([^/]*)/html$")
-            val matcher = pattern.matcher(uri)
+            val matcher = pattern.matcher(request.uri)
             val tournamentId = matcher.group(1)
             val player = matcher.group(2)
             val tournament = tournamentInterface.getTournament(tournamentId)
@@ -104,10 +104,10 @@ class TournamentApiSystem : LifecycleObserver {
             responseWriter.writeHtmlResponse(tournamentRenderer.renderDecksHtml(tournament, player))
         }
 
-    private fun executeGetTournamentReport(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
-        { uri, _, _, responseWriter ->
+    private fun executeGetTournamentReport(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
+        { request, responseWriter ->
             val pattern = Pattern.compile("^$urlPrefix/([^/]*)/report/html$")
-            val matcher = pattern.matcher(uri)
+            val matcher = pattern.matcher(request.uri)
             val tournamentId = matcher.group(1)
             val tournament = tournamentInterface.getTournament(tournamentId)
             if (tournament == null) {
@@ -120,10 +120,10 @@ class TournamentApiSystem : LifecycleObserver {
             responseWriter.writeHtmlResponse(tournamentRenderer.renderReportHtml(tournament))
         }
 
-    private fun executeGetTournamentInfo(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
-        { uri, _, _, responseWriter ->
+    private fun executeGetTournamentInfo(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
+        { request, responseWriter ->
             val pattern = Pattern.compile("^$urlPrefix/([^/]*)$")
-            val matcher = pattern.matcher(uri)
+            val matcher = pattern.matcher(request.uri)
             val tournamentId = matcher.group(1)
             val tournament = tournamentInterface.getTournament(tournamentId)
             if (tournament == null) {

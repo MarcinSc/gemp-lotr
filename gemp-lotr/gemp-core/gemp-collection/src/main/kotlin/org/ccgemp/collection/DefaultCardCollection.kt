@@ -1,5 +1,8 @@
 package org.ccgemp.collection
 
+import org.ccgemp.common.CardCollection
+import org.ccgemp.common.CardCollectionItem
+
 class DefaultCardCollection : CardCollection {
     override val all: Iterable<CardCollectionItem>
         get() = items.values

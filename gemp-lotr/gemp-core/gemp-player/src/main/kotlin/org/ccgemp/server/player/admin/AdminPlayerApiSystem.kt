@@ -93,8 +93,8 @@ class AdminPlayerApiSystem : LifecycleObserver {
         )
     }
 
-    private fun executeBanPlayer(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
-        { _, request, _, responseWriter ->
+    private fun executeBanPlayer(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
+        { request, responseWriter ->
             val login = request.getParameter("login") ?: throw HttpProcessingException(400)
             if (!playerInterface.banPlayer(login)) {
                 throw HttpProcessingException(404)
@@ -102,8 +102,8 @@ class AdminPlayerApiSystem : LifecycleObserver {
             responseWriter.writeXmlResponse(null)
         }
 
-    private fun executeBanPlayers(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
-        { _, request, remoteIp, responseWriter ->
+    private fun executeBanPlayers(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
+        { request, responseWriter ->
             val logins = request.getParameters("login[]")
             if (logins.isEmpty()) {
                 throw HttpProcessingException(400)
@@ -114,13 +114,8 @@ class AdminPlayerApiSystem : LifecycleObserver {
             responseWriter.writeXmlResponse(null)
         }
 
-    private fun executeBanPlayerTemporarily(): (
-        uri: String,
-        request: HttpRequest,
-        remoteIp: String,
-        responseWriter: ResponseWriter,
-    ) -> Unit =
-        { _, request, remoteIp, responseWriter ->
+    private fun executeBanPlayerTemporarily(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
+        { request, responseWriter ->
             val login = request.getParameter("login")
             val duration = request.getParameter("duration")?.toInt()
             if (login == null || duration == null) {
@@ -132,8 +127,8 @@ class AdminPlayerApiSystem : LifecycleObserver {
             responseWriter.writeXmlResponse(null)
         }
 
-    private fun executeUnbanPlayer(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
-        { _, request, _, responseWriter ->
+    private fun executeUnbanPlayer(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
+        { request, responseWriter ->
             val login = request.getParameter("login") ?: throw HttpProcessingException(400)
             if (!playerInterface.unbanPlayer(login)) {
                 throw HttpProcessingException(404)
@@ -141,8 +136,8 @@ class AdminPlayerApiSystem : LifecycleObserver {
             responseWriter.writeXmlResponse(null)
         }
 
-    private fun executeGetPlayerRoles(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
-        { _, request, _, responseWriter ->
+    private fun executeGetPlayerRoles(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
+        { request, responseWriter ->
             val login = request.getParameter("login") ?: throw HttpProcessingException(400)
             val playerRoles = playerInterface.getPlayerRoles(login) ?: throw HttpProcessingException(404)
 
@@ -156,8 +151,8 @@ class AdminPlayerApiSystem : LifecycleObserver {
             responseWriter.writeXmlResponse(doc)
         }
 
-    private fun executeSetPlayerRoles(): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
-        { _, request, _, responseWriter ->
+    private fun executeSetPlayerRoles(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
+        { request, responseWriter ->
             val login = request.getParameter("login") ?: throw HttpProcessingException(400)
             val playerRoles = request.getParameter("playerRoles") ?: throw HttpProcessingException(400)
 
@@ -175,11 +170,11 @@ class AdminPlayerApiSystem : LifecycleObserver {
         deregistration.clear()
     }
 
-    private fun validateAdmin(requestHandler: ServerRequestHandler): (uri: String, request: HttpRequest, remoteIp: String, responseWriter: ResponseWriter) -> Unit =
-        { uri, request, remoteIp, responseWriter ->
+    private fun validateAdmin(requestHandler: ServerRequestHandler): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
+        { request, responseWriter ->
             validateArmin(request)
 
-            requestHandler.handleRequest(uri, request, remoteIp, responseWriter)
+            requestHandler.handleRequest(request, responseWriter)
         }
 
     private fun validateArmin(request: HttpRequest) {
