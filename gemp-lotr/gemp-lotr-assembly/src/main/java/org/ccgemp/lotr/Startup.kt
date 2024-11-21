@@ -60,6 +60,9 @@ fun main() {
             LotrDeckValidation(),
             // Tournament related
             LotrTournamentRenderer(),
+            // Collection related
+            LotrProductLibrary(),
+            LotrCollectionContentsSerializer(),
         )
 
     val serverContext =

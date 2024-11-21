@@ -90,4 +90,25 @@ abstract class AbstractDbCollectionRepository : CollectionRepository {
                     .executeAndFetch(CollectionInfo::class.java)
             },
         )
+
+    override fun getItemCount(player: String, type: String, product: String): Int {
+        return dbAccess.openDB().withConnection(
+            StatementRunnableWithResult { connection, _ ->
+                val sql =
+                    """
+                        SELECT quantity from collection_entries ce join collection c on ce.collection_id = c.id
+                        WHERE c.player= :player and c.type = :type and ce.product = :product
+                    """.trimIndent()
+                val result =
+                    connection
+                        .createQuery(sql)
+                        .addParameter("player", player)
+                        .addParameter("type", type)
+                        .addParameter("product", product)
+                        .executeAndFetch(Int::class.java)
+
+                result.firstOrNull() ?: 0
+            },
+        )
+    }
 }

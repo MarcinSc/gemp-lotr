@@ -66,7 +66,7 @@ class ChatApiSystem : LifecycleObserver {
         { uri, request, _, responseWriter ->
             val roomName = uri.substring(urlPrefix.length + 1)
             val actAsUser =
-                getActingAsUser(loggedUserInterface, request, adminRole, request.getParameter(actAsParameter))
+                getActingAsUser(loggedUserInterface, request, adminRole, actAsParameter)
             val gatheringChatStream = GatheringChatStream()
             val added =
                 chat.joinUser(
@@ -89,7 +89,7 @@ class ChatApiSystem : LifecycleObserver {
         { uri, request, _, responseWriter ->
             val roomName = uri.substring(urlPrefix.length + 1)
             val actAsUserSystem =
-                getActingAsUser(loggedUserInterface, request, adminRole, request.getParameter(actAsParameter))
+                getActingAsUser(loggedUserInterface, request, adminRole, actAsParameter)
             val message = request.getParameter("message")
 
             if (message != null && message.trim().isNotEmpty()) {

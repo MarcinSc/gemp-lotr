@@ -6,5 +6,6 @@ fun createCollectionSystems(): List<Any> {
         BaseDbCollectionRepository(),
         FilterAndSortSystem<Any>(),
         CardFilterAndSortSystem<Any>(),
+        CollectionApiSystem(),
     )
 }

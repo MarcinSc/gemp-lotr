@@ -38,6 +38,8 @@ server:
     url: /gemp-lotr-server/getPlayerRoles
   setPlayerRoles:
     url: /gemp-lotr-server/setPlayerRoles
+  collection:
+    urlPrefix: /gemp-lotr-server/collection
   tournament:
     urlPrefix: /gemp-lotr-server/tournament
 

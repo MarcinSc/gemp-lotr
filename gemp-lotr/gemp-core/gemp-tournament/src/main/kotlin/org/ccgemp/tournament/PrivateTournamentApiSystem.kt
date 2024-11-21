@@ -68,7 +68,7 @@ class PrivateTournamentApiSystem : LifecycleObserver {
             val deckName = request.getParameter("deckName")
 
             val actAsUser =
-                getActingAsUser(loggedUserInterface, request, adminRole, request.getParameter(actAsParameter))
+                getActingAsUser(loggedUserInterface, request, adminRole, actAsParameter)
 
             tournamentInterface.joinTournament(tournamentId, actAsUser.userId, deckName?.splitText('\n').orEmpty())
 
@@ -82,7 +82,7 @@ class PrivateTournamentApiSystem : LifecycleObserver {
             val tournamentId = matcher.group(1)
 
             val actAsUser =
-                getActingAsUser(loggedUserInterface, request, adminRole, request.getParameter(actAsParameter))
+                getActingAsUser(loggedUserInterface, request, adminRole, actAsParameter)
 
             tournamentInterface.leaveTournament(tournamentId, actAsUser.userId)
 
@@ -97,7 +97,7 @@ class PrivateTournamentApiSystem : LifecycleObserver {
             val deckName = request.getParameter("deckName") ?: throw HttpProcessingException(400)
 
             val actAsUser =
-                getActingAsUser(loggedUserInterface, request, adminRole, request.getParameter(actAsParameter))
+                getActingAsUser(loggedUserInterface, request, adminRole, actAsParameter)
 
             tournamentInterface.registerDecks(tournamentId, actAsUser.userId, deckName.splitText('\n'))
 

@@ -9,5 +9,9 @@ interface CollectionRepository {
 
     fun addToCollection(collectionInfo: CollectionInfo, collectionChange: CollectionChange)
 
+    fun removeFromCollection(collectionInfo: CollectionInfo, collectionChange: CollectionChange)
+
     fun findCollectionsByType(type: String): List<CollectionInfo>
+
+    fun getItemCount(player: String, type: String, product: String): Int
 }

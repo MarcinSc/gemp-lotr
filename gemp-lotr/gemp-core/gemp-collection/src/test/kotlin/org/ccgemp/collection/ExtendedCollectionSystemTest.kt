@@ -48,6 +48,7 @@ class ExtendedCollectionSystemTest {
                         ExtendedDbCollectionRepository(),
                         DbAccessSystem(),
                         lifecycleSystem,
+                        TestProductLibrary(),
                     ),
                 ),
                 AnnotationSystemInitializer(propertyResolver),
@@ -58,9 +59,11 @@ class ExtendedCollectionSystemTest {
 
         val collectionSystem = context.getSystems(CollectionInterface::class.java).first()
 
+        // Test getting a collection that doesn't exist
         val noCollection = collectionSystem.findPlayerCollection("test", "test")
         assertNull(noCollection)
 
+        // Test creating a new collection with addPlayerCollection
         assertTrue(
             collectionSystem.addPlayerCollection(
                 "test",
@@ -69,16 +72,20 @@ class ExtendedCollectionSystemTest {
                     false,
                     "",
                     DefaultCardCollection().also {
-                        it.addItem("product", 2)
+                        it.addItem("pack", 2)
+                        it.addItem("selection", 1)
                     },
                 ),
             ),
         )
 
+        // Test reading collection
         val resultCollection = collectionSystem.findPlayerCollection("test", "test")
         assertNotNull(resultCollection)
-        assertEquals(2, resultCollection!!.getItemCount("product"))
+        assertEquals(2, resultCollection!!.getItemCount("pack"))
+        assertEquals(1, resultCollection!!.getItemCount("selection"))
 
+        // Test creating adding cards to existing collection
         assertTrue(
             collectionSystem.addToPlayerCollection(
                 "test",
@@ -87,16 +94,52 @@ class ExtendedCollectionSystemTest {
                     false,
                     "",
                     DefaultCardCollection().also {
-                        it.addItem("product", 1)
+                        it.addItem("pack", 1)
                     },
                 ),
             ),
         )
 
+        // Test getting collections of all players
         val playerCollections = collectionSystem.getPlayerCollections("test")
         assertEquals(1, playerCollections.size)
         val playerCollection = playerCollections["test"]
         assertNotNull(playerCollection)
-        assertEquals(3, playerCollection!!.getItemCount("product"))
+        assertEquals(3, playerCollection!!.getItemCount("pack"))
+        assertEquals(1, playerCollection!!.getItemCount("selection"))
+
+        // Validate opening pack that doesn't exist
+        assertNull(collectionSystem.openPackInCollection("test", "test", "invalid", null))
+        // Validate opening selection without specifying what is the selection
+        assertNull(collectionSystem.openPackInCollection("test", "test", "selection", null))
+        // Validate opening selection without specifying product not in selection
+        assertNull(collectionSystem.openPackInCollection("test", "test", "selection", "product3"))
+
+        // Validate opening a real pack
+        val openedPack = collectionSystem.openPackInCollection("test", "test", "pack", null)
+        assertNotNull(openedPack)
+        assertEquals(1, openedPack!!.getItemCount("product1"))
+        assertEquals(1, openedPack!!.getItemCount("product2"))
+
+        val openPackCollection = collectionSystem.findPlayerCollection("test", "test")
+        assertNotNull(openPackCollection)
+        assertEquals(2, openPackCollection!!.getItemCount("pack"))
+        assertEquals(1, openPackCollection!!.getItemCount("product1"))
+        assertEquals(1, openPackCollection!!.getItemCount("product2"))
+
+        // Validate opening a selection pack
+        val openedSelection = collectionSystem.openPackInCollection("test", "test", "selection", "product1")
+        assertNotNull(openedSelection)
+        assertEquals(1, openedSelection!!.getItemCount("product1"))
+        assertEquals(0, openedSelection!!.getItemCount("product2"))
+
+        val openSelectionCollection = collectionSystem.findPlayerCollection("test", "test")
+        assertNotNull(openSelectionCollection)
+        assertEquals(0, openSelectionCollection!!.getItemCount("selection"))
+        assertEquals(2, openSelectionCollection!!.getItemCount("product1"))
+        assertEquals(1, openSelectionCollection!!.getItemCount("product2"))
+
+        // Validate opening a pack, after all packs of the type have been opened
+        assertNull(collectionSystem.openPackInCollection("test", "test", "selection", "product1"))
     }
 }

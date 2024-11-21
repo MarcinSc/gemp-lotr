@@ -9,9 +9,10 @@ fun getActingAsUser(
     loggedUserInterface: LoggedUserInterface,
     request: HttpRequest,
     adminRole: String,
-    otherUser: String?,
+    actAsParameter: String,
 ): LoggedUser {
     val loggedUser = getLoggedUser(loggedUserInterface, request)
+    val otherUser = request.getParameter(actAsParameter)
     return if (otherUser != null && loggedUser.roles.contains(adminRole)) {
         LoggedUser(otherUser, loggedUser.roles, loggedUser.lastAccess)
     } else {

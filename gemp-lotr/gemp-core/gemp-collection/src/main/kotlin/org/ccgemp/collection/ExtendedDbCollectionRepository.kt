@@ -28,4 +28,27 @@ class ExtendedDbCollectionRepository : AbstractDbCollectionRepository() {
             },
         )
     }
+
+    override fun removeFromCollection(collectionInfo: CollectionInfo, collectionChange: CollectionChange) {
+        val sql =
+            """
+            UPDATE collection_entries SET quantity = GREATEST(quantity - :quantity, 0), source = :source
+            WHERE collection_id = :collectionId and product = :product;
+            """.trimIndent()
+
+        dbAccess.openDB().runInTransaction(
+            StatementRunnableWithResult { connection, _ ->
+                val query =
+                    connection
+                        .createQuery(sql)
+                collectionChange.collection.all.forEach {
+                    query.addParameter("collectionId", collectionInfo.id)
+                        .addParameter("product", it.product)
+                        .addParameter("quantity", it.count)
+                        .addParameter("source", collectionChange.reason)
+                        .executeUpdate()
+                }
+            },
+        )
+    }
 }
