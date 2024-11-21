@@ -96,8 +96,8 @@ abstract class AbstractDbCollectionRepository : CollectionRepository {
             StatementRunnableWithResult { connection, _ ->
                 val sql =
                     """
-                        SELECT quantity from collection_entries ce join collection c on ce.collection_id = c.id
-                        WHERE c.player= :player and c.type = :type and ce.product = :product
+                    SELECT quantity from collection_entries ce join collection c on ce.collection_id = c.id
+                    WHERE c.player= :player and c.type = :type and ce.product = :product
                     """.trimIndent()
                 val result =
                     connection

@@ -6,7 +6,7 @@ import org.ccgemp.collection.ProductBox
 import org.ccgemp.collection.ProductLibrary
 
 @Exposes(ProductLibrary::class)
-class LotrProductLibrary: ProductLibrary {
+class LotrProductLibrary : ProductLibrary {
     @Inject
     private lateinit var legacyObjectsProvider: LegacyObjectsProvider
 

@@ -13,7 +13,7 @@ import org.w3c.dom.Element
 import javax.xml.parsers.DocumentBuilderFactory
 
 @Exposes(CollectionContentsSerializer::class)
-class LotrCollectionContentsSerializer: CollectionContentsSerializer {
+class LotrCollectionContentsSerializer : CollectionContentsSerializer {
     @Inject
     private lateinit var legacyObjectsProvider: LegacyObjectsProvider
 
@@ -101,17 +101,26 @@ class LotrCollectionContentsSerializer: CollectionContentsSerializer {
     }
 
     private fun appendCardGroup(card: Element, blueprint: LotroCardBlueprint) {
-        val group = if (blueprint.cardType == CardType.THE_ONE_RING) "ring"
-        else if (blueprint.cardType == CardType.SITE) "site"
-        else if (blueprint.cardType == CardType.MAP) "map"
-        else if (blueprint.canStartWithRing()) "ringBearer"
-        else if (blueprint.side == Side.FREE_PEOPLE) "fp"
-        else if (blueprint.side == Side.SHADOW) "shadow"
-        else null
+        val group =
+            if (blueprint.cardType == CardType.THE_ONE_RING) {
+                "ring"
+            } else if (blueprint.cardType == CardType.SITE) {
+                "site"
+            } else if (blueprint.cardType == CardType.MAP) {
+                "map"
+            } else if (blueprint.canStartWithRing()) {
+                "ringBearer"
+            } else if (blueprint.side == Side.FREE_PEOPLE) {
+                "fp"
+            } else if (blueprint.side == Side.SHADOW) {
+                "shadow"
+            } else {
+                null
+            }
         if (group != null) card.setAttribute("group", group)
     }
 
-    private fun String.toItem(count: Int):  com.gempukku.lotro.game.CardCollection.Item {
+    private fun String.toItem(count: Int): com.gempukku.lotro.game.CardCollection.Item {
         return com.gempukku.lotro.game.CardCollection.Item.createItem(this, count)
     }
 }

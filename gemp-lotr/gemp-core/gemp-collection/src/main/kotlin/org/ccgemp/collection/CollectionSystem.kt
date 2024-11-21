@@ -7,6 +7,7 @@ import com.gempukku.context.resolver.expose.Exposes
 class CollectionSystem : CollectionInterface {
     @Inject
     private lateinit var repository: CollectionRepository
+
     @Inject
     private lateinit var productLibrary: ProductLibrary
 
@@ -67,19 +68,24 @@ class CollectionSystem : CollectionInterface {
         val entries = repository.getPlayerCollectionEntries(collectionInfos.toSet()).groupBy { it.collection_id }
         return collectionInfos.associate { collection ->
             collection.player!! to
-                    run {
-                        val result = DefaultCardCollection()
-                        entries[collection.id]?.forEach {
-                            result.addItem(it.product!!, it.quantity)
-                        }
-                        result
+                run {
+                    val result = DefaultCardCollection()
+                    entries[collection.id]?.forEach {
+                        result.addItem(it.product!!, it.quantity)
                     }
+                    result
+                }
         }.onEach { (player, collection) ->
             collectionCache[CollectionCacheKey(player, type)] = collection
         }
     }
 
-    override fun openPackInCollection(player: String, type: String, packId: String, selection: String?): CardCollection? {
+    override fun openPackInCollection(
+        player: String,
+        type: String,
+        packId: String,
+        selection: String?,
+    ): CardCollection? {
         val collectionInfo = repository.findPlayerCollection(player, type) ?: return null
         val count = repository.getItemCount(player, type, packId)
         if (count < 1) {

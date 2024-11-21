@@ -11,5 +11,10 @@ interface CollectionInterface {
 
     fun getPlayerCollections(type: String): Map<String, CardCollection>
 
-    fun openPackInCollection(player: String, type: String, packId: String, selection: String?): CardCollection?
+    fun openPackInCollection(
+        player: String,
+        type: String,
+        packId: String,
+        selection: String?,
+    ): CardCollection?
 }
