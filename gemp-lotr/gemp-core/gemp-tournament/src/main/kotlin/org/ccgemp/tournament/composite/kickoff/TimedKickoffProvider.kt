@@ -5,6 +5,15 @@ import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.json.JsonWithConfig
 
+/**
+ * Example configuration
+ * {@code
+ * {
+ *      type: timed
+ *      pause: 30000
+ * }
+ * }
+ */
 @Exposes(LifecycleObserver::class)
 class TimedKickoffProvider : LifecycleObserver {
     @Inject

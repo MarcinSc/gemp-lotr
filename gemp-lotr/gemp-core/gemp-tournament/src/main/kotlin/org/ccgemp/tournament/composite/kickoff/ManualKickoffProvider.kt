@@ -6,6 +6,14 @@ import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.json.JsonWithConfig
 import org.ccgemp.tournament.composite.CompositeTournamentUnloadNotified
 
+/**
+ * Example configuration
+ * {@code
+ * {
+ *      type: manual
+ * }
+ * }
+ */
 @Exposes(LifecycleObserver::class, CompositeTournamentUnloadNotified::class, ManualKickoff::class)
 class ManualKickoffProvider : LifecycleObserver, CompositeTournamentUnloadNotified, ManualKickoff {
     @Inject

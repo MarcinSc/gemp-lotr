@@ -10,6 +10,14 @@ import org.ccgemp.tournament.TournamentMatch
 import org.ccgemp.tournament.TournamentParticipant
 import org.ccgemp.tournament.composite.CompositeTournamentUnloadNotified
 
+/**
+ * Example configuration
+ * {@code
+ * {
+ *      type: manual
+ * }
+ * }
+ */
 @Exposes(LifecycleObserver::class, CompositeTournamentUnloadNotified::class, ManualPairing::class)
 class ManualPairingProvider : LifecycleObserver, CompositeTournamentUnloadNotified, ManualPairing {
     @Inject

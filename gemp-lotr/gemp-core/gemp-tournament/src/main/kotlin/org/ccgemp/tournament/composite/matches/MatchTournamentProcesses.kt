@@ -14,6 +14,31 @@ import org.ccgemp.tournament.composite.kickoff.TournamentKickoffRegistry
 import org.ccgemp.tournament.composite.pairing.PairingConfig
 import org.ccgemp.tournament.composite.pairing.TournamentPairingRegistry
 
+/**
+ * Example configuration
+ * {@code
+ * {
+ *      type: playGames
+ *      # number of rounds
+ *      rounds: 3
+ *      # type of deck, as used in tournament definition
+ *      deckType: constructedPortion
+ *      # format used for playing games
+ *      format: anythingGoesFotR
+ *      # this defines which pairings cannot be duplicated across multiple rounds
+ *      pairingGroup: wholeTournament
+ *      # this defines which players cannot receive bye, as they already did in a round
+ *      byeGroup: wholeTournament
+ *      kickoff: {
+ *          type: manual
+ *      }
+ *      pairing: {
+ *          type: swiss
+ *      }
+ *      dropLosers: false
+ * }
+ * }
+ */
 @Exposes(LifecycleObserver::class)
 class MatchTournamentProcesses : LifecycleObserver {
     @Inject
@@ -47,7 +72,7 @@ class MatchTournamentProcesses : LifecycleObserver {
             )
         }
         processRegistry.register(
-            "constructed",
+            "playGames",
             constructedProcess,
         )
     }

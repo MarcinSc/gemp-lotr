@@ -8,11 +8,70 @@ import org.ccgemp.json.JsonWithConfig
 import org.ccgemp.tournament.composite.TournamentProcess
 import org.ccgemp.tournament.composite.TournamentProcessConfig
 import org.ccgemp.tournament.composite.TournamentProcessRegistry
+import org.ccgemp.tournament.composite.kickoff.KickoffConfig
+import org.ccgemp.tournament.composite.kickoff.TournamentKickoffRegistry
 import org.ccgemp.tournament.composite.standing.StandingsConfig
 import org.ccgemp.tournament.composite.standing.TournamentStandingsRegistry
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+/**
+ * Example configuration
+ * {@code
+ * {
+ *      type: cutToTopX
+ *      x: 8
+ *      standings: {
+ *          type: modifiedMedian
+ *      }
+ * }
+ * }
+ * {@code
+ * {
+ *      type: cutToTopX
+ *      x: 8
+ *      standings: {
+ *          type: modifiedMedian
+ *      }
+ * }
+ * }
+ * {@code
+ * {
+ *      type: pause
+ *      # time in milliseconds
+ *      time: 30000
+ * }
+ * }
+ * {@code
+ * {
+ *      type: pauseUntil
+ *      # Time in format "yyyy-MM-dd HH:mm:ss" in UTC time zone
+ *      time: 2024-11-23 00:00:00
+ *      x: 8
+ *      standings: {
+ *          type: modifiedMedian
+ *      }
+ * }
+ * }
+ * {@code
+ * {
+ *      type: signup
+ *      # Optional array of invited players, if specified - only those player will be able to join
+ *      invitedPlayers: [
+ *          playerOne
+ *          playerTwo
+ *      ]
+ *      # Array of formats that you have to register decks for during signup - used for deck validation
+ *      formats: [
+ *          fotr_block
+ *      ]
+ *      # Array of deck types, as used in tournament configuration to identify decks to play with
+ *      deckTypes: [
+ *          fotrBlockPortion
+ *      ]
+ * }
+ * }
+ */
 @Exposes(LifecycleObserver::class)
 class MiscTournamentProcesses : LifecycleObserver {
     @Inject
@@ -23,6 +82,9 @@ class MiscTournamentProcesses : LifecycleObserver {
 
     @Inject
     private lateinit var deckInterface: DeckInterface
+
+    @Inject
+    private lateinit var kickoffRegistry: TournamentKickoffRegistry
 
     override fun afterContextStartup() {
         val cutToTopX: (JsonWithConfig<TournamentProcessConfig>) -> TournamentProcess = {
@@ -71,10 +133,7 @@ class MiscTournamentProcesses : LifecycleObserver {
                 allowedPlayers,
                 deckTypes,
                 formats.map { deckInterface.getValidator(it) },
-                LocalDateTime.parse(
-                    def.getString("until", null),
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"),
-                ),
+                kickoffRegistry.create(JsonWithConfig(def.get("kickoff").asObject(), KickoffConfig(it.config.tournamentId))),
             )
         }
         processRegistry.register("signup", signup)

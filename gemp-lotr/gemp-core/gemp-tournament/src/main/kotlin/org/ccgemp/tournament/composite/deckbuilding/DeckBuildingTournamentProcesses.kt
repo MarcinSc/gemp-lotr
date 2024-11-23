@@ -15,6 +15,30 @@ import org.ccgemp.tournament.composite.TournamentProcessRegistry
 import org.ccgemp.tournament.composite.kickoff.KickoffConfig
 import org.ccgemp.tournament.composite.kickoff.TournamentKickoffRegistry
 
+/**
+ * Example configuration
+ * {@code
+ * {
+ *      type: sealed
+ *      # type of collection as stored in collection table
+ *      collectionType: sealedTournament
+ *      # product given on sealed portion start
+ *      product: fellowshipOfTheRingSealed
+ *      # type of deck, as used in tournament definition
+ *      deckType: sealedDeck
+ *      # format used for validating submitted deck
+ *      format: anythingGoesFotR
+ *      productKickoff: {
+ *          type: manual
+ *      }
+ *      buildEndKickoff: {
+ *          type: timed
+ *          # 30 minutes
+ *          pause: 1800000
+ *      }
+ * }
+ * }
+ */
 @Exposes(LifecycleObserver::class)
 class DeckBuildingTournamentProcesses : LifecycleObserver {
     @Inject

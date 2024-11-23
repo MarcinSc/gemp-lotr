@@ -7,6 +7,7 @@ import org.ccgemp.tournament.TournamentMatch
 import org.ccgemp.tournament.TournamentParticipant
 import org.ccgemp.tournament.TournamentProgress
 import org.ccgemp.tournament.composite.SignupTournamentProcess
+import org.ccgemp.tournament.composite.kickoff.Kickoff
 import java.time.LocalDateTime
 
 const val SIGNUP_OPEN = "SIGNUP_OPEN"
@@ -15,7 +16,7 @@ class Signup(
     private val allowedPlayers: Set<String>?,
     override val deckTypes: List<String>,
     private val validators: List<DeckValidator>,
-    private val until: LocalDateTime,
+    private val kickoff: Kickoff,
 ) : SignupTournamentProcess {
     override fun canJoinTournament(players: List<TournamentParticipant>, player: String): Boolean {
         return players.none { it.player == player } &&
@@ -46,7 +47,7 @@ class Signup(
         when (stage) {
             "" -> tournamentProgress.updateState(round, SIGNUP_OPEN)
             SIGNUP_OPEN -> {
-                if (until.isAfter(LocalDateTime.now())) {
+                if (kickoff.isKickedOff(round)) {
                     tournamentProgress.updateState(round, FINISHED_STAGE)
                 }
             }

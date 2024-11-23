@@ -11,6 +11,16 @@ const val MEDIAN_SCORE = "medianScore"
 const val CUMULATIVE_SCORE = "cumulativeScore"
 const val OPPONENT_WIN_RATE = "opponentWinRate"
 
+/**
+ * Example configuration
+ * {@code
+ * {
+ *      type: modifiedMedian
+ *      pointsForWin: 1
+ *      pointsForLoss: 0
+ * }
+ * }
+ */
 @Exposes(LifecycleObserver::class)
 class ModifiedMedianStandingsProvider : LifecycleObserver {
     @Inject

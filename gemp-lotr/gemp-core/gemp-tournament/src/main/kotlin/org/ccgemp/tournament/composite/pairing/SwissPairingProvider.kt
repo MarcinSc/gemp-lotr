@@ -12,6 +12,17 @@ import org.ccgemp.tournament.composite.standing.StandingsConfig
 import org.ccgemp.tournament.composite.standing.TournamentStandingsRegistry
 import java.util.concurrent.ThreadLocalRandom
 
+/**
+ * Example configuration
+ * {@code
+ * {
+ *      type: swiss
+ *      standings: {
+ *          type: modifiedMedian
+ *      }
+ * }
+ * }
+ */
 @Exposes(LifecycleObserver::class)
 class SwissPairingProvider : LifecycleObserver {
     @Inject
