@@ -12,30 +12,6 @@ server:
   session:
     # 5 minutes = 5 * 60 * 1000
     timeout: 300000
-  login:
-    url: /gemp-lotr-server/login
-  register:
-    url: /gemp-lotr-server/register
-  passwordReset:
-    url: /gemp-lotr-server/passwordReset
-  passwordResetValidate:
-    url: /gemp-lotr-server/passwordResetValidate
-  changeEmail:
-    url: /gemp-lotr-server/changeEmail
-  changeEmailValidate:
-    url: /gemp-lotr-server/changeEmailValidate
-  banPlayer:
-    url: /gemp-lotr-server/player-admin/banUser
-  banPlayers:
-    url: /gemp-lotr-server/player-admin/banMultiple
-  banPlayerTemporarily:
-    url: /gemp-lotr-server/player-admin/banUserTemp
-  unbanPlayer:
-    url: /gemp-lotr-server/player-admin/unBanUser
-  getPlayerRoles:
-    url: /gemp-lotr-server/player-admin/getPlayerRoles
-  setPlayerRoles:
-    url: /gemp-lotr-server/player-admin/setPlayerRoles
 
 db:
   connection:
@@ -48,13 +24,3 @@ db:
 
 update:
   frequency: 100
-
-roles:
-  default: u
-  admin: a
-  tournamentAdmin: t
-  leagueAdmin: l
-  playTester: p
-  commentator: c
-  unbanned: n
-  user: u

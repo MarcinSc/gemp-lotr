@@ -10,6 +10,7 @@ import com.gempukku.server.HttpRequest
 import com.gempukku.server.HttpServer
 import com.gempukku.server.ResponseWriter
 import com.gempukku.server.login.LoggedUserInterface
+import com.gempukku.server.login.UserRolesProvider
 import com.gempukku.server.login.getActingAsUser
 import org.ccgemp.common.splitText
 import java.util.regex.Pattern
@@ -24,6 +25,9 @@ class PrivateTournamentApiSystem : LifecycleObserver {
 
     @Inject
     private lateinit var loggedUserInterface: LoggedUserInterface
+
+    @Inject
+    private lateinit var userRolesProvider: UserRolesProvider
 
     @InjectValue("server.tournament.urlPrefix")
     private lateinit var urlPrefix: String
@@ -68,7 +72,7 @@ class PrivateTournamentApiSystem : LifecycleObserver {
             val deckName = request.getParameter("deckName")
 
             val actAsUser =
-                getActingAsUser(loggedUserInterface, request, adminRole, actAsParameter)
+                getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
 
             tournamentInterface.joinTournament(tournamentId, actAsUser.userId, deckName?.splitText('\n').orEmpty())
 
@@ -82,7 +86,7 @@ class PrivateTournamentApiSystem : LifecycleObserver {
             val tournamentId = matcher.group(1)
 
             val actAsUser =
-                getActingAsUser(loggedUserInterface, request, adminRole, actAsParameter)
+                getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
 
             tournamentInterface.leaveTournament(tournamentId, actAsUser.userId)
 
@@ -97,7 +101,7 @@ class PrivateTournamentApiSystem : LifecycleObserver {
             val deckName = request.getParameter("deckName") ?: throw HttpProcessingException(400)
 
             val actAsUser =
-                getActingAsUser(loggedUserInterface, request, adminRole, actAsParameter)
+                getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
 
             tournamentInterface.registerDecks(tournamentId, actAsUser.userId, deckName.splitText('\n'))
 

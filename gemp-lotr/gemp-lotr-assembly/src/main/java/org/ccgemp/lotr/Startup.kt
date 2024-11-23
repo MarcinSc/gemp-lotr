@@ -1,6 +1,7 @@
 package org.ccgemp.lotr
 
 import com.gempukku.context.DefaultGempukkuContext
+import com.gempukku.context.GempukkuContext
 import com.gempukku.context.decorator.SimpleThreadPoolFactory
 import com.gempukku.context.decorator.WorkerThreadExecutorSystem
 import com.gempukku.context.initializer.inject.AnnotationSystemInitializer
@@ -21,12 +22,27 @@ import org.ccgemp.server.player.createPlayerSystems
 import org.ccgemp.tournament.createTournamentSystems
 import org.ccgemp.transfer.createTransferSystems
 import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
 
 fun main() {
-    val rootPropertyResolver = YamlPropertyResolver("classpath:/root-context-config.yaml")
     val threadPoolFactory = SimpleThreadPoolFactory("Worker-Thread")
     val executorService = Executors.newSingleThreadScheduledExecutor(threadPoolFactory)
 
+    val (rootLifecycleSystem, rootContext) = createRootContext(threadPoolFactory, executorService)
+
+    rootLifecycleSystem.start()
+
+    val (lotrLifecycleSystem, lotrContext) = createLotrContext(threadPoolFactory, executorService, rootContext)
+
+    lotrLifecycleSystem.start()
+}
+
+private fun createRootContext(
+    threadPoolFactory: SimpleThreadPoolFactory,
+    executorService: ScheduledExecutorService,
+    parentContext: GempukkuContext? = null,
+): Pair<LifecycleSystem, DefaultGempukkuContext> {
+    val rootPropertyResolver = YamlPropertyResolver("classpath:/root-context-config.yaml")
     val rootWorkerThreadExecutorSystem = WorkerThreadExecutorSystem(threadPoolFactory, executorService)
     val rootLifecycleSystem = LifecycleSystem()
 
@@ -50,22 +66,24 @@ fun main() {
 
     val rootContext =
         DefaultGempukkuContext(
-            null,
+            parentContext,
             AnnotationSystemResolver(
-                rootSystems +
-                        createPlayerSystems(),
+                rootSystems,
             ),
             AnnotationSystemInitializer(rootPropertyResolver),
             rootWorkerThreadExecutorSystem,
         )
 
     rootContext.initialize()
+    return Pair(rootLifecycleSystem, rootContext)
+}
 
-    rootLifecycleSystem.start()
-
-
+private fun createLotrContext(
+    threadPoolFactory: SimpleThreadPoolFactory,
+    executorService: ScheduledExecutorService,
+    parentContext: GempukkuContext,
+): Pair<LifecycleSystem, GempukkuContext> {
     val lotrPropertyResolver = YamlPropertyResolver("classpath:/lotr-context-config.yaml")
-
     val lotrWorkerThreadExecutorSystem = WorkerThreadExecutorSystem(threadPoolFactory, executorService)
     val lotrLifecycleSystem = LifecycleSystem()
 
@@ -99,9 +117,10 @@ fun main() {
 
     val lotrContext =
         DefaultGempukkuContext(
-            rootContext,
+            parentContext,
             AnnotationSystemResolver(
                 lotrBaseSystems +
+                        createPlayerSystems() +
                         createJsonSystems() +
                         createChatSystems() +
                         createTransferSystems() +
@@ -116,6 +135,5 @@ fun main() {
         )
 
     lotrContext.initialize()
-
-    lotrLifecycleSystem.start()
+    return Pair(lotrLifecycleSystem, lotrContext)
 }

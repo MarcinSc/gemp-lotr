@@ -9,6 +9,7 @@ import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpServer
 import com.gempukku.server.ServerRequestHandler
 import com.gempukku.server.login.LoggedUserInterface
+import com.gempukku.server.login.UserRolesProvider
 import com.gempukku.server.login.validateHasRole
 import org.ccgemp.json.JsonProvider
 import org.ccgemp.tournament.composite.kickoff.ManualKickoff
@@ -28,6 +29,9 @@ class AdminTournamentApiSystem : LifecycleObserver {
 
     @Inject
     private lateinit var loggedUserInterface: LoggedUserInterface
+
+    @Inject
+    private lateinit var userRolesProvider: UserRolesProvider
 
     @Inject
     private lateinit var manualKickoff: ManualKickoff
@@ -63,35 +67,35 @@ class AdminTournamentApiSystem : LifecycleObserver {
             httpServer.registerRequestHandler(
                 HttpMethod.POST,
                 "^$manualKickoffUrlPrefix/([^/]*)/([^/]*)$",
-                validateHasRole(executeManualKickoff(), loggedUserInterface, adminRole),
+                validateHasRole(executeManualKickoff(), loggedUserInterface, userRolesProvider, adminRole),
             ),
         )
         deregistration.add(
             httpServer.registerRequestHandler(
                 HttpMethod.POST,
                 "^$manualPairingUrlPrefix/([^/]*)/([^/]*)$",
-                validateHasRole(executeManualPairing(), loggedUserInterface, adminRole),
+                validateHasRole(executeManualPairing(), loggedUserInterface, userRolesProvider, adminRole),
             ),
         )
         deregistration.add(
             httpServer.registerRequestHandler(
                 HttpMethod.POST,
                 "^$dropSwitchUrlPrefix/([^/]*)$",
-                validateHasRole(executeDropSwitch(), loggedUserInterface, adminRole),
+                validateHasRole(executeDropSwitch(), loggedUserInterface,userRolesProvider,  adminRole),
             ),
         )
         deregistration.add(
             httpServer.registerRequestHandler(
                 HttpMethod.POST,
                 "^$setPlayerDeckUrlPrefix/([^/]*)$",
-                validateHasRole(executeSetPlayerDeck(), loggedUserInterface, adminRole),
+                validateHasRole(executeSetPlayerDeck(), loggedUserInterface, userRolesProvider, adminRole),
             ),
         )
         deregistration.add(
             httpServer.registerRequestHandler(
                 HttpMethod.POST,
                 "^$createTournamentUrlPrefix/([^/]*)$",
-                validateHasRole(executeCreateTournament(), loggedUserInterface, adminRole),
+                validateHasRole(executeCreateTournament(), loggedUserInterface, userRolesProvider, adminRole),
             ),
         )
     }

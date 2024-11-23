@@ -10,6 +10,7 @@ import com.gempukku.server.HttpRequest
 import com.gempukku.server.HttpServer
 import com.gempukku.server.ResponseWriter
 import com.gempukku.server.login.LoggedUserInterface
+import com.gempukku.server.login.UserRolesProvider
 import com.gempukku.server.login.validateHasRole
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -23,6 +24,8 @@ class AdminPlayerApiSystem : LifecycleObserver {
 
     @Inject
     private lateinit var loggedUserSystem: LoggedUserInterface
+    @Inject
+    private lateinit var userRolesProvider: UserRolesProvider
 
     @InjectValue("server.banPlayer.url")
     private lateinit var banPlayerUrl: String
@@ -52,42 +55,42 @@ class AdminPlayerApiSystem : LifecycleObserver {
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$banPlayerUrl$",
-                validateHasRole(executeBanPlayer(), loggedUserSystem, adminRole),
+                validateHasRole(executeBanPlayer(), loggedUserSystem,userRolesProvider,  adminRole),
             ),
         )
         deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$banPlayersUrl$",
-                validateHasRole(executeBanPlayers(), loggedUserSystem, adminRole),
+                validateHasRole(executeBanPlayers(), loggedUserSystem,userRolesProvider,  adminRole),
             ),
         )
         deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$banPlayerTemporarilyUrl$",
-                validateHasRole(executeBanPlayerTemporarily(), loggedUserSystem, adminRole),
+                validateHasRole(executeBanPlayerTemporarily(), loggedUserSystem,userRolesProvider,  adminRole),
             ),
         )
         deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$unbanPlayerUrl",
-                validateHasRole(executeUnbanPlayer(), loggedUserSystem, adminRole),
+                validateHasRole(executeUnbanPlayer(), loggedUserSystem,userRolesProvider,  adminRole),
             ),
         )
         deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.GET,
                 "^$getPlayerRolesUrl$",
-                validateHasRole(executeGetPlayerRoles(), loggedUserSystem, adminRole),
+                validateHasRole(executeGetPlayerRoles(), loggedUserSystem,userRolesProvider,  adminRole),
             ),
         )
         deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$setPlayerRolesUrl",
-                validateHasRole(executeSetPlayerRoles(), loggedUserSystem, adminRole),
+                validateHasRole(executeSetPlayerRoles(), loggedUserSystem,userRolesProvider,  adminRole),
             ),
         )
     }

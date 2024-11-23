@@ -11,6 +11,7 @@ import com.gempukku.server.HttpServer
 import com.gempukku.server.ResponseWriter
 import com.gempukku.server.chat.polling.GatheringChatStream
 import com.gempukku.server.login.LoggedUserInterface
+import com.gempukku.server.login.UserRolesProvider
 import com.gempukku.server.login.getActingAsUser
 import com.gempukku.server.polling.LongPolling
 
@@ -24,6 +25,9 @@ class ChatApiSystem : LifecycleObserver {
 
     @Inject
     private lateinit var loggedUserInterface: LoggedUserInterface
+
+    @Inject
+    private lateinit var userRolesProvider: UserRolesProvider
 
     @Inject
     private lateinit var longPolling: LongPolling
@@ -66,13 +70,13 @@ class ChatApiSystem : LifecycleObserver {
         { request, responseWriter ->
             val roomName = request.uri.substring(urlPrefix.length + 1)
             val actAsUser =
-                getActingAsUser(loggedUserInterface, request, adminRole, actAsParameter)
+                getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
             val gatheringChatStream = GatheringChatStream()
             val added =
                 chat.joinUser(
                     roomName,
                     actAsUser.userId,
-                    actAsUser.roles.contains(adminRole),
+                    userRolesProvider.getUserRoles(actAsUser.userId).contains(adminRole),
                     gatheringChatStream,
                 )
             if (added == null) {
@@ -88,12 +92,12 @@ class ChatApiSystem : LifecycleObserver {
     private fun executePostChat(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
         { request, responseWriter ->
             val roomName = request.uri.substring(urlPrefix.length + 1)
-            val actAsUserSystem =
-                getActingAsUser(loggedUserInterface, request, adminRole, actAsParameter)
+            val actAsUser =
+                getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
             val message = request.getParameter("message")
 
             if (message != null && message.trim().isNotEmpty()) {
-                chat.sendMessage(roomName, actAsUserSystem.userId, message, actAsUserSystem.roles.contains(adminRole))
+                chat.sendMessage(roomName, actAsUser.userId, message, userRolesProvider.getUserRoles(actAsUser.userId).contains(adminRole))
             }
 
             val pollId = request.getParameter(pollIdParameterName) ?: throw HttpProcessingException(404)

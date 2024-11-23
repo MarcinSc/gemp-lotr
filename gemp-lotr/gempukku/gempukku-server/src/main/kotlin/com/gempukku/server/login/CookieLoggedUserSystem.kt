@@ -19,9 +19,6 @@ class CookieLoggedUserSystem :
     @Inject
     private lateinit var server: HttpServer
 
-    @Inject
-    private lateinit var userRolesProvider: UserRolesProvider
-
     private val loggedUsersBySessionId: MutableMap<String, UserLastAccess> = mutableMapOf()
 
     override fun sendLogUserResponse(userId: String, responseWriter: ResponseWriter) {
@@ -43,7 +40,7 @@ class CookieLoggedUserSystem :
         val sessionId = request.getCookie("loggedUser")
         return loggedUsersBySessionId[sessionId]?.let {
             it.lastAccess = System.currentTimeMillis()
-            LoggedUser(it.userId, userRolesProvider.getUserRoles(it.userId), it.lastAccess)
+            LoggedUser(it.userId, it.lastAccess)
         }
     }
 

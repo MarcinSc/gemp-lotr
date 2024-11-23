@@ -65,7 +65,7 @@ class ChatServerLegacyTest {
         // Start server
         lifecycleSystem.start()
 
-        loggedUser.loggedUser = LoggedUser("player1", emptySet(), System.currentTimeMillis())
+        loggedUser.loggedUser = LoggedUser("player1", System.currentTimeMillis())
 
         chatSystem.createChatRoom("room", false, emptyMap(), "Welcome!")
 

@@ -11,6 +11,7 @@ import com.gempukku.server.HttpServer
 import com.gempukku.server.ServerRequestHandler
 import com.gempukku.server.ServerResponseHeaderProcessor
 import com.gempukku.server.login.LoggedUserInterface
+import com.gempukku.server.login.UserRolesProvider
 import com.gempukku.server.login.getActingAsUser
 import org.ccgemp.common.CollectionContentsSerializer
 import javax.xml.parsers.DocumentBuilderFactory
@@ -28,6 +29,9 @@ class TransferApiSystem : LifecycleObserver {
 
     @Inject
     private lateinit var loggedUserInterface: LoggedUserInterface
+
+    @Inject
+    private lateinit var userRolesProvider: UserRolesProvider
 
     @InjectValue("server.delivery.url")
     private lateinit var deliveryUrl: String
@@ -63,7 +67,7 @@ class TransferApiSystem : LifecycleObserver {
     private fun checkForDelivery() =
         object : ServerResponseHeaderProcessor {
             override fun getExtraHeaders(request: HttpRequest): Map<String, String> {
-                val actAsUser = getActingAsUser(loggedUserInterface, request, adminRole, actAsParameter)
+                val actAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
 
                 return if (transferInterface.hasUnnotifiedTransfers(actAsUser.userId)) {
                     mapOf("Delivery-Service-Package" to "true")
@@ -75,7 +79,7 @@ class TransferApiSystem : LifecycleObserver {
 
     private fun executeGetDelivery() =
         ServerRequestHandler { request, responseWriter ->
-            val actAsUser = getActingAsUser(loggedUserInterface, request, adminRole, actAsParameter)
+            val actAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
 
             val transfers = transferInterface.consumeUnnotifiedTransfers(actAsUser.userId)
             if (transfers.isEmpty()) {

@@ -8,9 +8,7 @@ import com.gempukku.server.login.UserRolesProvider
 import java.security.MessageDigest
 
 @Exposes(PlayerInterface::class, UserRolesProvider::class)
-class PlayerSystem :
-    PlayerInterface,
-    UserRolesProvider {
+class PlayerSystem : PlayerInterface, UserRolesProvider {
     @Inject
     private lateinit var playerRepository: PlayerRepository
 
