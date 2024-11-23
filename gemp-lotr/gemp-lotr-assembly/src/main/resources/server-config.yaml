@@ -54,6 +54,8 @@ server:
     urlPrefix: /gemp-lotr-server/tournament-admin/dropSwitch
   setPlayerDeck:
     urlPrefix: /gemp-lotr-server/tournament-admin/setPlayerDeck
+  createTournament:
+    urlPrefix: /gemp-lotr-server/tournament-admin/createTournament
 
 parameterNames:
   actAsParameter: participantId

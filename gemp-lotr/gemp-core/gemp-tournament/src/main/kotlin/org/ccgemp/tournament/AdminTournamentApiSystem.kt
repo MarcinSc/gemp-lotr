@@ -14,6 +14,8 @@ import org.ccgemp.json.JsonProvider
 import org.ccgemp.tournament.composite.kickoff.ManualKickoff
 import org.ccgemp.tournament.composite.pairing.ManualPairing
 import org.ccgemp.tournament.composite.pairing.RoundPairing
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
 
 @Exposes(LifecycleObserver::class)
@@ -51,6 +53,9 @@ class AdminTournamentApiSystem : LifecycleObserver {
     @InjectValue("server.setPlayerDeck.urlPrefix")
     private lateinit var setPlayerDeckUrlPrefix: String
 
+    @InjectValue("server.createTournament.urlPrefix")
+    private lateinit var createTournamentUrlPrefix: String
+
     private val deregistration: MutableList<Runnable> = mutableListOf()
 
     override fun afterContextStartup() {
@@ -80,6 +85,13 @@ class AdminTournamentApiSystem : LifecycleObserver {
                 HttpMethod.POST,
                 "^$setPlayerDeckUrlPrefix/([^/]*)$",
                 validateHasRole(executeSetPlayerDeck(), loggedUserInterface, adminRole),
+            ),
+        )
+        deregistration.add(
+            httpServer.registerRequestHandler(
+                HttpMethod.POST,
+                "^$createTournamentUrlPrefix/([^/]*)$",
+                validateHasRole(executeCreateTournament(), loggedUserInterface, adminRole),
             ),
         )
     }
@@ -136,4 +148,31 @@ class AdminTournamentApiSystem : LifecycleObserver {
             val result = tournamentInterface.setPlayerDeck(tournamentId, player, deckType, deckName)
             responseWriter.writeJsonResponse("{\"success\":$result}")
         }
+
+    private fun executeCreateTournament(): ServerRequestHandler =
+        ServerRequestHandler { request, responseWriter ->
+            val pattern = Pattern.compile("^$createTournamentUrlPrefix/([^/]*)$")
+            val matcher = pattern.matcher(request.uri)
+            val tournamentId = matcher.group(1)
+
+            val type = request.getParameter("type") ?: throw HttpProcessingException(400)
+            val name = request.getParameter("name") ?: throw HttpProcessingException(400)
+            val startDateStr = request.getParameter("startDate") ?: throw HttpProcessingException(400)
+            val parameters = request.getParameter("parameters") ?: throw HttpProcessingException(400)
+
+            val startDate = LocalDateTime.parse(
+                startDateStr,
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"),
+            )
+
+            val result = tournamentInterface.addTournament(tournamentId, type, name, startDate, parameters)
+            responseWriter.writeJsonResponse("{\"success\":$result}")
+        }
+
+    override fun beforeContextStopped() {
+        deregistration.forEach {
+            it.run()
+        }
+        deregistration.clear()
+    }
 }

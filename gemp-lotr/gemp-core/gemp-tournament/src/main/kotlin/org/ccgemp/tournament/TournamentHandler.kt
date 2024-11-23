@@ -2,8 +2,11 @@ package org.ccgemp.tournament
 
 import org.ccgemp.deck.GameDeck
 import org.ccgemp.game.GameSettings
+import java.time.LocalDateTime
 
 interface TournamentHandler<TournamentData> {
+    fun validateTournament(tournament: Tournament): Boolean
+
     fun initializeTournament(tournament: Tournament): TournamentData
 
     fun getGameSettings(tournament: TournamentInfo<TournamentData>, round: Int): GameSettings

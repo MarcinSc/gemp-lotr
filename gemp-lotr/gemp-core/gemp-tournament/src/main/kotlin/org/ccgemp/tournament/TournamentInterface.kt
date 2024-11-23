@@ -1,7 +1,11 @@
 package org.ccgemp.tournament
 
+import java.time.LocalDateTime
+
 interface TournamentInterface {
     fun registerTournamentHandler(type: String, tournamentHandler: TournamentHandler<Any>)
+
+    fun addTournament(tournamentId: String, type: String, name: String, startDate: LocalDateTime, parameters: String): Boolean
 
     fun getLiveTournaments(): List<TournamentClientInfo>
 

@@ -16,6 +16,7 @@ import org.ccgemp.tournament.TournamentHandler
 import org.ccgemp.tournament.TournamentInfo
 import org.ccgemp.tournament.TournamentInterface
 import org.ccgemp.tournament.TournamentProgress
+import java.time.LocalDateTime
 
 @Exposes(TournamentProcessRegistry::class)
 class CompositeTournamentHandlerSystem :
@@ -37,6 +38,15 @@ class CompositeTournamentHandlerSystem :
 
     override fun afterContextStartup() {
         tournamentInterface.registerTournamentHandler(tournamentCompositeType, this as TournamentHandler<Any>)
+    }
+
+    override fun validateTournament(tournament: Tournament): Boolean {
+        try {
+            initializeTournament(tournament)
+            return true
+        } catch (exception: Exception) {
+            return false
+        }
     }
 
     override fun initializeTournament(tournament: Tournament): TournamentPlan {

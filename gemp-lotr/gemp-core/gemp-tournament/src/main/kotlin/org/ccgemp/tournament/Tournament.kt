@@ -8,6 +8,6 @@ data class Tournament(
     val startDate: LocalDateTime,
     val type: String,
     val parameters: String,
-    val stage: String,
+    val stage: String = "",
     val round: Int = 0,
 )

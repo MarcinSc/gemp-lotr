@@ -48,6 +48,15 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
         handlerMap[type.lowercase()] = tournamentHandler
     }
 
+    override fun addTournament(tournamentId: String, type: String, name: String, startDate: LocalDateTime, parameters: String): Boolean {
+        val handler = handlerMap[type.lowercase()] ?: return false
+        if (!handler.validateTournament(Tournament(tournamentId, name, startDate, type, parameters)))
+            return false
+        repository.createTournament(tournamentId, type, name, startDate, parameters, "", 0)
+        addTournamentInternal(handler, Tournament(tournamentId, name, startDate, type, parameters))
+        return true
+    }
+
     override fun getLiveTournaments(): List<TournamentClientInfo> {
         return loadedTournaments.values.filter { it.status != FINISHED_STAGE }.toList()
     }
@@ -210,39 +219,46 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
         repository.getUnfinishedOrStartAfter(LocalDateTime.now().minusHours(tournamentLingerHours)).forEach { tournament ->
             val tournamentHandler = findHandler(tournament.type)
 
-            val data = tournamentHandler.initializeTournament(tournament)
+            addTournamentInternal(tournamentHandler, tournament)
+        }
+    }
 
-            val tournamentInfo =
-                DefaultTournamentInfo(
-                    tournamentHandler,
-                    tournament.startDate,
-                    data,
-                    tournament.tournamentId,
-                    tournament.name,
-                    tournament.stage,
-                    tournament.round,
-                    mutableListOf(),
-                    mutableListOf(),
-                    mutableMapOf(),
-                )
+    private fun addTournamentInternal(
+        tournamentHandler: TournamentHandler<Any>,
+        tournament: Tournament,
+    ) {
+        val data = tournamentHandler.initializeTournament(tournament)
 
-            val tournamentDecks = repository.getTournamentDecks(tournament.tournamentId).groupBy { it.player }
+        val tournamentInfo =
+            DefaultTournamentInfo(
+                tournamentHandler,
+                tournament.startDate,
+                data,
+                tournament.tournamentId,
+                tournament.name,
+                tournament.stage,
+                tournament.round,
+                mutableListOf(),
+                mutableListOf(),
+                mutableMapOf(),
+            )
 
-            val tournamentPlayers = repository.getTournamentPlayers(tournament.tournamentId)
-            tournamentPlayers.forEach {
-                tournamentInfo.players.add(it.toParticipant(tournamentDecks[it.player].orEmpty()))
-            }
-            val tournamentMatches = repository.getTournamentMatches(tournament.tournamentId)
-            tournamentMatches.forEach {
-                tournamentInfo.matches.add(it)
-            }
+        val tournamentDecks = repository.getTournamentDecks(tournament.tournamentId).groupBy { it.player }
 
-            loadedTournaments[tournament.tournamentId] = tournamentInfo
+        val tournamentPlayers = repository.getTournamentPlayers(tournament.tournamentId)
+        tournamentPlayers.forEach {
+            tournamentInfo.players.add(it.toParticipant(tournamentDecks[it.player].orEmpty()))
+        }
+        val tournamentMatches = repository.getTournamentMatches(tournament.tournamentId)
+        tournamentMatches.forEach {
+            tournamentInfo.matches.add(it)
+        }
 
-            // Start all the matches that are not finished
-            tournamentMatches.filter { !it.finished && !it.bye }.forEach { match ->
-                startMatch(match.round, match.playerOne, match.playerTwo, tournamentInfo)
-            }
+        loadedTournaments[tournament.tournamentId] = tournamentInfo
+
+        // Start all the matches that are not finished
+        tournamentMatches.filter { !it.finished && !it.bye }.forEach { match ->
+            startMatch(match.round, match.playerOne, match.playerTwo, tournamentInfo)
         }
     }
 
