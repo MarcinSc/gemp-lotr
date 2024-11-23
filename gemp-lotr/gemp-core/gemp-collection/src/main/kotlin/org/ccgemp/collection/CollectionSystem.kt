@@ -1,6 +1,7 @@
 package org.ccgemp.collection
 
 import com.gempukku.context.initializer.inject.Inject
+import com.gempukku.context.initializer.inject.InjectList
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.common.GempCollection
 import org.ccgemp.common.DefaultGempCollection
@@ -14,10 +15,17 @@ class CollectionSystem : CollectionInterface {
     @Inject
     private lateinit var productLibrary: ProductLibrary
 
+    @InjectList
+    private lateinit var collectionTypeProviders: List<CollectionTypeProvider>
+
     @Inject(allowsNull = true)
     private var transferInterface: TransferInterface? = null
 
     private val collectionCache: MutableMap<CollectionCacheKey, GempCollection> = mutableMapOf()
+
+    override fun getPlayerCollectionTypes(player: String): List<CollectionType> {
+        return collectionTypeProviders.flatMap { it.getCollectionTypes(player) }
+    }
 
     override fun findPlayerCollection(player: String, type: String): GempCollection? {
         val collectionCacheKey = CollectionCacheKey(player, type)

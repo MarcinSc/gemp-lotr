@@ -21,9 +21,6 @@ class CollectionApiSystem : LifecycleObserver {
     @Inject
     private lateinit var collectionInterface: CollectionInterface
 
-    @InjectList
-    private lateinit var collectionTypeProviders: List<CollectionTypeProvider>
-
     @Inject
     private lateinit var server: HttpServer
 
@@ -82,14 +79,12 @@ class CollectionApiSystem : LifecycleObserver {
 
             val collectionsElem = doc.createElement("collections")
 
-            collectionTypeProviders.forEach {
-                it.getCollectionTypes(actAsUser).forEach { collectionType ->
-                    val collectionElem = doc.createElement("collection")
-                    collectionElem.setAttribute("type", collectionType.type)
-                    collectionElem.setAttribute("name", collectionType.name)
-                    collectionElem.setAttribute("format", collectionType.format)
-                    collectionsElem.appendChild(collectionElem)
-                }
+            collectionInterface.getPlayerCollectionTypes(actAsUser.userId).forEach { collectionType ->
+                val collectionElem = doc.createElement("collection")
+                collectionElem.setAttribute("type", collectionType.type)
+                collectionElem.setAttribute("name", collectionType.name)
+                collectionElem.setAttribute("format", collectionType.format)
+                collectionsElem.appendChild(collectionElem)
             }
             doc.appendChild(collectionsElem)
 

@@ -3,6 +3,8 @@ package org.ccgemp.collection
 import org.ccgemp.common.GempCollection
 
 interface CollectionInterface {
+    fun getPlayerCollectionTypes(player: String): List<CollectionType>
+
     fun findPlayerCollection(player: String, type: String): GempCollection?
 
     fun addPlayerCollection(player: String, type: String, collectionChange: CollectionChange): Boolean
