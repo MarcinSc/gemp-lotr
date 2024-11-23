@@ -1,0 +1,52 @@
+server:
+  chat:
+    urlPrefix: /gemp-lotr-server/chat
+  delivery:
+    url: /gemp-lotr-server/delivery
+  delivery-notify:
+    url: /gemp-lotr-server/collection
+  collection:
+    urlPrefix: /gemp-lotr-server/collection
+  tournament:
+    urlPrefix: /gemp-lotr-server/tournament
+  manualKickoff:
+    urlPrefix: /gemp-lotr-server/tournament-admin/kickoff
+  manualPairing:
+    urlPrefix: /gemp-lotr-server/tournament-admin/pairing
+  dropSwitch:
+    urlPrefix: /gemp-lotr-server/tournament-admin/dropSwitch
+  setPlayerDeck:
+    urlPrefix: /gemp-lotr-server/tournament-admin/setPlayerDeck
+  createTournament:
+    urlPrefix: /gemp-lotr-server/tournament-admin/createTournament
+
+parameterNames:
+  actAsParameter: participantId
+  pollId: pollId
+
+update:
+  frequency: 100
+
+roles:
+  default: u
+  admin: a
+  tournamentAdmin: t
+  leagueAdmin: l
+  playTester: p
+  commentator: c
+  unbanned: n
+  user: u
+
+collection:
+  filter:
+    defaultSort: name
+
+games:
+  threadCount: 5
+  lingerTime: 300000 # 5 minutes
+
+tournament:
+  linger:
+    hours: 48
+  composite:
+    type: composite

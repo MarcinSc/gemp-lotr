@@ -12,8 +12,6 @@ server:
   session:
     # 5 minutes = 5 * 60 * 1000
     timeout: 300000
-  chat:
-    urlPrefix: /gemp-lotr-server/chat
   login:
     url: /gemp-lotr-server/login
   register:
@@ -25,41 +23,19 @@ server:
   changeEmail:
     url: /gemp-lotr-server/changeEmail
   changeEmailValidate:
-    url: /gemp-lotr-server/changeEmail
+    url: /gemp-lotr-server/changeEmailValidate
   banPlayer:
-    url: /gemp-lotr-server/banUser
+    url: /gemp-lotr-server/player-admin/banUser
   banPlayers:
-    url: /gemp-lotr-server/banMultiple
+    url: /gemp-lotr-server/player-admin/banMultiple
   banPlayerTemporarily:
-    url: /gemp-lotr-server/banUserTemp
+    url: /gemp-lotr-server/player-admin/banUserTemp
   unbanPlayer:
-    url: /gemp-lotr-server/unBanUser
+    url: /gemp-lotr-server/player-admin/unBanUser
   getPlayerRoles:
-    url: /gemp-lotr-server/getPlayerRoles
+    url: /gemp-lotr-server/player-admin/getPlayerRoles
   setPlayerRoles:
-    url: /gemp-lotr-server/setPlayerRoles
-  delivery:
-    url: /gemp-lotr-server/delivery
-  delivery-notify:
-    url: /gemp-lotr-server/collection
-  collection:
-    urlPrefix: /gemp-lotr-server/collection
-  tournament:
-    urlPrefix: /gemp-lotr-server/tournament
-  manualKickoff:
-    urlPrefix: /gemp-lotr-server/tournament-admin/kickoff
-  manualPairing:
-    urlPrefix: /gemp-lotr-server/tournament-admin/pairing
-  dropSwitch:
-    urlPrefix: /gemp-lotr-server/tournament-admin/dropSwitch
-  setPlayerDeck:
-    urlPrefix: /gemp-lotr-server/tournament-admin/setPlayerDeck
-  createTournament:
-    urlPrefix: /gemp-lotr-server/tournament-admin/createTournament
-
-parameterNames:
-  actAsParameter: participantId
-  pollId: pollId
+    url: /gemp-lotr-server/player-admin/setPlayerRoles
 
 db:
   connection:
@@ -82,17 +58,3 @@ roles:
   commentator: c
   unbanned: n
   user: u
-
-collection:
-  filter:
-    defaultSort: name
-
-games:
-  threadCount: 5
-  lingerTime: 300000 # 5 minutes
-
-tournament:
-  linger:
-    hours: 48
-  composite:
-    type: composite

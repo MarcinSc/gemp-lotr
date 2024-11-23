@@ -23,19 +23,19 @@ import org.ccgemp.transfer.createTransferSystems
 import java.util.concurrent.Executors
 
 fun main() {
-    val lifecycleSystem = LifecycleSystem()
-    val propertyResolver = YamlPropertyResolver("classpath:/server-config.yaml")
+    val rootPropertyResolver = YamlPropertyResolver("classpath:/root-context-config.yaml")
     val threadPoolFactory = SimpleThreadPoolFactory("Worker-Thread")
     val executorService = Executors.newSingleThreadScheduledExecutor(threadPoolFactory)
 
-    val workerThreadExecutorSystem = WorkerThreadExecutorSystem(threadPoolFactory, executorService)
+    val rootWorkerThreadExecutorSystem = WorkerThreadExecutorSystem(threadPoolFactory, executorService)
+    val rootLifecycleSystem = LifecycleSystem()
 
-    val baseSystems =
+    val rootSystems =
         listOf(
             // Provides access to scheduling tasks
-            workerThreadExecutorSystem,
+            rootWorkerThreadExecutorSystem,
             // Responsible for managing state of the Context
-            lifecycleSystem,
+            rootLifecycleSystem,
             // Responsible for processing ticks within the Context
             UpdatingSystem(),
             // Responsible for managing player logged sessions
@@ -46,6 +46,37 @@ fun main() {
             LongPollingSystem(),
             // Allows access to database
             DbAccessSystem(),
+        )
+
+    val rootContext =
+        DefaultGempukkuContext(
+            null,
+            AnnotationSystemResolver(
+                rootSystems +
+                        createPlayerSystems(),
+            ),
+            AnnotationSystemInitializer(rootPropertyResolver),
+            rootWorkerThreadExecutorSystem,
+        )
+
+    rootContext.initialize()
+
+    rootLifecycleSystem.start()
+
+
+    val lotrPropertyResolver = YamlPropertyResolver("classpath:/lotr-context-config.yaml")
+
+    val lotrWorkerThreadExecutorSystem = WorkerThreadExecutorSystem(threadPoolFactory, executorService)
+    val lotrLifecycleSystem = LifecycleSystem()
+
+    val lotrBaseSystems =
+        listOf(
+            // Provides access to scheduling tasks
+            lotrWorkerThreadExecutorSystem,
+            // Responsible for managing state of the Context
+            lotrLifecycleSystem,
+            // Responsible for processing ticks within the Context
+            UpdatingSystem(),
         )
 
     val lotrSpecificSystems =
@@ -66,28 +97,25 @@ fun main() {
             LotrCollectionContentsSerializer(),
         )
 
-    val serverContext =
+    val lotrContext =
         DefaultGempukkuContext(
-            null,
+            rootContext,
             AnnotationSystemResolver(
-                baseSystems +
-                    createJsonSystems() +
-                    createPlayerSystems() +
-                    createChatSystems() +
-                    createTransferSystems() +
-                    createCollectionSystems() +
-                    createDeckSystems() +
-                    createTournamentSystems() +
-                    createGameSystems() +
-                    lotrSpecificSystems,
+                lotrBaseSystems +
+                        createJsonSystems() +
+                        createChatSystems() +
+                        createTransferSystems() +
+                        createCollectionSystems() +
+                        createDeckSystems() +
+                        createTournamentSystems() +
+                        createGameSystems() +
+                        lotrSpecificSystems,
             ),
-            AnnotationSystemInitializer(propertyResolver),
-            workerThreadExecutorSystem,
+            AnnotationSystemInitializer(lotrPropertyResolver),
+            lotrWorkerThreadExecutorSystem,
         )
 
-    serverContext.initialize()
+    lotrContext.initialize()
 
-    lifecycleSystem.start()
+    lotrLifecycleSystem.start()
 }
-
-private class ResourceLocator
