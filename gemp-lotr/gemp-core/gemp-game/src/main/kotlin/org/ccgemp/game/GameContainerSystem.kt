@@ -1,6 +1,7 @@
 package org.ccgemp.game
 
 import com.gempukku.context.initializer.inject.Inject
+import com.gempukku.context.initializer.inject.InjectList
 import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
@@ -10,12 +11,12 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 @Exposes(GameContainerInterface::class, LifecycleObserver::class, UpdatedSystem::class)
-class GameContainerSystem :
-    GameContainerInterface<Any>,
-    LifecycleObserver,
-    UpdatedSystem {
+class GameContainerSystem : GameContainerInterface<Any>, LifecycleObserver, UpdatedSystem {
     @Inject
     private lateinit var gameProducer: GameProducer
+
+    @InjectList
+    private lateinit var gameResultListener: List<GameResultListener>
 
     @InjectValue("games.threadCount")
     private var gamesThreadCount: Int = 1
@@ -24,7 +25,7 @@ class GameContainerSystem :
     private var gamesLingerTime: Long = 1000 * 60 * 5
 
     private val gameContainers = mutableListOf<GameContainer>()
-    private val games: MutableMap<String, Game> = mutableMapOf()
+    private val games: MutableMap<String, GameEntry> = mutableMapOf()
 
     override fun afterContextStartup() {
         (1..gamesThreadCount).forEach { _ ->
@@ -43,19 +44,30 @@ class GameContainerSystem :
         val currentTime = System.currentTimeMillis()
         val gamesToRemove = mutableSetOf<String>()
 
-        games.forEach { (gameId, game) ->
+        games.forEach { (gameId, gameEntry) ->
             val gameContainer = findGameContainer(gameId)
 
-            val gameFinished = game.gameFinished
-            if (gameFinished != null && currentTime > gameFinished + gamesLingerTime) {
+            val gameResult = gameEntry.game.gameResult
+            if (gameResult != null && !gameEntry.notifiedFinished) {
+                gameResultListener.forEach {
+                    if (gameResult.cancelled) {
+                        it.gameCancelled(gameId)
+                    } else {
+                        it.gameFinished(gameId, gameEntry.game.gameParticipants, gameResult.winner!!)
+                    }
+                }
+                gameEntry.notifiedFinished = true
+            }
+            if (gameResult != null && currentTime > gameResult.finishTime + gamesLingerTime) {
                 gameContainer?.executorService?.execute {
-                    game.finalizeGame()
+                    gameEntry.game.finalizeGame()
                     gameContainer.games.remove(gameId)
                     gamesToRemove.add(gameId)
                 }
-            } else if (gameFinished == null) {
+            }
+            if (gameResult == null) {
                 gameContainer?.executorService?.execute {
-                    game.checkForTimeouts()
+                    gameEntry.game.checkForTimeouts()
                 }
             }
         }
@@ -68,7 +80,7 @@ class GameContainerSystem :
         val gameContainer = findBestContainer()
         val gameId = generateUniqueId()
         val game = gameProducer.createGame(participants, gameSettings)
-        games[gameId] = game
+        games[gameId] = GameEntry(game, false)
         gameContainer.games.add(gameId)
         return gameId
     }
@@ -79,7 +91,8 @@ class GameContainerSystem :
         admin: Boolean,
         gameStream: GameStream<Any>,
     ): Runnable? {
-        val game = games[gameId] ?: return null
+        val gameEntry = games[gameId] ?: return null
+        val game = gameEntry.game
 
         val gameSettings = game.gameSettings
         if (gameSettings.private && !admin && !game.gameParticipants.any { it.playerId == playerId }) {
@@ -107,12 +120,12 @@ class GameContainerSystem :
         decisionId: String,
         decisionValue: String,
     ): Boolean {
-        val game = games[gameId] ?: return false
+        val gameEntry = games[gameId] ?: return false
 
         val container = findGameContainer(gameId)
         return container?.let {
             it.executorService.execute {
-                processDecisionInGameThread(game, playerId, decisionId, decisionValue)
+                processDecisionInGameThread(gameEntry.game, playerId, decisionId, decisionValue)
             }
             true
         } ?: false
@@ -154,4 +167,9 @@ class GameContainerSystem :
 internal class GameContainer(
     val executorService: ExecutorService,
     val games: MutableSet<String> = mutableSetOf(),
+)
+
+internal data class GameEntry(
+    val game: Game,
+    var notifiedFinished: Boolean,
 )

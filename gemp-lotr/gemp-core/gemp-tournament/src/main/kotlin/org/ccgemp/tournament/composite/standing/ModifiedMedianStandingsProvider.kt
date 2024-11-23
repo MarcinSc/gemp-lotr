@@ -57,7 +57,7 @@ private class ModifiedMedianStandings(
         for (match in finishedNonByeMatches) {
             playerOpponents[match.winner]!!.add(match.loser!!)
             playerOpponents[match.loser]!!.add(match.winner!!)
-            playerWinCounts.incrementFor(match.winner)
+            playerWinCounts.incrementFor(match.winner!!)
             playerLossCounts.incrementFor(match.loser)
         }
 

@@ -21,6 +21,14 @@ interface TournamentRepository {
         winner: String? = null,
     )
 
+    fun setMatchWinner(
+        tournamentId: String,
+        round: Int,
+        playerOne: String,
+        playerTwo: String,
+        winner: String,
+    )
+
     fun addPlayer(tournamentId: String, player: String)
 
     fun setPlayerDrop(tournamentId: String, player: String, dropped: Boolean)

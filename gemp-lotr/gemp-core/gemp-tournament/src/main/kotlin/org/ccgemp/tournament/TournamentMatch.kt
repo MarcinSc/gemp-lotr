@@ -6,7 +6,7 @@ data class TournamentMatch(
     val round: Int = 0,
     val playerOne: String,
     val playerTwo: String,
-    val winner: String?,
+    var winner: String?,
 ) {
     val bye = playerTwo == BYE_NAME
     val finished = winner != null

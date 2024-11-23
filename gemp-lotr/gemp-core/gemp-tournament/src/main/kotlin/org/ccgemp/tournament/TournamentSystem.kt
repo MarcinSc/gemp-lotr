@@ -12,12 +12,14 @@ import org.ccgemp.deck.toDeckParts
 import org.ccgemp.deck.toDeckString
 import org.ccgemp.game.GameContainerInterface
 import org.ccgemp.game.GameParticipant
+import org.ccgemp.game.GameResultListener
+import org.ccgemp.game.GameSettings
 import java.time.LocalDateTime
 
 const val FINISHED_STAGE = "FINISHED"
 
-@Exposes(UpdatedSystem::class, TournamentInterface::class)
-class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
+@Exposes(UpdatedSystem::class, TournamentInterface::class, GameResultListener::class)
+class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, GameResultListener {
     @Inject
     private lateinit var repository: TournamentRepository
 
@@ -122,8 +124,9 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
 
     override fun setPlayerDrop(tournamentId: String, player: String, drop: Boolean): Boolean {
         val tournament = loadedTournaments[tournamentId]
-        if (tournament == null || tournament.finished)
+        if (tournament == null || tournament.finished) {
             return false
+        }
 
         val tournamentPlayer = tournament.players.firstOrNull { it.player == player } ?: return false
         repository.setPlayerDrop(tournamentId, player, drop)
@@ -132,10 +135,16 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
         return true
     }
 
-    override fun setPlayerDeck(tournamentId: String, player: String, deckType: String, deckName: String): Boolean {
+    override fun setPlayerDeck(
+        tournamentId: String,
+        player: String,
+        deckType: String,
+        deckName: String,
+    ): Boolean {
         val tournament = loadedTournaments[tournamentId]
-        if (tournament == null || tournament.finished)
+        if (tournament == null || tournament.finished) {
             return false
+        }
 
         val tournamentPlayer = tournament.players.firstOrNull { it.player == player } ?: return false
 
@@ -168,6 +177,35 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
         }
     }
 
+    override fun gameCancelled(gameId: String) {
+        loadedTournaments.values.forEach { tournament ->
+            val gameEntry = tournament.runningGames[gameId]
+            if (gameEntry != null) {
+                tournament.runningGames.remove(gameId)
+                // Restart the game
+                val newGameId = gameContainerInterface.createNewGame(gameEntry.gameParticipants, gameEntry.gameSettings)
+                tournament.runningGames[newGameId] = RunningGameEntry(gameEntry.round, gameEntry.gameSettings, gameEntry.gameParticipants)
+            }
+        }
+    }
+
+    override fun gameFinished(gameId: String, participants: Array<GameParticipant>, winner: String) {
+        loadedTournaments.values.forEach { tournament ->
+            val gameEntry = tournament.runningGames[gameId]
+            if (gameEntry != null) {
+                tournament.runningGames.remove(gameId)
+
+                val playerOne = participants[0].playerId
+                val playerTwo = participants[1].playerId
+                repository.setMatchWinner(tournament.id, gameEntry.round, playerOne, playerTwo, winner)
+                val match = tournament.matches.firstOrNull { it.round == gameEntry.round && it.playerOne == playerOne && it.playerTwo == playerTwo }
+                match?.let {
+                    it.winner = winner
+                }
+            }
+        }
+    }
+
     private fun initialize() {
         repository.getUnfinishedOrStartAfter(LocalDateTime.now().minusHours(tournamentLingerHours)).forEach { tournament ->
             val tournamentHandler = findHandler(tournament.type)
@@ -185,7 +223,7 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
                     tournament.round,
                     mutableListOf(),
                     mutableListOf(),
-                    mutableSetOf(),
+                    mutableMapOf(),
                 )
 
             val tournamentDecks = repository.getTournamentDecks(tournament.tournamentId).groupBy { it.player }
@@ -219,13 +257,15 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
         val type = handler.getPlayedDeckType(tournament, round)
         val deckOne = tournament.players.firstOrNull { it.player == playerOne }!!.decks[type]!!
         val deckTwo = tournament.players.firstOrNull { it.player == playerTwo }!!.decks[type]!!
+
+        val gameSettings = handler.getGameSettings(tournament, round)
         val participants =
             arrayOf(
                 GameParticipant(playerOne, deckOne),
                 GameParticipant(playerTwo, deckTwo),
             )
-        val gameId = gameContainerInterface.createNewGame(participants, handler.getGameSettings(tournament, round))
-        tournament.runningGames.add(gameId)
+        val gameId = gameContainerInterface.createNewGame(participants, gameSettings)
+        tournament.runningGames[gameId] = RunningGameEntry(round, gameSettings, participants)
     }
 
     private fun TournamentPlayer.toParticipant(decks: List<TournamentDeck>): TournamentParticipant {
@@ -281,11 +321,17 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
         override var round: Int,
         override val players: MutableList<TournamentParticipant>,
         override val matches: MutableList<TournamentMatch>,
-        val runningGames: MutableSet<String>,
+        val runningGames: MutableMap<String, RunningGameEntry>,
     ) : TournamentInfo<TournamentData>, TournamentClientInfo {
         override val status: String
             get() = handler.getTournamentStatus(this)
         override val finished: Boolean
             get() = stage == FINISHED_STAGE
     }
+
+    data class RunningGameEntry(
+        val round: Int,
+        val gameSettings: GameSettings,
+        val gameParticipants: Array<GameParticipant>,
+    )
 }

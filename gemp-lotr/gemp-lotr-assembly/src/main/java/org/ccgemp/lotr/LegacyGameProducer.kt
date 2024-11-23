@@ -10,6 +10,7 @@ import com.gempukku.lotro.logic.timing.DefaultLotroGame
 import org.ccgemp.game.Game
 import org.ccgemp.game.GameParticipant
 import org.ccgemp.game.GameProducer
+import org.ccgemp.game.GameResult
 import org.ccgemp.game.GameSettings
 import org.ccgemp.game.GameStream
 import java.util.logging.Level
@@ -49,7 +50,9 @@ internal class LegacyGame(
     private val lotroGame: DefaultLotroGame,
     private val userFeedback: DefaultUserFeedback,
 ) : Game {
-    private var gameFinishedTime: Long? = null
+    @Volatile
+    override var gameResult: GameResult? = null
+
     private var playerClocks: MutableMap<String, Int> = HashMap()
     private val openChatStreams: MutableSet<GameStreamConfig> = mutableSetOf()
 
@@ -58,9 +61,6 @@ internal class LegacyGame(
             playerClocks[it.playerId] = 0
         }
     }
-
-    override val gameFinished: Long?
-        get() = gameFinishedTime
 
     override fun processDecision(playerId: String, decisionId: String, decisionValue: String) {
         val awaitingDecision = userFeedback.getAwaitingDecision(playerId)
@@ -127,6 +127,17 @@ internal class LegacyGame(
         lotroGame.addGameStateListener(
             playerId,
             GameStateStreamListener(playerId, lotroGame.format, gameStream as GameStream<GameEvent>),
+        )
+        lotroGame.addGameResultListener(
+            object : com.gempukku.lotro.logic.timing.GameResultListener {
+                override fun gameCancelled() {
+                    gameResult = GameResult(System.currentTimeMillis(), true, null)
+                }
+
+                override fun gameFinished(winnerPlayerId: String?, winReason: String?, loserPlayerIdsWithReasons: MutableMap<String, String>?) {
+                    gameResult = GameResult(System.currentTimeMillis(), false, winnerPlayerId)
+                }
+            },
         )
         openChatStreams.add(GameStreamConfig(playerId, channelId, gameStream))
     }

@@ -136,6 +136,28 @@ class DbTournamentRepository : TournamentRepository {
             .executeUpdate()
     }
 
+    override fun setMatchWinner(
+        tournamentId: String,
+        round: Int,
+        playerOne: String,
+        playerTwo: String,
+        winner: String,
+    ) = dbAccess.openDB().runInTransaction { connection, _ ->
+        val sql =
+            """
+            UPDATE tournament_match SET winner = :winner 
+            WHERE tournament_id = :tournamentId and round = :round and playerOne = :playerOne and playerTwo = :playerTwo
+            """.trimIndent()
+        connection
+            .createQuery(sql)
+            .addParameter("tournamentId", tournamentId)
+            .addParameter("round", round)
+            .addParameter("playerOne", playerOne)
+            .addParameter("playerTwo", playerTwo)
+            .addParameter("winner", winner)
+            .executeUpdate()
+    }
+
     override fun addPlayer(tournamentId: String, player: String) =
         dbAccess.openDB().runInTransaction { connection, _ ->
             val sql =

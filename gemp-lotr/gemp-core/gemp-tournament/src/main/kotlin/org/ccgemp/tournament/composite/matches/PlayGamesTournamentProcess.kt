@@ -60,12 +60,12 @@ class PlayGamesTournamentProcess(
 
             PLAYING_GAMES -> {
                 if (matches.none {
-                        it.round == round && it.winner == null
+                        it.round == round && !it.finished
                     }
                 ) {
                     if (dropLosers) {
                         matches.filter { it.round == round && !it.bye }.forEach {
-                            val loser = (listOf(it.playerOne, it.playerTwo) - it.winner!!).first()
+                            val loser = it.loser!!
                             tournamentProgress.dropPlayer(loser)
                         }
                     }

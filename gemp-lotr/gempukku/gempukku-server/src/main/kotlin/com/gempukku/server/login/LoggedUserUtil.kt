@@ -22,11 +22,7 @@ fun getActingAsUser(
     }
 }
 
-fun validateHasRole(
-    requestHandler: ServerRequestHandler,
-    loggedUserInterface: LoggedUserInterface,
-    role: String,
-): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
+fun validateHasRole(requestHandler: ServerRequestHandler, loggedUserInterface: LoggedUserInterface, role: String): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
     { request, responseWriter ->
         val loggedUser = getLoggedUser(loggedUserInterface, request)
         if (loggedUser.roles.contains(role)) {

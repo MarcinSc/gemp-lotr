@@ -17,5 +17,10 @@ interface TournamentInterface {
 
     fun setPlayerDrop(tournamentId: String, player: String, drop: Boolean): Boolean
 
-    fun setPlayerDeck(tournamentId: String, player: String, deckType: String, deckName: String): Boolean
+    fun setPlayerDeck(
+        tournamentId: String,
+        player: String,
+        deckType: String,
+        deckName: String,
+    ): Boolean
 }

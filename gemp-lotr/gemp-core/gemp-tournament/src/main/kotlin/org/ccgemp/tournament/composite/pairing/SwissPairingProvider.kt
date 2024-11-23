@@ -62,9 +62,9 @@ class SwissPairing(
         // Get all players that got a bye in the same bye group
         val playersWithByes = matches.filter { it.bye && byeGroups[it.round] == byeGroup }.mapNotNullTo(mutableSetOf()) { it.winner }
         val previouslyPaired =
-            notDroppedPlayers.associate { player ->
+            notDroppedPlayers.associateWith { player ->
                 val opponents = notByeMatches.filter { it.hasPlayer(player) && pairingGroups[it.round] == pairingGroup }.mapNotNullTo(mutableSetOf()) { it.getOpponent(player) }
-                player to opponents
+                opponents
             }
 
         val pairingResults = mutableMapOf<String, String>()

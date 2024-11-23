@@ -2,8 +2,8 @@ package org.ccgemp.game
 
 interface Game {
     val gameSettings: GameSettings
-    val gameFinished: Long?
     val gameParticipants: Array<GameParticipant>
+    val gameResult: GameResult?
 
     fun processDecision(playerId: String, decisionId: String, decisionValue: String)
 

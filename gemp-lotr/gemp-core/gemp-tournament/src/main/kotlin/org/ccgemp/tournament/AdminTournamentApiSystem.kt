@@ -4,7 +4,10 @@ import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
-import com.gempukku.server.*
+import com.gempukku.server.HttpMethod
+import com.gempukku.server.HttpProcessingException
+import com.gempukku.server.HttpServer
+import com.gempukku.server.ServerRequestHandler
 import com.gempukku.server.login.LoggedUserInterface
 import com.gempukku.server.login.validateHasRole
 import org.ccgemp.json.JsonProvider
@@ -70,14 +73,14 @@ class AdminTournamentApiSystem : LifecycleObserver {
                 HttpMethod.POST,
                 "^$dropSwitchUrlPrefix/([^/]*)$",
                 validateHasRole(executeDropSwitch(), loggedUserInterface, adminRole),
-            )
+            ),
         )
         deregistration.add(
             httpServer.registerRequestHandler(
                 HttpMethod.POST,
                 "^$setPlayerDeckUrlPrefix/([^/]*)$",
                 validateHasRole(executeSetPlayerDeck(), loggedUserInterface, adminRole),
-            )
+            ),
         )
     }
 
