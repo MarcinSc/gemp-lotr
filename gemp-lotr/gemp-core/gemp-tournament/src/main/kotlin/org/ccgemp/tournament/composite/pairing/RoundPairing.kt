@@ -1,4 +1,4 @@
-package org.ccgemp.tournament.composite.matches.pairing
+package org.ccgemp.tournament.composite.pairing
 
 data class RoundPairing(
     val pairings: Set<Pair<String, String>>,

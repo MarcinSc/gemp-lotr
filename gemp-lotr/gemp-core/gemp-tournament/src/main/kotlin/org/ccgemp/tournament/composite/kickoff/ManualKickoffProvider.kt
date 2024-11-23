@@ -1,4 +1,4 @@
-package org.ccgemp.tournament.composite.matches.kickoff
+package org.ccgemp.tournament.composite.kickoff
 
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.lifecycle.LifecycleObserver
@@ -6,8 +6,8 @@ import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.json.JsonWithConfig
 import org.ccgemp.tournament.composite.CompositeTournamentUnloadNotified
 
-@Exposes(LifecycleObserver::class, CompositeTournamentUnloadNotified::class)
-class ManualKickoffProvider : LifecycleObserver, CompositeTournamentUnloadNotified {
+@Exposes(LifecycleObserver::class, CompositeTournamentUnloadNotified::class, ManualKickoff::class)
+class ManualKickoffProvider : LifecycleObserver, CompositeTournamentUnloadNotified, ManualKickoff {
     @Inject
     private lateinit var registry: TournamentKickoffRegistry
 
@@ -26,8 +26,10 @@ class ManualKickoffProvider : LifecycleObserver, CompositeTournamentUnloadNotifi
         tournamentKickoffs.remove(tournamentId)
     }
 
-    private fun kickoffRound(tournamentId: String, round: Int) {
-        tournamentKickoffs[tournamentId]?.add(round)
+    override fun kickoffRound(tournamentId: String, round: Int): Boolean {
+        val kickoff = tournamentKickoffs[tournamentId] ?: return false
+        kickoff.add(round)
+        return true
     }
 
     inner class ManualKickoff(

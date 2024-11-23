@@ -1,4 +1,4 @@
-package org.ccgemp.tournament.composite.matches.kickoff
+package org.ccgemp.tournament.composite.kickoff
 
 interface Kickoff {
     fun isKickedOff(round: Int): Boolean

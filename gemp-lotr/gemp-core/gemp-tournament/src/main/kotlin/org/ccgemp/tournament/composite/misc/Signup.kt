@@ -22,9 +22,15 @@ class Signup(
             (allowedPlayers == null || allowedPlayers.contains(player))
     }
 
-    override fun canRegisterDecks(players: List<TournamentParticipant>, player: String, decks: List<GameDeck>): Boolean {
+    override fun canRegisterDecks(
+        round: Int,
+        stage: String,
+        players: List<TournamentParticipant>,
+        player: String,
+        decks: List<GameDeck>,
+    ): Boolean {
         return validators.withIndex().all {
-            it.value.isValid(decks[it.index])
+            it.value.isValid(player, decks[it.index])
         }
     }
 

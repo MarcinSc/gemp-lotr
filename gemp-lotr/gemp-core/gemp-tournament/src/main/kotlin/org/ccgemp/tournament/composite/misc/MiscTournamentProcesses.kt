@@ -8,8 +8,8 @@ import org.ccgemp.json.JsonWithConfig
 import org.ccgemp.tournament.composite.TournamentProcess
 import org.ccgemp.tournament.composite.TournamentProcessConfig
 import org.ccgemp.tournament.composite.TournamentProcessRegistry
-import org.ccgemp.tournament.composite.matches.standing.StandingsConfig
-import org.ccgemp.tournament.composite.matches.standing.TournamentStandingsRegistry
+import org.ccgemp.tournament.composite.standing.StandingsConfig
+import org.ccgemp.tournament.composite.standing.TournamentStandingsRegistry
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 

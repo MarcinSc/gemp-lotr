@@ -1,7 +1,6 @@
 package org.ccgemp.collection
 
 import com.gempukku.context.initializer.inject.Inject
-import com.gempukku.context.initializer.inject.InjectList
 import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
@@ -12,8 +11,8 @@ import com.gempukku.server.HttpServer
 import com.gempukku.server.ResponseWriter
 import com.gempukku.server.login.LoggedUserInterface
 import com.gempukku.server.login.getActingAsUser
-import org.ccgemp.common.GempCollectionItem
 import org.ccgemp.common.CollectionContentsSerializer
+import org.ccgemp.common.GempCollectionItem
 import javax.xml.parsers.DocumentBuilderFactory
 
 @Exposes(LifecycleObserver::class)

@@ -45,7 +45,12 @@ class LotrCollectionContentsSerializer : CollectionContentsSerializer {
         return collectionElem
     }
 
-    override fun serializeCardListToXml(document: Document, cardList: List<GempCollectionItem>, start: Int, count: Int): Element {
+    override fun serializeCardListToXml(
+        document: Document,
+        cardList: List<GempCollectionItem>,
+        start: Int,
+        count: Int,
+    ): Element {
         val collectionElem = document.createElement("collection")
         collectionElem.setAttribute("count", cardList.size.toString())
 

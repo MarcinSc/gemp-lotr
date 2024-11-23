@@ -1,4 +1,4 @@
-package org.ccgemp.tournament.composite.matches.kickoff
+package org.ccgemp.tournament.composite.kickoff
 
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.lifecycle.LifecycleObserver

@@ -1,4 +1,4 @@
-package org.ccgemp.tournament.composite.matches.standing
+package org.ccgemp.tournament.composite.standing
 
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.lifecycle.LifecycleObserver

@@ -151,17 +151,18 @@ class DbTournamentRepository : TournamentRepository {
                 .executeUpdate()
         }
 
-    override fun dropPlayer(tournamentId: String, player: String) =
+    override fun setPlayerDrop(tournamentId: String, player: String, dropped: Boolean) =
         dbAccess.openDB().runInTransaction { connection, _ ->
             val sql =
                 """
-                UPDATE tournament_player set dropped = true
+                UPDATE tournament_player set dropped = :dropped
                 WHERE tournament_id = :tournamentId and player = :player
                 """.trimIndent()
             connection
                 .createQuery(sql)
                 .addParameter("tournamentId", tournamentId)
                 .addParameter("player", player)
+                .addParameter("dropped", dropped)
                 .executeUpdate()
         }
 

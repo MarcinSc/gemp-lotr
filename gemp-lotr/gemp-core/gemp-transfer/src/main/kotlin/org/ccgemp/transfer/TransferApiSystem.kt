@@ -56,7 +56,7 @@ class TransferApiSystem : LifecycleObserver {
     }
 
     private fun checkForDelivery() =
-        object: ServerResponseHeaderProcessor {
+        object : ServerResponseHeaderProcessor {
             override fun getExtraHeaders(request: HttpRequest): Map<String, String> {
                 val actAsUser = getActingAsUser(loggedUserInterface, request, adminRole, actAsParameter)
 

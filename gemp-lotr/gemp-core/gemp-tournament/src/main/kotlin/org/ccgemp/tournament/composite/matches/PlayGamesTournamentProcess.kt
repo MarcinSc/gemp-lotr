@@ -7,8 +7,8 @@ import org.ccgemp.tournament.TournamentMatch
 import org.ccgemp.tournament.TournamentParticipant
 import org.ccgemp.tournament.TournamentProgress
 import org.ccgemp.tournament.composite.MatchesTournamentProcess
-import org.ccgemp.tournament.composite.matches.kickoff.Kickoff
-import org.ccgemp.tournament.composite.matches.pairing.Pairing
+import org.ccgemp.tournament.composite.kickoff.Kickoff
+import org.ccgemp.tournament.composite.pairing.Pairing
 
 const val PLAYING_GAMES = "PLAYING_GAMES"
 const val AWAITING_KICKOFF = "AWAITING_KICKOFF"

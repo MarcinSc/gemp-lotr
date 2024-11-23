@@ -71,15 +71,15 @@ fun main() {
             null,
             AnnotationSystemResolver(
                 baseSystems +
-                        createJsonSystems() +
-                        createPlayerSystems() +
-                        createChatSystems() +
-                        createTransferSystems() +
-                        createCollectionSystems() +
-                        createDeckSystems() +
-                        createTournamentSystems() +
-                        createGameSystems() +
-                        lotrSpecificSystems,
+                    createJsonSystems() +
+                    createPlayerSystems() +
+                    createChatSystems() +
+                    createTransferSystems() +
+                    createCollectionSystems() +
+                    createDeckSystems() +
+                    createTournamentSystems() +
+                    createGameSystems() +
+                    lotrSpecificSystems,
             ),
             AnnotationSystemInitializer(propertyResolver),
             workerThreadExecutorSystem,

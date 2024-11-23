@@ -178,7 +178,6 @@ class NettyServerSystem :
     }
 
     inner class GempukkuHttpRequestHandler : SimpleChannelInboundHandler<FullHttpRequest>() {
-
         private val fileCache: MutableMap<String, ByteArray?> = Collections.synchronizedMap(HashMap())
 
         override fun channelRead0(ctx: ChannelHandlerContext, httpRequest: FullHttpRequest) {
@@ -205,7 +204,6 @@ class NettyServerSystem :
                     externalHttpRequest,
                     System.currentTimeMillis(),
                 )
-
 
             val responseSender = ResponseSender(requestInformation, ctx, httpRequest)
 
@@ -557,7 +555,6 @@ class NettyServerSystem :
             io.netty.handler.codec.http.HttpMethod.POST -> HttpMethod.POST
             else -> HttpMethod.GET
         }
-
 }
 
 private data class PendingRequest(

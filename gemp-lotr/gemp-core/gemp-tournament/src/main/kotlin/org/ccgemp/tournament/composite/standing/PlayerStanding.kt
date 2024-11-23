@@ -1,4 +1,4 @@
-package org.ccgemp.tournament.composite.matches.standing
+package org.ccgemp.tournament.composite.standing
 
 data class PlayerStanding(
     val name: String,

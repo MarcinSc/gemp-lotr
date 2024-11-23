@@ -5,7 +5,7 @@ import org.ccgemp.tournament.TournamentMatch
 import org.ccgemp.tournament.TournamentParticipant
 import org.ccgemp.tournament.TournamentProgress
 import org.ccgemp.tournament.composite.TournamentProcess
-import org.ccgemp.tournament.composite.matches.standing.Standings
+import org.ccgemp.tournament.composite.standing.Standings
 
 class CutToTopX(
     private val x: Int,

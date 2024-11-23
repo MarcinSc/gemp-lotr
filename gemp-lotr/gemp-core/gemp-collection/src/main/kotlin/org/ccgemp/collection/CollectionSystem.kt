@@ -3,8 +3,8 @@ package org.ccgemp.collection
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectList
 import com.gempukku.context.resolver.expose.Exposes
-import org.ccgemp.common.GempCollection
 import org.ccgemp.common.DefaultGempCollection
+import org.ccgemp.common.GempCollection
 import org.ccgemp.transfer.TransferInterface
 
 @Exposes(CollectionInterface::class)
@@ -82,13 +82,13 @@ class CollectionSystem : CollectionInterface {
         val entries = repository.getPlayerCollectionEntries(collectionInfos.toSet()).groupBy { it.collection_id }
         return collectionInfos.associate { collection ->
             collection.player!! to
-                    run {
-                        val result = DefaultGempCollection()
-                        entries[collection.id]?.forEach {
-                            result.addItem(it.product!!, it.quantity)
-                        }
-                        result
+                run {
+                    val result = DefaultGempCollection()
+                    entries[collection.id]?.forEach {
+                        result.addItem(it.product!!, it.quantity)
                     }
+                    result
+                }
         }.onEach { (player, collection) ->
             collectionCache[CollectionCacheKey(player, type)] = collection
         }
@@ -112,12 +112,12 @@ class CollectionSystem : CollectionInterface {
         val productBox = productLibrary.getProductBox(packId) ?: return null
         val openedPack = productBox.openPack()
         if (productLibrary.isSelection(packId)) {
-            if (selection == null || selection !in openedPack) {
+            if (selection == null || openedPack.getItemCount(selection) < 1) {
                 return null
             }
 
             val addCollection = DefaultGempCollection()
-            addCollection.addItem(selection, 1)
+            addCollection.addItem(selection, openedPack.getItemCount(selection))
 
             internalRemoveFromCollection(collectionInfo, CollectionChange(false, "Opened pack", removeCollection))
             internalAddToCollection(collectionInfo, CollectionChange(true, "Opened pack", addCollection))
@@ -126,32 +126,21 @@ class CollectionSystem : CollectionInterface {
 
             return addCollection
         } else {
-            val addCollection = DefaultGempCollection()
-            openedPack.forEach {
-                addCollection.addItem(it, 1)
-            }
-
             internalRemoveFromCollection(collectionInfo, CollectionChange(false, "Opened pack", removeCollection))
-            internalAddToCollection(collectionInfo, CollectionChange(true, "Opened pack", addCollection))
+            internalAddToCollection(collectionInfo, CollectionChange(true, "Opened pack", openedPack))
 
             collectionCache.remove(CollectionCacheKey(player, type))
 
-            return addCollection
+            return openedPack
         }
     }
 
-    private fun internalRemoveFromCollection(
-        collectionInfo: CollectionInfo,
-        collectionChange: CollectionChange,
-    ) {
+    private fun internalRemoveFromCollection(collectionInfo: CollectionInfo, collectionChange: CollectionChange) {
         repository.removeFromCollection(collectionInfo, collectionChange)
         transferInterface?.addTransferFrom(collectionInfo.player!!, collectionChange.reason, collectionInfo.type!!, collectionChange.collection)
     }
 
-    private fun internalAddToCollection(
-        collectionInfo: CollectionInfo,
-        collectionChange: CollectionChange,
-    ) {
+    private fun internalAddToCollection(collectionInfo: CollectionInfo, collectionChange: CollectionChange) {
         repository.addToCollection(collectionInfo, collectionChange)
         transferInterface?.addTransferTo(collectionInfo.player!!, collectionChange.reason, collectionChange.notify, collectionInfo.type!!, collectionChange.collection)
     }

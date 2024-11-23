@@ -9,9 +9,8 @@ import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpRequest
 import com.gempukku.server.HttpServer
 import com.gempukku.server.ResponseWriter
-import com.gempukku.server.ServerRequestHandler
 import com.gempukku.server.login.LoggedUserInterface
-import com.gempukku.server.login.getLoggedUser
+import com.gempukku.server.login.validateHasRole
 import javax.xml.parsers.DocumentBuilderFactory
 
 @Exposes(LifecycleObserver::class)
@@ -53,42 +52,42 @@ class AdminPlayerApiSystem : LifecycleObserver {
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$banPlayerUrl$",
-                validateAdmin(executeBanPlayer()),
+                validateHasRole(executeBanPlayer(), loggedUserSystem, adminRole),
             ),
         )
         deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$banPlayersUrl$",
-                validateAdmin(executeBanPlayers()),
+                validateHasRole(executeBanPlayers(), loggedUserSystem, adminRole),
             ),
         )
         deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$banPlayerTemporarilyUrl$",
-                validateAdmin(executeBanPlayerTemporarily()),
+                validateHasRole(executeBanPlayerTemporarily(), loggedUserSystem, adminRole),
             ),
         )
         deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$unbanPlayerUrl",
-                validateAdmin(executeUnbanPlayer()),
+                validateHasRole(executeUnbanPlayer(), loggedUserSystem, adminRole),
             ),
         )
         deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.GET,
                 "^$getPlayerRolesUrl$",
-                validateAdmin(executeGetPlayerRoles()),
+                validateHasRole(executeGetPlayerRoles(), loggedUserSystem, adminRole),
             ),
         )
         deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$setPlayerRolesUrl",
-                validateAdmin(executeSetPlayerRoles()),
+                validateHasRole(executeSetPlayerRoles(), loggedUserSystem, adminRole),
             ),
         )
     }
@@ -168,19 +167,5 @@ class AdminPlayerApiSystem : LifecycleObserver {
             it.run()
         }
         deregistration.clear()
-    }
-
-    private fun validateAdmin(requestHandler: ServerRequestHandler): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
-        { request, responseWriter ->
-            validateArmin(request)
-
-            requestHandler.handleRequest(request, responseWriter)
-        }
-
-    private fun validateArmin(request: HttpRequest) {
-        val loggedUser = getLoggedUser(loggedUserSystem, request)
-        if (loggedUser.roles.contains(adminRole)) {
-            throw HttpProcessingException(403)
-        }
     }
 }

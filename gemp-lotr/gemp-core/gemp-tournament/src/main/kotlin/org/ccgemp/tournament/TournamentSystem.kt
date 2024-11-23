@@ -58,12 +58,7 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
         return loadedTournaments[tournamentId]
     }
 
-    override fun joinTournament(
-        tournamentId: String,
-        player: String,
-        deckNames: List<String>,
-        forced: Boolean,
-    ) {
+    override fun joinTournament(tournamentId: String, player: String, deckNames: List<String>) {
         val tournament = loadedTournaments[tournamentId]
         if (tournament == null || tournament.finished) {
             throw HttpProcessingException(404)
@@ -74,7 +69,7 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
                 deckInterface.findDeck(player, it)
             }.toMutableList()
 
-        if (tournament.handler.canJoinTournament(tournament, player, forced) && tournament.handler.canRegisterDecks(tournament, player, decks, forced)) {
+        if (tournament.handler.canJoinTournament(tournament, player) && tournament.handler.canRegisterDecks(tournament, player, decks)) {
             repository.addPlayer(tournamentId, player)
             val deckMap = mutableMapOf<String, GameDeck>()
             tournament.handler.getRegisterDeckTypes(tournament).forEachIndexed { index, type ->
@@ -94,16 +89,11 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
             throw HttpProcessingException(404)
         }
 
-        repository.dropPlayer(tournamentId, player)
+        repository.setPlayerDrop(tournamentId, player, true)
         tournament.players.firstOrNull { it.player == player }?.dropped = true
     }
 
-    override fun registerDecks(
-        tournamentId: String,
-        player: String,
-        deckNames: List<String>,
-        forced: Boolean,
-    ) {
+    override fun registerDecks(tournamentId: String, player: String, deckNames: List<String>) {
         val tournament = loadedTournaments[tournamentId]
         if (tournament == null || tournament.finished) {
             throw HttpProcessingException(404)
@@ -119,7 +109,7 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
             throw HttpProcessingException(404)
         }
 
-        if (tournament.handler.canRegisterDecks(tournament, player, decks, forced)) {
+        if (tournament.handler.canRegisterDecks(tournament, player, decks)) {
             tournament.handler.getRegisterDeckTypes(tournament).forEachIndexed { index, type ->
                 val deck = decks[index]
                 repository.upsertDeck(tournamentId, player, type, deck.name, deck.notes, deck.targetFormat, deck.toDeckString())
@@ -128,6 +118,33 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
         } else {
             throw HttpProcessingException(403)
         }
+    }
+
+    override fun setPlayerDrop(tournamentId: String, player: String, drop: Boolean): Boolean {
+        val tournament = loadedTournaments[tournamentId]
+        if (tournament == null || tournament.finished)
+            return false
+
+        val tournamentPlayer = tournament.players.firstOrNull { it.player == player } ?: return false
+        repository.setPlayerDrop(tournamentId, player, drop)
+        tournamentPlayer.dropped = drop
+
+        return true
+    }
+
+    override fun setPlayerDeck(tournamentId: String, player: String, deckType: String, deckName: String): Boolean {
+        val tournament = loadedTournaments[tournamentId]
+        if (tournament == null || tournament.finished)
+            return false
+
+        val tournamentPlayer = tournament.players.firstOrNull { it.player == player } ?: return false
+
+        val deck = deckInterface.findDeck(player, deckName) ?: return false
+
+        repository.upsertDeck(tournamentId, player, deckType, deck.name, deck.notes, deck.targetFormat, deck.toDeckString())
+        tournamentPlayer.decks[deckType] = deck
+
+        return true
     }
 
     override fun update() {
@@ -249,7 +266,7 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver {
         }
 
         override fun dropPlayer(player: String) {
-            repository.dropPlayer(info.id, player)
+            repository.setPlayerDrop(info.id, player, true)
             info.players.firstOrNull { it.player == player }?.dropped = true
         }
     }

@@ -32,7 +32,7 @@ class DummyDeckSystem : DeckInterface {
 
     override fun getValidator(format: String): DeckValidator {
         return object : DeckValidator {
-            override fun isValid(deck: GameDeck?): Boolean {
+            override fun isValid(player: String, deck: GameDeck): Boolean {
                 return true
             }
         }

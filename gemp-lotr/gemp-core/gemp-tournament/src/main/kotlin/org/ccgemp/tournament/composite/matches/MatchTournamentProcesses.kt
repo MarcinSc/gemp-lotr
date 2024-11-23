@@ -9,10 +9,10 @@ import org.ccgemp.json.JsonWithConfig
 import org.ccgemp.tournament.composite.TournamentProcess
 import org.ccgemp.tournament.composite.TournamentProcessConfig
 import org.ccgemp.tournament.composite.TournamentProcessRegistry
-import org.ccgemp.tournament.composite.matches.kickoff.KickoffConfig
-import org.ccgemp.tournament.composite.matches.kickoff.TournamentKickoffRegistry
-import org.ccgemp.tournament.composite.matches.pairing.PairingConfig
-import org.ccgemp.tournament.composite.matches.pairing.TournamentPairingRegistry
+import org.ccgemp.tournament.composite.kickoff.KickoffConfig
+import org.ccgemp.tournament.composite.kickoff.TournamentKickoffRegistry
+import org.ccgemp.tournament.composite.pairing.PairingConfig
+import org.ccgemp.tournament.composite.pairing.TournamentPairingRegistry
 
 @Exposes(LifecycleObserver::class)
 class MatchTournamentProcesses : LifecycleObserver {

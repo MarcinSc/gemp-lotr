@@ -1,4 +1,4 @@
-package org.ccgemp.tournament.composite.matches.pairing
+package org.ccgemp.tournament.composite.pairing
 
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.lifecycle.LifecycleObserver
@@ -6,10 +6,10 @@ import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.json.JsonWithConfig
 import org.ccgemp.tournament.TournamentMatch
 import org.ccgemp.tournament.TournamentParticipant
-import org.ccgemp.tournament.composite.matches.standing.PlayerStanding
-import org.ccgemp.tournament.composite.matches.standing.Standings
-import org.ccgemp.tournament.composite.matches.standing.StandingsConfig
-import org.ccgemp.tournament.composite.matches.standing.TournamentStandingsRegistry
+import org.ccgemp.tournament.composite.standing.PlayerStanding
+import org.ccgemp.tournament.composite.standing.Standings
+import org.ccgemp.tournament.composite.standing.StandingsConfig
+import org.ccgemp.tournament.composite.standing.TournamentStandingsRegistry
 import java.util.concurrent.ThreadLocalRandom
 
 @Exposes(LifecycleObserver::class)

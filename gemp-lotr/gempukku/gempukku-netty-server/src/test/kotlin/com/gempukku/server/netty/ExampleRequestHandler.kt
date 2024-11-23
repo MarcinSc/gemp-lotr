@@ -14,10 +14,7 @@ class ExampleRequestHandler : ServerRequestHandler, LifecycleObserver {
     @Inject
     private lateinit var serverSystem: HttpServer
 
-    override fun handleRequest(
-        request: HttpRequest,
-        responseWriter: ResponseWriter,
-    ) {
+    override fun handleRequest(request: HttpRequest, responseWriter: ResponseWriter) {
         responseWriter.writeHtmlResponse("<html><body>Hello world!</body></html>")
     }
 

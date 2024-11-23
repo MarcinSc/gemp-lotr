@@ -2,8 +2,8 @@ package org.ccgemp.transfer
 
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
-import org.ccgemp.common.GempCollection
 import org.ccgemp.common.DefaultGempCollection
+import org.ccgemp.common.GempCollection
 import org.ccgemp.common.mergeTexts
 import org.ccgemp.common.splitText
 
@@ -12,13 +12,24 @@ class TransferSystem : TransferInterface {
     @Inject
     private lateinit var transferRepository: TransferRepository
 
-    override fun addTransferFrom(player: String, reason: String, collectionType: String, collection: GempCollection) {
+    override fun addTransferFrom(
+        player: String,
+        reason: String,
+        collectionType: String,
+        collection: GempCollection,
+    ) {
         if (collection.all.iterator().hasNext()) {
             transferRepository.addTransfer(player, reason, false, collectionType, "from", serializeCollection(collection))
         }
     }
 
-    override fun addTransferTo(player: String, reason: String, notifyPlayer: Boolean, collectionType: String, collection: GempCollection) {
+    override fun addTransferTo(
+        player: String,
+        reason: String,
+        notifyPlayer: Boolean,
+        collectionType: String,
+        collection: GempCollection,
+    ) {
         if (collection.all.iterator().hasNext()) {
             transferRepository.addTransfer(player, reason, notifyPlayer, collectionType, "to", serializeCollection(collection))
         }

@@ -23,7 +23,7 @@ interface TournamentRepository {
 
     fun addPlayer(tournamentId: String, player: String)
 
-    fun dropPlayer(tournamentId: String, player: String)
+    fun setPlayerDrop(tournamentId: String, player: String, dropped: Boolean)
 
     fun upsertDeck(
         tournamentId: String,

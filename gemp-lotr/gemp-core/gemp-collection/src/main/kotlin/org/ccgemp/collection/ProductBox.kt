@@ -1,5 +1,7 @@
 package org.ccgemp.collection
 
+import org.ccgemp.common.GempCollection
+
 interface ProductBox {
-    fun openPack(): List<String>
+    fun openPack(): GempCollection
 }

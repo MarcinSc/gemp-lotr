@@ -9,19 +9,13 @@ interface TournamentInterface {
 
     fun getTournament(tournamentId: String): TournamentClientInfo?
 
-    fun joinTournament(
-        tournamentId: String,
-        player: String,
-        deckNames: List<String>,
-        forced: Boolean = false,
-    )
+    fun joinTournament(tournamentId: String, player: String, deckNames: List<String>)
 
     fun leaveTournament(tournamentId: String, player: String)
 
-    fun registerDecks(
-        tournamentId: String,
-        player: String,
-        deckNames: List<String>,
-        forced: Boolean = false,
-    )
+    fun registerDecks(tournamentId: String, player: String, deckNames: List<String>)
+
+    fun setPlayerDrop(tournamentId: String, player: String, drop: Boolean): Boolean
+
+    fun setPlayerDeck(tournamentId: String, player: String, deckType: String, deckName: String): Boolean
 }

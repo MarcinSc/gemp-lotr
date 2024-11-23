@@ -40,10 +40,20 @@ server:
     url: /gemp-lotr-server/setPlayerRoles
   delivery:
     url: /gemp-lotr-server/delivery
+  delivery-notify:
+    url: /gemp-lotr-server/collection
   collection:
     urlPrefix: /gemp-lotr-server/collection
   tournament:
     urlPrefix: /gemp-lotr-server/tournament
+  manualKickoff:
+    urlPrefix: /gemp-lotr-server/tournament-admin/kickoff
+  manualPairing:
+    urlPrefix: /gemp-lotr-server/tournament-admin/pairing
+  dropSwitch:
+    urlPrefix: /gemp-lotr-server/tournament-admin/dropSwitch
+  setPlayerDeck:
+    urlPrefix: /gemp-lotr-server/tournament-admin/setPlayerDeck
 
 parameterNames:
   actAsParameter: participantId
@@ -64,6 +74,7 @@ update:
 roles:
   default: u
   admin: a
+  tournamentAdmin: t
   leagueAdmin: l
   playTester: p
   commentator: c

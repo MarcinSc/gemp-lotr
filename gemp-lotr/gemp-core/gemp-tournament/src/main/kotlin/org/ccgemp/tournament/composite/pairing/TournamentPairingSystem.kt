@@ -1,4 +1,4 @@
-package org.ccgemp.tournament.composite.matches.pairing
+package org.ccgemp.tournament.composite.pairing
 
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.json.TypedRegistry

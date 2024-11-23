@@ -1,4 +1,4 @@
-package org.ccgemp.tournament.composite.matches.pairing
+package org.ccgemp.tournament.composite.pairing
 
 import org.ccgemp.tournament.TournamentMatch
 import org.ccgemp.tournament.TournamentParticipant
