@@ -1,0 +1,123 @@
+{
+  "processes": [
+    {
+      "type": "pauseUntil",
+      "time": "2024-11-23 00:00:00"
+    },
+    {
+      "type": "signup",
+      "formats": [
+        "fotrBlock",
+        "tttBlock"
+      ],
+      "deckTypes": [
+        "fotrPortion",
+        "tttPortion"
+      ],
+      "kickoff": {
+        "type": "pauseUntil",
+        "time": "2024-11-23 01:00:00"
+      }
+    },
+    {
+      "type": "playGames",
+      "rounds": 3,
+      "deckType": "fotrPortion",
+      "format": "fotrBlock",
+      "pairingGroup": "mainPairingGroup",
+      "byeGroup": "mainByeGroup",
+      "kickoff": {
+        "type": "pause",
+        "pause": 180000
+      },
+      "pairing": {
+        "type": "swiss",
+        "standings": {
+          "type": "modifiedMedian",
+          "pointsForWin": 1,
+          "pointsForLoss": 0
+        }
+      }
+    },
+    {
+      "type": "playGames",
+      "rounds": 3,
+      "deckType": "tttPortion",
+      "format": "tttBlock",
+      "pairingGroup": "mainPairingGroup",
+      "byeGroup": "mainByeGroup",
+      "kickoff": {
+        "type": "pause",
+        "pause": 180000
+      },
+      "pairing": {
+        "type": "swiss",
+        "standings": {
+          "type": "modifiedMedian",
+          "pointsForWin": 1,
+          "pointsForLoss": 0
+        }
+      }
+    },
+    {
+      "type": "sealed",
+      "collectionType": "tournamentCollection1",
+      "product": "fotrSealed",
+      "deckType": "sealedPortion",
+      "format": "anythingGoesFotR",
+      "productKickoff": {
+        "type": "pause",
+        "pause": 180000
+      },
+      "buildEndKickoff": {
+        "type": "pause",
+        "pause": 1800000
+      }
+    },
+    {
+      "type": "playGames",
+      "rounds": 3,
+      "deckType": "sealedPortion",
+      "format": "fotrBlock",
+      "pairingGroup": "sealedPairingGroup",
+      "byeGroup": "sealedByeGroup",
+      "kickoff": {
+        "type": "pause",
+        "pause": 180000
+      },
+      "pairing": {
+        "type": "swiss",
+        "standings": {
+          "type": "modifiedMedian",
+          "pointsForWin": 1,
+          "pointsForLoss": 0
+        }
+      }
+    },
+    {
+      "type": "cutToTopX",
+      "x": 4,
+      "standings": {
+        "type": "modifiedMedian",
+        "pointsForWin": 1,
+        "pointsForLoss": 0
+      }
+    },
+    {
+      "type": "playGames",
+      "rounds": 2,
+      "deckType": "fotrPortion",
+      "format": "fotrBlock",
+      "pairingGroup": "top4PairingGroup",
+      "byeGroup": "top4ByeGroup",
+      "kickoff": {
+        "type": "pause",
+        "pause": 180000
+      },
+      "pairing": {
+        "type": "manual"
+      },
+      "dropLosers": true
+    }
+  ]
+}
