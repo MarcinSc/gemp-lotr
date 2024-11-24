@@ -10,6 +10,7 @@ include(
     "gempukku:gempukku-chat-server",
     "gempukku:gempukku-context",
     "gempukku:gempukku-netty-server",
+    "gempukku:gempukku-object-stream",
     "gempukku:gempukku-server",
     "gemp-core:gemp-collection",
     "gemp-core:gemp-common",
