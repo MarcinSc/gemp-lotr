@@ -1,9 +1,11 @@
 package org.ccgemp.tournament
 
+import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
+import com.gempukku.server.ApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpRequest
@@ -14,16 +16,9 @@ import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
 import javax.xml.parsers.DocumentBuilderFactory
 
-@Exposes(LifecycleObserver::class)
-class TournamentApiSystem : LifecycleObserver {
+class TournamentApiSystem : ApiSystem() {
     @Inject
     private lateinit var tournamentInterface: TournamentInterface
-
-    @Inject
-    private lateinit var server: HttpServer
-
-    @Inject
-    private lateinit var loggedUserInterface: LoggedUserInterface
 
     @Inject
     private lateinit var tournamentRenderer: TournamentRenderer
@@ -31,40 +26,30 @@ class TournamentApiSystem : LifecycleObserver {
     @InjectValue("server.tournament.urlPrefix")
     private lateinit var urlPrefix: String
 
-    private val deregistration: MutableList<Runnable> = mutableListOf()
-
     private val minuteFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
-    override fun afterContextStartup() {
-        deregistration.add(
+    override fun registerAPIs(): List<Registration> {
+        return listOf(
             server.registerRequestHandler(
                 HttpMethod.GET,
                 "^$urlPrefix$",
                 executeGetCurrentTournaments(),
             ),
-        )
-        deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.GET,
                 "^$urlPrefix/history$",
                 executeGetHistoricTournaments(),
             ),
-        )
-        deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.GET,
                 "^$urlPrefix/([^/]*)/deck/([^/]*)/html$",
                 executeGetTournamentDecks(),
             ),
-        )
-        deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.GET,
                 "^$urlPrefix/([^/]*)/report/html$",
                 executeGetTournamentReport(),
             ),
-        )
-        deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.GET,
                 "^$urlPrefix/([^/]*)$",
@@ -157,12 +142,5 @@ class TournamentApiSystem : LifecycleObserver {
         doc.appendChild(tournaments)
 
         responseWriter.writeXmlResponse(doc)
-    }
-
-    override fun beforeContextStopped() {
-        deregistration.forEach {
-            it.run()
-        }
-        deregistration.clear()
     }
 }

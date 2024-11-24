@@ -12,11 +12,13 @@ class AnnotationSystemResolver(
                 .takeIf {
                     clazz.isAssignableFrom(it.javaClass)
                 }?.takeIf {
-                    val exposedInterfaces =
-                        it.javaClass.getAnnotation(Exposes::class.java)?.value?.map { clazz ->
-                            clazz.java
-                        }
-                    exposedInterfaces?.contains(clazz as Any) ?: false
+                    val exposedInterfaces = mutableSetOf<Class<out Any>>()
+                    var classToInspect: Class<Any>? = system.javaClass
+                    do {
+                        exposedInterfaces.addAll(classToInspect!!.getAnnotation(Exposes::class.java)?.value?.map { clazz -> clazz.java }.orEmpty())
+                        classToInspect = classToInspect.superclass
+                    } while (classToInspect != null)
+                    exposedInterfaces.contains(clazz as Any)
                 } as T?
         }
     }

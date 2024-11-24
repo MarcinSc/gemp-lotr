@@ -1,9 +1,11 @@
 package org.ccgemp.collection
 
+import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
+import com.gempukku.server.ApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpRequest
@@ -16,13 +18,9 @@ import org.ccgemp.common.CollectionContentsSerializer
 import org.ccgemp.common.GempCollectionItem
 import javax.xml.parsers.DocumentBuilderFactory
 
-@Exposes(LifecycleObserver::class)
-class CollectionApiSystem : LifecycleObserver {
+class CollectionApiSystem : ApiSystem() {
     @Inject
     private lateinit var collectionInterface: CollectionInterface
-
-    @Inject
-    private lateinit var server: HttpServer
 
     @Inject
     private lateinit var loggedUserInterface: LoggedUserInterface
@@ -45,24 +43,18 @@ class CollectionApiSystem : LifecycleObserver {
     @InjectValue("parameterNames.actAsParameter")
     private lateinit var actAsParameter: String
 
-    private val deregistration: MutableList<Runnable> = mutableListOf()
-
-    override fun afterContextStartup() {
-        deregistration.add(
+    override fun registerAPIs(): List<Registration> {
+        return listOf(
             server.registerRequestHandler(
                 HttpMethod.GET,
                 "^$urlPrefix$",
                 executeGetCollectionTypes(),
             ),
-        )
-        deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$urlPrefix/([^/]*)$",
                 executeOpenPack(),
             ),
-        )
-        deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.GET,
                 "^$urlPrefix/([^/]*)$",
@@ -135,11 +127,4 @@ class CollectionApiSystem : LifecycleObserver {
 
             responseWriter.writeXmlResponse(doc)
         }
-
-    override fun beforeContextStopped() {
-        deregistration.forEach {
-            it.run()
-        }
-        deregistration.clear()
-    }
 }

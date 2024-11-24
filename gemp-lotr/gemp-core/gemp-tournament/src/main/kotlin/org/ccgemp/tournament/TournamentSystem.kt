@@ -29,7 +29,7 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
     private lateinit var deckInterface: DeckInterface
 
     @Inject
-    private lateinit var gameContainerInterface: GameContainerInterface<*>
+    private lateinit var gameContainerInterface: GameContainerInterface<Any, Any>
 
     @Inject(allowsNull = true)
     private var serverState: ServerStateInterface? = null

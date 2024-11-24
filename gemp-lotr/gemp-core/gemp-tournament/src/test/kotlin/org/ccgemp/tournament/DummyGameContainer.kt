@@ -1,13 +1,15 @@
 package org.ccgemp.tournament
 
+import com.gempukku.context.Registration
 import com.gempukku.context.resolver.expose.Exposes
+import com.gempukku.server.ResponseWriter
 import org.ccgemp.game.GameContainerInterface
 import org.ccgemp.game.GameParticipant
 import org.ccgemp.game.GameSettings
 import org.ccgemp.game.GameStream
 
 @Exposes(GameContainerInterface::class)
-class DummyGameContainer : GameContainerInterface<Any> {
+class DummyGameContainer<GameEvent, ObserveSettings> : GameContainerInterface<GameEvent, ObserveSettings> {
     override fun createNewGame(participants: Array<GameParticipant>, gameSettings: GameSettings): String {
         TODO("Not yet implemented")
     }
@@ -16,8 +18,12 @@ class DummyGameContainer : GameContainerInterface<Any> {
         gameId: String,
         playerId: String,
         admin: Boolean,
-        gameStream: GameStream<Any>,
-    ): Runnable? {
+        gameStream: GameStream<GameEvent>,
+    ): Registration? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setPlayerObserveSettings(gameId: String, player: String, settings: ObserveSettings) {
         TODO("Not yet implemented")
     }
 
@@ -28,5 +34,9 @@ class DummyGameContainer : GameContainerInterface<Any> {
         decisionValue: String,
     ): Boolean {
         TODO("Not yet implemented")
+    }
+
+    override fun produceCardInfo(gameId: String, playerId: String, cardId: String, responseWriter: ResponseWriter) {
+        responseWriter.writeHtmlResponse("")
     }
 }

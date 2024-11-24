@@ -1,5 +1,6 @@
 package com.gempukku.server.netty
 
+import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.lifecycle.LifecycleObserver
@@ -103,11 +104,13 @@ class NettyServerSystem :
     private var workerGroup: NioEventLoopGroup? = null
     private var serverChannel: Channel? = null
 
-    override fun registerResponseHeadersProcessor(method: HttpMethod, uriRegex: String, responseHeaderProcessor: ServerResponseHeaderProcessor): Runnable {
+    override fun registerResponseHeadersProcessor(method: HttpMethod, uriRegex: String, responseHeaderProcessor: ServerResponseHeaderProcessor): Registration {
         val registration = ResponseHeaderProcessorRegistration(method, Regex(uriRegex), responseHeaderProcessor)
         responseHeaderProcessorRegistration.add(registration)
-        return Runnable {
-            responseHeaderProcessorRegistration.remove(registration)
+        return object:Registration {
+            override fun deregister() {
+                responseHeaderProcessorRegistration.remove(registration)
+            }
         }
     }
 
@@ -116,11 +119,13 @@ class NettyServerSystem :
         uriRegex: String,
         requestHandler: ServerRequestHandler,
         validateOrigin: Boolean,
-    ): Runnable {
+    ): Registration {
         val registration = RequestHandlerRegistration(method, Regex(uriRegex), requestHandler, validateOrigin)
         requestHandlerRegistrations.add(registration)
-        return Runnable {
-            requestHandlerRegistrations.remove(registration)
+        return object:Registration {
+            override fun deregister() {
+                requestHandlerRegistrations.remove(registration)
+            }
         }
     }
 

@@ -43,7 +43,7 @@ class TournamentSystemTest {
                         TournamentSystem(),
                         DbTournamentRepository(),
                         DummyDeckSystem(),
-                        DummyGameContainer(),
+                        DummyGameContainer<Any, Any>(),
                         DbAccessSystem(),
                         lifecycleSystem,
                     ),

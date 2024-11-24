@@ -1,5 +1,6 @@
 package org.ccgemp.game
 
+import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectList
 import com.gempukku.context.initializer.inject.InjectValue
@@ -7,16 +8,17 @@ import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.context.update.UpdatedSystem
 import com.gempukku.ostream.ObjectStream
+import com.gempukku.server.HttpProcessingException
+import com.gempukku.server.ResponseWriter
 import com.gempukku.server.generateUniqueId
 import org.ccgemp.state.ServerStateInterface
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.function.Consumer
 
 @Exposes(GameContainerInterface::class, LifecycleObserver::class, UpdatedSystem::class)
-class GameContainerSystem : GameContainerInterface<Any>, LifecycleObserver, UpdatedSystem {
+class GameContainerSystem : GameContainerInterface<Any, Any>, LifecycleObserver, UpdatedSystem {
     @Inject
-    private lateinit var gameProducer: GameProducer
+    private lateinit var gameProducer: GameProducer<Any>
 
     @Inject(allowsNull = true)
     private var serverState: ServerStateInterface? = null
@@ -81,6 +83,11 @@ class GameContainerSystem : GameContainerInterface<Any>, LifecycleObserver, Upda
                 finishedGameStream?.objectRemoved(gameId)
             }
             if (gameResult == null) {
+                val status = gameEntry.game.status
+                if (gameEntry.communicatedStatus != status) {
+                    gameEntry.communicatedStatus = status
+                    playedGameStream?.objectUpdated(gameId, gameEntry.game)
+                }
                 gameContainer?.executorService?.execute {
                     gameEntry.game.checkForTimeouts()
                 }
@@ -94,16 +101,20 @@ class GameContainerSystem : GameContainerInterface<Any>, LifecycleObserver, Upda
     override fun createNewGame(participants: Array<GameParticipant>, gameSettings: GameSettings): String {
         val gameContainer = findBestContainer()
         val gameId = generateUniqueId()
-        val game = gameProducer.createGame(gameId, participants, gameSettings) { status ->
-            games[gameId]?.game?.let {
-                it.status = status
-                playedGameStream?.objectUpdated(gameId, it)
-            }
-        }
-        playedGameStream?.objectCreated(gameId, game)
-        games[gameId] = GameEntry(game, false)
+        val game = gameProducer.createGame(gameId, participants, gameSettings)
+        games[gameId] = GameEntry(game, game.status, false)
         gameContainer.games.add(gameId)
+        playedGameStream?.objectCreated(gameId, game)
         return gameId
+    }
+
+    override fun setPlayerObserveSettings(gameId: String, player: String, settings: Any) {
+        val gameEntry = games[gameId] ?: return
+        val game = gameEntry.game
+        val gameContainer = findGameContainer(gameId)
+        gameContainer?.executorService?.execute {
+            setPlayerObserveSettingsInThread(game, player, settings)
+        }
     }
 
     override fun joinGame(
@@ -111,7 +122,7 @@ class GameContainerSystem : GameContainerInterface<Any>, LifecycleObserver, Upda
         playerId: String,
         admin: Boolean,
         gameStream: GameStream<Any>,
-    ): Runnable? {
+    ): Registration? {
         val gameEntry = games[gameId] ?: return null
         val game = gameEntry.game
 
@@ -126,9 +137,11 @@ class GameContainerSystem : GameContainerInterface<Any>, LifecycleObserver, Upda
             gameContainer.executorService.execute {
                 joinGameInGameThread(game, playerId, channelId, gameStream)
             }
-            return Runnable {
-                gameContainer.executorService.execute {
-                    leaveGameInGameThread(game, channelId)
+            return object:Registration {
+                override fun deregister() {
+                    gameContainer.executorService.execute {
+                        leaveGameInGameThread(game, channelId)
+                    }
                 }
             }
         }
@@ -152,6 +165,17 @@ class GameContainerSystem : GameContainerInterface<Any>, LifecycleObserver, Upda
         } ?: false
     }
 
+    override fun produceCardInfo(gameId: String, playerId: String, cardId: String, responseWriter: ResponseWriter) {
+        val gameEntry = games[gameId] ?: throw HttpProcessingException(404)
+
+        val container = findGameContainer(gameId)
+        container?.let {
+            it.executorService.execute {
+                produceCardInfoInGameThread(gameEntry.game, playerId, cardId, responseWriter)
+            }
+        }
+    }
+
     private fun findGameContainer(gameId: String): GameContainer? {
         val container =
             gameContainers.firstOrNull {
@@ -163,7 +187,7 @@ class GameContainerSystem : GameContainerInterface<Any>, LifecycleObserver, Upda
     private fun findBestContainer(): GameContainer = gameContainers.minBy { it.games.size }
 
     private fun processDecisionInGameThread(
-        game: Game,
+        game: Game<Any>,
         playerId: String,
         decisionId: String,
         decisionValue: String,
@@ -171,8 +195,16 @@ class GameContainerSystem : GameContainerInterface<Any>, LifecycleObserver, Upda
         game.processDecision(playerId, decisionId, decisionValue)
     }
 
+    private fun setPlayerObserveSettingsInThread(
+        game: Game<Any>,
+        playerId: String,
+        settings: Any,
+    ) {
+        game.setPlayerObserveSettings(playerId, settings)
+    }
+
     private fun joinGameInGameThread(
-        game: Game,
+        game: Game<Any>,
         playerId: String,
         channelId: String,
         gameStream: GameStream<Any>,
@@ -180,8 +212,12 @@ class GameContainerSystem : GameContainerInterface<Any>, LifecycleObserver, Upda
         game.joinGame(playerId, channelId, gameStream)
     }
 
-    private fun leaveGameInGameThread(game: Game, channelId: String) {
+    private fun leaveGameInGameThread(game: Game<Any>, channelId: String) {
         game.leaveGame(channelId)
+    }
+
+    private fun produceCardInfoInGameThread(game: Game<Any>, playerId: String, cardId: String, responseWriter: ResponseWriter) {
+        responseWriter.writeHtmlResponse(game.produceCardInfo(playerId, cardId, responseWriter))
     }
 }
 
@@ -191,6 +227,7 @@ internal class GameContainer(
 )
 
 internal data class GameEntry(
-    val game: Game,
+    val game: Game<Any>,
+    var communicatedStatus: String,
     var notifiedFinished: Boolean,
 )

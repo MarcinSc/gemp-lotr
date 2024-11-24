@@ -1,5 +1,6 @@
 package com.gempukku.server.chat
 
+import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
 import java.util.function.Predicate
@@ -20,7 +21,7 @@ class ChatSystem : ChatInterface {
         commands: Map<String, ChatCommandCallback>,
         welcomeMessage: String?,
         userPredicate: Predicate<String>,
-    ): Runnable? {
+    ): Registration? {
         if (chatRooms.containsKey(roomName)) {
             return null
         }
@@ -29,9 +30,11 @@ class ChatSystem : ChatInterface {
 
         chatRooms[roomName] = chatRoom
 
-        return Runnable {
-            chatRoom.close()
-            chatRooms.remove(roomName)
+        return object:Registration {
+            override fun deregister() {
+                chatRoom.close()
+                chatRooms.remove(roomName)
+            }
         }
     }
 
@@ -40,7 +43,7 @@ class ChatSystem : ChatInterface {
         playerId: String,
         admin: Boolean,
         chatStream: ChatStream,
-    ): Runnable? =
+    ): Registration? =
         chatRooms[roomName]?.joinUser(
             playerId,
             admin,

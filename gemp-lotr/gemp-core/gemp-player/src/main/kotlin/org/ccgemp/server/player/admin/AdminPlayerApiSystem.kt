@@ -1,9 +1,11 @@
 package org.ccgemp.server.player.admin
 
+import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
+import com.gempukku.server.ApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpRequest
@@ -14,11 +16,7 @@ import com.gempukku.server.login.UserRolesProvider
 import com.gempukku.server.login.validateHasRole
 import javax.xml.parsers.DocumentBuilderFactory
 
-@Exposes(LifecycleObserver::class)
-class AdminPlayerApiSystem : LifecycleObserver {
-    @Inject
-    private lateinit var server: HttpServer
-
+class AdminPlayerApiSystem : ApiSystem() {
     @Inject
     private lateinit var playerInterface: AdminPlayerInterface
 
@@ -48,45 +46,33 @@ class AdminPlayerApiSystem : LifecycleObserver {
     @InjectValue("roles.admin")
     private lateinit var adminRole: String
 
-    private val deregistration: MutableList<Runnable> = mutableListOf()
-
-    override fun afterContextStartup() {
-        deregistration.add(
+    override fun registerAPIs(): List<Registration> {
+        return listOf(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$banPlayerUrl$",
                 validateHasRole(executeBanPlayer(), loggedUserSystem,userRolesProvider,  adminRole),
             ),
-        )
-        deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$banPlayersUrl$",
                 validateHasRole(executeBanPlayers(), loggedUserSystem,userRolesProvider,  adminRole),
             ),
-        )
-        deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$banPlayerTemporarilyUrl$",
                 validateHasRole(executeBanPlayerTemporarily(), loggedUserSystem,userRolesProvider,  adminRole),
             ),
-        )
-        deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$unbanPlayerUrl",
                 validateHasRole(executeUnbanPlayer(), loggedUserSystem,userRolesProvider,  adminRole),
             ),
-        )
-        deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.GET,
                 "^$getPlayerRolesUrl$",
                 validateHasRole(executeGetPlayerRoles(), loggedUserSystem,userRolesProvider,  adminRole),
             ),
-        )
-        deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$setPlayerRolesUrl",
@@ -164,11 +150,4 @@ class AdminPlayerApiSystem : LifecycleObserver {
 
             responseWriter.writeXmlResponse(null)
         }
-
-    override fun beforeContextStopped() {
-        deregistration.forEach {
-            it.run()
-        }
-        deregistration.clear()
-    }
 }

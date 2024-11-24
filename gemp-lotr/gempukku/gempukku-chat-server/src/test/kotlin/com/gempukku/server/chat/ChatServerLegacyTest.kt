@@ -52,6 +52,7 @@ class ChatServerLegacyTest {
                         LegacyChatEventSinkProducer(),
                         NettyServerSystem(),
                         loggedUser,
+                        SimpleUserRolesProvider(),
                         UpdatingSystem(),
                         LongPollingSystem(),
                         workerThreadExecutorSystem,

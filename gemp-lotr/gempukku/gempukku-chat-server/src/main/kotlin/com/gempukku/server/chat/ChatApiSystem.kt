@@ -1,9 +1,11 @@
 package com.gempukku.server.chat
 
+import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
+import com.gempukku.server.ApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpRequest
@@ -15,13 +17,9 @@ import com.gempukku.server.login.UserRolesProvider
 import com.gempukku.server.login.getActingAsUser
 import com.gempukku.server.polling.LongPolling
 
-@Exposes(LifecycleObserver::class)
-class ChatApiSystem : LifecycleObserver {
+class ChatApiSystem : ApiSystem() {
     @Inject
     private lateinit var chat: ChatInterface
-
-    @Inject
-    private lateinit var server: HttpServer
 
     @Inject
     private lateinit var loggedUserInterface: LoggedUserInterface
@@ -47,17 +45,13 @@ class ChatApiSystem : LifecycleObserver {
     @InjectValue("parameterNames.pollId")
     private lateinit var pollIdParameterName: String
 
-    private val deregistration: MutableList<Runnable> = mutableListOf()
-
-    override fun afterContextStartup() {
-        deregistration.add(
+    override fun registerAPIs(): List<Registration> {
+        return listOf(
             server.registerRequestHandler(
                 HttpMethod.GET,
                 "^$urlPrefix/.*$",
                 executeGetChat(),
             ),
-        )
-        deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$urlPrefix/.*$",
@@ -110,11 +104,4 @@ class ChatApiSystem : LifecycleObserver {
                 throw HttpProcessingException(404)
             }
         }
-
-    override fun beforeContextStopped() {
-        deregistration.forEach {
-            it.run()
-        }
-        deregistration.clear()
-    }
 }

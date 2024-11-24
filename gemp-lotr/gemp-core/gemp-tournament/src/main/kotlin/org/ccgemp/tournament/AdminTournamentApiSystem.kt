@@ -1,9 +1,11 @@
 package org.ccgemp.tournament
 
+import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
+import com.gempukku.server.ApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpServer
@@ -19,13 +21,9 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
 
-@Exposes(LifecycleObserver::class)
-class AdminTournamentApiSystem : LifecycleObserver {
+class AdminTournamentApiSystem : ApiSystem() {
     @Inject
     private lateinit var tournamentInterface: TournamentInterface
-
-    @Inject
-    private lateinit var httpServer: HttpServer
 
     @Inject
     private lateinit var loggedUserInterface: LoggedUserInterface
@@ -60,39 +58,29 @@ class AdminTournamentApiSystem : LifecycleObserver {
     @InjectValue("server.createTournament.urlPrefix")
     private lateinit var createTournamentUrlPrefix: String
 
-    private val deregistration: MutableList<Runnable> = mutableListOf()
-
-    override fun afterContextStartup() {
-        deregistration.add(
-            httpServer.registerRequestHandler(
+    override fun registerAPIs(): List<Registration> {
+        return listOf(
+            server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$manualKickoffUrlPrefix/([^/]*)/([^/]*)$",
                 validateHasRole(executeManualKickoff(), loggedUserInterface, userRolesProvider, adminRole),
             ),
-        )
-        deregistration.add(
-            httpServer.registerRequestHandler(
+            server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$manualPairingUrlPrefix/([^/]*)/([^/]*)$",
                 validateHasRole(executeManualPairing(), loggedUserInterface, userRolesProvider, adminRole),
             ),
-        )
-        deregistration.add(
-            httpServer.registerRequestHandler(
+            server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$dropSwitchUrlPrefix/([^/]*)$",
                 validateHasRole(executeDropSwitch(), loggedUserInterface,userRolesProvider,  adminRole),
             ),
-        )
-        deregistration.add(
-            httpServer.registerRequestHandler(
+            server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$setPlayerDeckUrlPrefix/([^/]*)$",
                 validateHasRole(executeSetPlayerDeck(), loggedUserInterface, userRolesProvider, adminRole),
             ),
-        )
-        deregistration.add(
-            httpServer.registerRequestHandler(
+            server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$createTournamentUrlPrefix/([^/]*)$",
                 validateHasRole(executeCreateTournament(), loggedUserInterface, userRolesProvider, adminRole),
@@ -172,11 +160,4 @@ class AdminTournamentApiSystem : LifecycleObserver {
             val result = tournamentInterface.addTournament(tournamentId, type, name, startDate, parameters)
             responseWriter.writeJsonResponse("{\"success\":$result}")
         }
-
-    override fun beforeContextStopped() {
-        deregistration.forEach {
-            it.run()
-        }
-        deregistration.clear()
-    }
 }

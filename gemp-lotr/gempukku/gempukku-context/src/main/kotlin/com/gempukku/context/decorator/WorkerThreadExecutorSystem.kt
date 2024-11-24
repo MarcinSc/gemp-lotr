@@ -1,6 +1,7 @@
 package com.gempukku.context.decorator
 
 import com.gempukku.context.ContextScheduledExecutor
+import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.AnnotationSystemInitializer
 import com.gempukku.context.initializer.inject.InjectionException
 import com.gempukku.context.resolver.expose.Exposes
@@ -73,10 +74,12 @@ class WorkerThreadExecutorSystem(
         initialDelay: Long,
         period: Long,
         unit: TimeUnit,
-    ): Runnable {
+    ): Registration {
         val scheduleAtFixedRate = executorService.scheduleAtFixedRate(command, initialDelay, period, unit)
-        return Runnable {
-            scheduleAtFixedRate.cancel(false)
+        return object: Registration {
+            override fun deregister() {
+                scheduleAtFixedRate.cancel(false)
+            }
         }
     }
 

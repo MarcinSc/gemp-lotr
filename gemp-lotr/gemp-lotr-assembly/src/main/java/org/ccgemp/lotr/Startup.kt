@@ -105,6 +105,8 @@ private fun createLotrContext(
             LegacyChatNameDisplayFormatter(),
             // Legacy game running
             LegacyGameProducer(),
+            LotrGameObserveSettingsExtractor(),
+            LotrGameEventSinkProducer(),
             // Deck related
             LotrDeckSerialization(),
             LotrDeckValidation(),

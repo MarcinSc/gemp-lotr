@@ -1,9 +1,11 @@
 package org.ccgemp.tournament
 
+import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
+import com.gempukku.server.ApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpRequest
@@ -15,13 +17,9 @@ import com.gempukku.server.login.getActingAsUser
 import org.ccgemp.common.splitText
 import java.util.regex.Pattern
 
-@Exposes(LifecycleObserver::class)
-class PrivateTournamentApiSystem : LifecycleObserver {
+class PrivateTournamentApiSystem : ApiSystem() {
     @Inject
     private lateinit var tournamentInterface: TournamentInterface
-
-    @Inject
-    private lateinit var httpServer: HttpServer
 
     @Inject
     private lateinit var loggedUserInterface: LoggedUserInterface
@@ -38,25 +36,19 @@ class PrivateTournamentApiSystem : LifecycleObserver {
     @InjectValue("parameterNames.actAsParameter")
     private lateinit var actAsParameter: String
 
-    private val deregistration: MutableList<Runnable> = mutableListOf()
-
-    override fun afterContextStartup() {
-        deregistration.add(
-            httpServer.registerRequestHandler(
+    override fun registerAPIs(): List<Registration> {
+        return listOf(
+            server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$urlPrefix/([^/]*)/join$",
                 executeJoinTournament(),
             ),
-        )
-        deregistration.add(
-            httpServer.registerRequestHandler(
+            server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$urlPrefix/([^/]*)/leave",
                 executeLeaveTournament(),
             ),
-        )
-        deregistration.add(
-            httpServer.registerRequestHandler(
+            server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$urlPrefix/([^/]*)/registerdeck",
                 executeRegisterDeck(),
@@ -107,11 +99,4 @@ class PrivateTournamentApiSystem : LifecycleObserver {
 
             responseWriter.writeXmlResponse(null)
         }
-
-    override fun beforeContextStopped() {
-        deregistration.forEach {
-            it.run()
-        }
-        deregistration.clear()
-    }
 }

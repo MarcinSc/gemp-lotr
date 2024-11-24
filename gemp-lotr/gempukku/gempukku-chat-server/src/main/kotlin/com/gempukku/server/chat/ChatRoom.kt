@@ -1,5 +1,6 @@
 package com.gempukku.server.chat
 
+import com.gempukku.context.Registration
 import java.util.Date
 import java.util.LinkedList
 import java.util.Locale
@@ -59,7 +60,7 @@ class ChatRoom(
         admin: Boolean,
         allowedAuthors: Predicate<String>,
         chatStream: ChatStream,
-    ): Runnable? {
+    ): Registration? {
         if (!canAccessRoom(playerId, admin)) {
             return null
         }
@@ -88,12 +89,14 @@ class ChatRoom(
             chatStream.messageReceived(ChatMessage(Date(), "System", welcomeMessage, false))
         }
 
-        return Runnable {
-            val playerWasInRoom = playerIsInRoom(playerId)
-            openChatStreams.remove(chatStreamConfig)
-            if (!playerIsInRoom(playerId) && playerWasInRoom) {
-                openChatStreams.forEach {
-                    it.chatStream.playerParted(playerId)
+        return object:Registration {
+            override fun deregister() {
+                val playerWasInRoom = playerIsInRoom(playerId)
+                openChatStreams.remove(chatStreamConfig)
+                if (!playerIsInRoom(playerId) && playerWasInRoom) {
+                    openChatStreams.forEach {
+                        it.chatStream.playerParted(playerId)
+                    }
                 }
             }
         }

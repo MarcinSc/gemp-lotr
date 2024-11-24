@@ -1,9 +1,11 @@
 package org.ccgemp.server.player
 
+import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
+import com.gempukku.server.ApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpRequest
@@ -11,11 +13,7 @@ import com.gempukku.server.HttpServer
 import com.gempukku.server.ResponseWriter
 import com.gempukku.server.login.LoggedUserInterface
 
-@Exposes(LifecycleObserver::class)
-class PlayerApiSystem : LifecycleObserver {
-    @Inject
-    private lateinit var server: HttpServer
-
+class PlayerApiSystem : ApiSystem() {
     @Inject
     private lateinit var playerInterface: PlayerInterface
 
@@ -40,45 +38,33 @@ class PlayerApiSystem : LifecycleObserver {
     @InjectValue("server.changeEmailValidate.url")
     private lateinit var changeEmailValidateUrl: String
 
-    private val deregistration: MutableList<Runnable> = mutableListOf()
-
-    override fun afterContextStartup() {
-        deregistration.add(
+    override fun registerAPIs(): List<Registration> {
+        return listOf(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$loginUrl$",
                 executeLogin(),
             ),
-        )
-        deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$registerUrl$",
                 executeRegister(),
             ),
-        )
-        deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$passwordResetUrl$",
                 executePasswordReset(),
             ),
-        )
-        deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$passwordResetValidateUrl$",
                 executePasswordResetValidate(),
             ),
-        )
-        deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$changeEmailUrl$",
                 executeChangeEmail(),
             ),
-        )
-        deregistration.add(
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$changeEmailValidateUrl$",
@@ -176,11 +162,4 @@ class PlayerApiSystem : LifecycleObserver {
             playerInterface.changeEmailValidate(changeEmailToken)
             responseWriter.writeXmlResponse(null)
         }
-
-    override fun beforeContextStopped() {
-        deregistration.forEach {
-            it.run()
-        }
-        deregistration.clear()
-    }
 }

@@ -1,17 +1,20 @@
 package com.gempukku.ostream
 
+import com.gempukku.context.Registration
 import kotlin.reflect.KClass
 
 class DefaultObjectStreamRegistry<ConsumerType> : ObjectStreamRegistry<ConsumerType> {
     private val customizersPerType: MutableMap<String, ObjectStreamCustomizer<ConsumerType, Any, Any>> = mutableMapOf()
 
-    override fun <ObjectType : Any> registerConsumer(type: String, consumer: ConsumerType, stream: ObjectStream<ObjectType>): Runnable {
+    override fun <ObjectType : Any> registerConsumer(type: String, consumer: ConsumerType, stream: ObjectStream<ObjectType>): Registration {
         val customizer = customizersPerType[type] ?: throw IllegalStateException("Customizer not registered for $type")
 
         customizer.addConsumer(consumer, stream as ObjectStream<Any>)
 
-        return Runnable {
-            customizer.removeConsumer(consumer)
+        return object:Registration {
+            override fun deregister() {
+                customizer.removeConsumer(consumer)
+            }
         }
     }
 

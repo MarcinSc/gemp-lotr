@@ -1,5 +1,6 @@
 package com.gempukku.server.polling
 
+import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.context.update.UpdatedSystem
@@ -17,12 +18,12 @@ class LongPollingSystem :
 
     private val pollMap: MutableMap<String, PollRegistration<*>> = mutableMapOf()
 
-    override fun <Event> registerLongPoll(eventStream: EventStream<Event>, timeoutRunnable: Runnable?): String {
+    override fun <Event> registerLongPoll(eventStream: EventStream<Event>, registration: Registration?): String {
         var pollId: String
         do {
             pollId = generateUniqueId()
         } while (pollMap.containsKey(pollId))
-        pollMap[pollId] = PollRegistration(System.currentTimeMillis(), eventStream, null, timeoutRunnable)
+        pollMap[pollId] = PollRegistration(System.currentTimeMillis(), eventStream, null, registration)
         return pollId
     }
 
@@ -53,7 +54,7 @@ class LongPollingSystem :
             val remove = it.value.lastAccessed + channelTimeout < updateTime || it.value.eventStream.isFinished()
             if (remove) {
                 it.value.eventSink?.processEventsAndClose(emptyList())
-                it.value.timeOutRunnable?.run()
+                it.value.registration?.deregister()
             }
             remove
         }
@@ -64,5 +65,5 @@ private data class PollRegistration<Event>(
     var lastAccessed: Long,
     val eventStream: EventStream<Event>,
     var eventSink: EventSink<Event>?,
-    val timeOutRunnable: Runnable?,
+    val registration: Registration?,
 )

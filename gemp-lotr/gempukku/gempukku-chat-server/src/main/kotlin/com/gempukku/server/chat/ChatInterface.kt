@@ -1,5 +1,6 @@
 package com.gempukku.server.chat
 
+import com.gempukku.context.Registration
 import java.util.function.Predicate
 
 interface ChatInterface {
@@ -9,14 +10,14 @@ interface ChatInterface {
         commands: Map<String, ChatCommandCallback>,
         welcomeMessage: String? = null,
         userPredicate: Predicate<String> = Predicate<String> { true },
-    ): Runnable?
+    ): Registration?
 
     fun joinUser(
         roomName: String,
         playerId: String,
         admin: Boolean,
         chatStream: ChatStream,
-    ): Runnable?
+    ): Registration?
 
     fun setIncognito(roomName: String, playerId: String, incognito: Boolean)
 

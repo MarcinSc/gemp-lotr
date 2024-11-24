@@ -14,5 +14,5 @@ interface ContextScheduledExecutor {
         initialDelay: Long,
         period: Long,
         unit: TimeUnit,
-    ): Runnable
+    ): Registration
 }

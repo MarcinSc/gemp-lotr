@@ -32,3 +32,10 @@ fun validateHasRole(requestHandler: ServerRequestHandler, loggedUserInterface: L
 
         requestHandler.handleRequest(request, responseWriter)
     }
+
+fun hasRole(loggedUserInterface: LoggedUserInterface, userRolesProvider: UserRolesProvider, request: HttpRequest, role: String): Boolean {
+    val loggedUser = getLoggedUser(loggedUserInterface, request)
+    return userRolesProvider.getUserRoles(loggedUser.userId).contains(role)
+}
+
+

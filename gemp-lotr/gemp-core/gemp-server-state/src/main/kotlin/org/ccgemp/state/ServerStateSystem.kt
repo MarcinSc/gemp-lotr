@@ -1,5 +1,6 @@
 package org.ccgemp.state
 
+import com.gempukku.context.Registration
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.ostream.DefaultObjectStreamRegistry
 import com.gempukku.ostream.ObjectStream
@@ -10,7 +11,7 @@ import kotlin.reflect.KClass
 class ServerStateSystem: ServerStateInterface {
     private val registry = DefaultObjectStreamRegistry<String>()
 
-    override fun <ToType> registerConsumer(type: String, player: String, stream: ObjectStream<ToType>): Runnable {
+    override fun <ToType> registerConsumer(type: String, player: String, stream: ObjectStream<ToType>): Registration {
         return registry.registerConsumer(type, player, stream as ObjectStream<Any>)
     }
 

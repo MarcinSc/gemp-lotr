@@ -49,10 +49,6 @@ public class DefaultLotroGame implements LotroGame {
         this(format, decks, userFeedback, library, (Consumer<String>) s -> {}, "No timer", false);
     }
 
-    public DefaultLotroGame(LotroFormat format, Map<String, LotroDeck> decks, UserFeedback userFeedback, final LotroCardBlueprintLibrary library, Consumer<String> statusConsumer) {
-        this(format, decks, userFeedback, library, statusConsumer, "No timer", false);
-    }
-
     public DefaultLotroGame(LotroFormat format, Map<String, LotroDeck> decks, UserFeedback userFeedback, final LotroCardBlueprintLibrary library, Consumer<String> statusConsumer,
                             String timerInfo, boolean allowSpectators) {
         this.statusConsumer = statusConsumer;

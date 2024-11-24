@@ -1,6 +1,7 @@
 package com.gempukku.context.update
 
 import com.gempukku.context.ContextScheduledExecutor
+import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectList
 import com.gempukku.context.initializer.inject.InjectValue
@@ -19,7 +20,7 @@ class UpdatingSystem : LifecycleObserver {
     @InjectList(priorityPrefix = "updating", selectFromAncestors = false)
     private lateinit var updatedSystems: List<UpdatedSystem>
 
-    private var scheduledTaskTurnOff: Runnable? = null
+    private var scheduledTaskTurnOff: Registration? = null
 
     override fun afterContextStartup() {
         scheduledTaskTurnOff =
@@ -29,6 +30,6 @@ class UpdatingSystem : LifecycleObserver {
     }
 
     override fun beforeContextStopped() {
-        scheduledTaskTurnOff?.run()
+        scheduledTaskTurnOff?.deregister()
     }
 }
