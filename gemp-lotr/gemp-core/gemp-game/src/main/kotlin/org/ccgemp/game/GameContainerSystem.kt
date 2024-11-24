@@ -6,14 +6,20 @@ import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.context.update.UpdatedSystem
+import com.gempukku.ostream.ObjectStream
 import com.gempukku.server.generateUniqueId
+import org.ccgemp.state.ServerStateInterface
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.function.Consumer
 
 @Exposes(GameContainerInterface::class, LifecycleObserver::class, UpdatedSystem::class)
 class GameContainerSystem : GameContainerInterface<Any>, LifecycleObserver, UpdatedSystem {
     @Inject
     private lateinit var gameProducer: GameProducer
+
+    @Inject(allowsNull = true)
+    private var serverState: ServerStateInterface? = null
 
     @InjectList
     private lateinit var gameResultListener: List<GameResultListener>
@@ -27,7 +33,13 @@ class GameContainerSystem : GameContainerInterface<Any>, LifecycleObserver, Upda
     private val gameContainers = mutableListOf<GameContainer>()
     private val games: MutableMap<String, GameEntry> = mutableMapOf()
 
+    private var playedGameStream: ObjectStream<PlayedGame>? = null
+    private var finishedGameStream: ObjectStream<FinishedGame>? = null
+
     override fun afterContextStartup() {
+        playedGameStream = serverState?.registerProducer("playedGame", PlayedGame::class)
+        finishedGameStream = serverState?.registerProducer("finishedGame", FinishedGame::class)
+
         (1..gamesThreadCount).forEach { _ ->
             gameContainers.add(GameContainer(Executors.newSingleThreadExecutor()))
         }
@@ -56,7 +68,9 @@ class GameContainerSystem : GameContainerInterface<Any>, LifecycleObserver, Upda
                         it.gameFinished(gameId, gameEntry.game.gameParticipants, gameResult.winner!!)
                     }
                 }
+                playedGameStream?.objectRemoved(gameId)
                 gameEntry.notifiedFinished = true
+                finishedGameStream?.objectCreated(gameId, gameEntry.game)
             }
             if (gameResult != null && currentTime > gameResult.finishTime + gamesLingerTime) {
                 gameContainer?.executorService?.execute {
@@ -64,6 +78,7 @@ class GameContainerSystem : GameContainerInterface<Any>, LifecycleObserver, Upda
                     gameContainer.games.remove(gameId)
                     gamesToRemove.add(gameId)
                 }
+                finishedGameStream?.objectRemoved(gameId)
             }
             if (gameResult == null) {
                 gameContainer?.executorService?.execute {
@@ -79,7 +94,13 @@ class GameContainerSystem : GameContainerInterface<Any>, LifecycleObserver, Upda
     override fun createNewGame(participants: Array<GameParticipant>, gameSettings: GameSettings): String {
         val gameContainer = findBestContainer()
         val gameId = generateUniqueId()
-        val game = gameProducer.createGame(participants, gameSettings)
+        val game = gameProducer.createGame(gameId, participants, gameSettings) { status ->
+            games[gameId]?.game?.let {
+                it.status = status
+                playedGameStream?.objectUpdated(gameId, it)
+            }
+        }
+        playedGameStream?.objectCreated(gameId, game)
         games[gameId] = GameEntry(game, false)
         gameContainer.games.add(gameId)
         return gameId

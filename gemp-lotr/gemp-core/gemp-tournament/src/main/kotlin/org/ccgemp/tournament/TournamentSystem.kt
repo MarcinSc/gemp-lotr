@@ -5,6 +5,7 @@ import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.context.update.UpdatedSystem
+import com.gempukku.ostream.ObjectStream
 import com.gempukku.server.HttpProcessingException
 import org.ccgemp.deck.DeckInterface
 import org.ccgemp.deck.GameDeck
@@ -14,6 +15,7 @@ import org.ccgemp.game.GameContainerInterface
 import org.ccgemp.game.GameParticipant
 import org.ccgemp.game.GameResultListener
 import org.ccgemp.game.GameSettings
+import org.ccgemp.state.ServerStateInterface
 import java.time.LocalDateTime
 
 const val FINISHED_STAGE = "FINISHED"
@@ -29,6 +31,11 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
     @Inject
     private lateinit var gameContainerInterface: GameContainerInterface<*>
 
+    @Inject(allowsNull = true)
+    private var serverState: ServerStateInterface? = null
+
+    private var tournamentStream: ObjectStream<TournamentClientInfo>? = null
+
     @InjectValue(value = "tournament.linger.hours")
     private var tournamentLingerHours: Long = 12
 
@@ -37,6 +44,22 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
     private val handlerMap = mutableMapOf<String, TournamentHandler<Any>>()
 
     private val loadedTournaments = mutableMapOf<String, DefaultTournamentInfo<Any>>()
+
+    override fun afterContextStartup() {
+        tournamentStream = serverState?.registerProducer("tournament", TournamentClientInfo::class)
+    }
+
+    private fun createTournamentState(tournament: TournamentClientInfo) {
+        tournamentStream?.objectCreated(tournament.id, tournament)
+    }
+
+    private fun updateTournamentState(tournament: TournamentClientInfo) {
+        tournamentStream?.objectUpdated(tournament.id, tournament)
+    }
+
+    private fun removeTournamentState(tournament: TournamentClientInfo) {
+        tournamentStream?.objectRemoved(tournament.id)
+    }
 
     private fun findHandler(type: String): TournamentHandler<Any> {
         val tournamentHandler =
@@ -179,6 +202,7 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
             if (tournamentInfo.stage == FINISHED_STAGE && tournamentInfo.startDate.isBefore(LocalDateTime.now().minusHours(tournamentLingerHours))) {
                 handler.unloadTournament(tournamentInfo)
                 tournamentsToUnload.add(tournamentId)
+                removeTournamentState(tournamentInfo)
             }
         }
         tournamentsToUnload.forEach {
@@ -211,6 +235,7 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
                 match?.let {
                     it.winner = winner
                 }
+                updateTournamentState(tournament)
             }
         }
     }
@@ -260,6 +285,8 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
         tournamentMatches.filter { !it.finished && !it.bye }.forEach { match ->
             startMatch(match.round, match.playerOne, match.playerTwo, tournamentInfo)
         }
+
+        createTournamentState(tournamentInfo)
     }
 
     private fun startMatch(
@@ -301,6 +328,7 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
             repository.setRoundAndStage(info.id, round, stage)
             info.stage = stage
             info.round = round
+            updateTournamentState(info)
         }
 
         override fun createMatch(recipe: TournamentGameRecipe) {
@@ -313,17 +341,20 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
             startMatch(round, playerOne, playerTwo, info)
 
             info.matches.add(TournamentMatch(recipe.round, playerOne, playerTwo, null))
+            updateTournamentState(info)
         }
 
         override fun awardBye(round: Int, player: String) {
             repository.createMatch(info.id, round, player, BYE_NAME, player)
 
             info.matches.add(TournamentMatch(round, player, BYE_NAME, player))
+            updateTournamentState(info)
         }
 
         override fun dropPlayer(player: String) {
             repository.setPlayerDrop(info.id, player, true)
             info.players.firstOrNull { it.player == player }?.dropped = true
+            updateTournamentState(info)
         }
     }
 

@@ -17,6 +17,7 @@ import com.gempukku.lotro.packs.ProductLibrary;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 

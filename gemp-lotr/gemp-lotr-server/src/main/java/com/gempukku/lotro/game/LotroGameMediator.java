@@ -19,6 +19,7 @@ import com.gempukku.lotro.logic.vo.LotroDeck;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,6 +40,8 @@ public class LotroGameMediator {
     private final boolean _allowSpectators;
     private final boolean _cancellable;
     private final boolean _showInGameHall;
+
+    private String gameStatus = "Setting up";
 
     private final ReentrantReadWriteLock _lock = new ReentrantReadWriteLock(true);
     private final ReentrantReadWriteLock.ReadLock _readLock = _lock.readLock();
@@ -65,8 +68,13 @@ public class LotroGameMediator {
         }
 
         _userFeedback = new DefaultUserFeedback();
-        _lotroGame = new DefaultLotroGame(lotroFormat, _playerDecks, _userFeedback, library, _timeSettings.toString(), _allowSpectators,
-                tournamentName);
+        _lotroGame = new DefaultLotroGame(lotroFormat, _playerDecks, _userFeedback, library,
+                new Consumer<String>() {
+                    @Override
+                    public void accept(String s) {
+                        gameStatus = s;
+                    }
+                }, _timeSettings.toString(), _allowSpectators);
         _userFeedback.setGame(_lotroGame);
     }
 
@@ -127,14 +135,7 @@ public class LotroGameMediator {
     }
 
     public String getGameStatus() {
-        if (_lotroGame.isCancelled())
-            return "Cancelled";
-        if (_lotroGame.isFinished())
-            return "Finished";
-        final Phase currentPhase = _lotroGame.getGameState().getCurrentPhase();
-        if (currentPhase == Phase.PLAY_STARTING_FELLOWSHIP || currentPhase == Phase.PUT_RING_BEARER)
-            return "Preparation";
-        return "At sites: " + getPlayerPositions();
+        return gameStatus;
     }
 
     public boolean isFinished() {
@@ -574,15 +575,4 @@ public class LotroGameMediator {
     }
 
     public Map<String, Integer> getPlayerClocks() { return Collections.unmodifiableMap(_playerClocks); }
-
-    public String getPlayerPositions() {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (String player : _playersPlaying) {
-            stringBuilder.append(_lotroGame.getGameState().getPlayerPosition(player) + ", ");
-        }
-        if (stringBuilder.length() > 0)
-            stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
-
-        return stringBuilder.toString();
-    }
 }

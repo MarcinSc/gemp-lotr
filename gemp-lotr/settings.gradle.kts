@@ -19,6 +19,7 @@ include(
     "gemp-core:gemp-game",
     "gemp-core:gemp-json",
     "gemp-core:gemp-player",
+    "gemp-core:gemp-server-state",
     "gemp-core:gemp-tournament",
     "gemp-core:gemp-transfer",
     "gemp-lotr-assembly",

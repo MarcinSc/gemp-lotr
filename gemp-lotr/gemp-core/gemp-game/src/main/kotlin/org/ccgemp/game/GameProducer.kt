@@ -1,5 +1,7 @@
 package org.ccgemp.game
 
+import java.util.function.Consumer
+
 interface GameProducer {
-    fun createGame(gameParticipants: Array<GameParticipant>, gameSettings: GameSettings): Game
+    fun createGame(gameId: String, gameParticipants: Array<GameParticipant>, gameSettings: GameSettings, statusConsumer: Consumer<String>): Game
 }

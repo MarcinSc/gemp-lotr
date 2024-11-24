@@ -13,6 +13,7 @@ import org.ccgemp.game.GameProducer
 import org.ccgemp.game.GameResult
 import org.ccgemp.game.GameSettings
 import org.ccgemp.game.GameStream
+import java.util.function.Consumer
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -23,7 +24,7 @@ class LegacyGameProducer : GameProducer {
     @Inject
     private lateinit var legacyObjectsProvider: LegacyObjectsProvider
 
-    override fun createGame(gameParticipants: Array<GameParticipant>, gameSettings: GameSettings): Game {
+    override fun createGame(gameId: String, gameParticipants: Array<GameParticipant>, gameSettings: GameSettings, statusConsumer: Consumer<String>): Game {
         val format = legacyObjectsProvider.formatLibrary.getFormat(gameSettings.format)
         val userFeedback = DefaultUserFeedback()
         val decks =
@@ -36,20 +37,35 @@ class LegacyGameProducer : GameProducer {
                 decks,
                 userFeedback,
                 legacyObjectsProvider.cardLibrary,
+                statusConsumer,
                 gameSettings.timeSettings.toString(),
                 !gameSettings.private,
-                null,
             )
-        return LegacyGame(gameParticipants, gameSettings, game, userFeedback)
+        return LegacyGame(gameId, gameParticipants, gameSettings, game, userFeedback)
     }
 }
 
 internal class LegacyGame(
+    override val gameId: String,
     override val gameParticipants: Array<GameParticipant>,
     override val gameSettings: GameSettings,
     private val lotroGame: DefaultLotroGame,
     private val userFeedback: DefaultUserFeedback,
 ) : Game {
+    override val formatName: String
+        get() = lotroGame.format.name
+    override val info: String
+        get() = gameSettings.info
+    override val players: List<String>
+        get() = gameParticipants.map { it.playerId }
+    override var status: String = "Setting up"
+    override val watchable: Boolean
+        get() = gameSettings.watchable
+    override val private: Boolean
+        get() = gameSettings.private
+    override val winner: String?
+        get() = lotroGame.winnerPlayerId
+
     @Volatile
     override var gameResult: GameResult? = null
 

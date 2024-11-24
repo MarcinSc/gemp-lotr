@@ -1,6 +1,6 @@
 package org.ccgemp.game
 
-interface Game {
+interface Game: PlayedGame, FinishedGame {
     val gameSettings: GameSettings
     val gameParticipants: Array<GameParticipant>
     val gameResult: GameResult?

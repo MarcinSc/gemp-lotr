@@ -7,7 +7,6 @@ import java.util.Map;
 
 public record PreGameInfo (
         List<String> participants,
-        String tournamentName,
         String timingInfo,
         boolean privateGame,
         LotroFormat format,
@@ -24,7 +23,7 @@ public record PreGameInfo (
     }
 
     public String getGameSummary() {
-        var summary = tournamentName.split("-")[0] + " - a " + (privateGame ? "private" : "public") + " game of <b>"
+        var summary = "A " + (privateGame ? "private" : "public") + " game of <b>"
                 + format.getName() + "</b>. " + timingInfo + "<br/><br/>" + formatAddenda;
 
         return summary;

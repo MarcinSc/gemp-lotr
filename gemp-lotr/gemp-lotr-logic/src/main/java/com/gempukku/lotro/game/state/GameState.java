@@ -11,6 +11,7 @@ import com.gempukku.lotro.logic.timing.GameStats;
 import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,7 +38,7 @@ public class GameState {
     private final Map<Integer, PhysicalCardImpl> _allCards = new HashMap<>();
 
     private String _currentPlayerId;
-    private Phase _currentPhase = Phase.PUT_RING_BEARER;
+    private Phase _currentPhase;
     private int _twilightPool;
 
     private int _moveCount;
@@ -67,6 +68,8 @@ public class GameState {
 
     private PreGameInfo _preGameInfo;
 
+    private Consumer<String> statusConsumer;
+
     private int _nextCardId = 0;
 
     private int nextCardId() {
@@ -81,9 +84,11 @@ public class GameState {
         }
     }
 
-    public void init(PlayerOrder playerOrder, String firstPlayer, Map<String, List<String>> cards,
-            Map<String, String> ringBearers, Map<String, String> rings, Map<String, String> maps,
-            LotroCardBlueprintLibrary library, LotroFormat format) {
+    public void init(Consumer<String> statusConsumer, PlayerOrder playerOrder, String firstPlayer, Map<String, List<String>> cards,
+                     Map<String, String> ringBearers, Map<String, String> rings, Map<String, String> maps,
+                     LotroCardBlueprintLibrary library, LotroFormat format) {
+        this.statusConsumer = statusConsumer;
+        setCurrentPhase(Phase.PUT_RING_BEARER);
         _playerOrder = playerOrder;
         _currentPlayerId = firstPlayer;
         _format = format;
@@ -672,6 +677,19 @@ public class GameState {
         _playerPosition.put(playerId, i);
         for (GameStateListener listener : getAllGameStateListeners())
             listener.setPlayerPosition(playerId, i);
+        statusConsumer.accept("At sites: "+getPlayerPositions());
+    }
+
+    private String getPlayerPositions() {
+        StringBuilder stringBuilder = new StringBuilder();
+        _playerPosition.entrySet().forEach(entry -> {
+            stringBuilder.append(entry.getValue()).append(", ");
+        });
+        if (!stringBuilder.isEmpty())
+            stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
+
+        return stringBuilder.toString();
+
     }
 
     public void addThreats(String playerId, int count) {
@@ -969,6 +987,8 @@ public class GameState {
     }
 
     public void setCurrentPhase(Phase phase) {
+        if (phase == Phase.PLAY_STARTING_FELLOWSHIP || phase == Phase.PUT_RING_BEARER)
+            statusConsumer.accept("Preparation");
         _currentPhase = phase;
         for (GameStateListener listener : getAllGameStateListeners())
             listener.setCurrentPhase(getPhaseString());

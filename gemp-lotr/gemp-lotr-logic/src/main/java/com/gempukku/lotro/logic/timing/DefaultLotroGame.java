@@ -15,7 +15,9 @@ import com.gempukku.lotro.logic.modifiers.ModifiersLogic;
 import com.gempukku.lotro.logic.modifiers.ModifiersQuerying;
 import com.gempukku.lotro.logic.timing.rules.CharacterDeathRule;
 import com.gempukku.lotro.logic.vo.LotroDeck;
+
 import java.util.*;
+import java.util.function.Consumer;
 
 public class DefaultLotroGame implements LotroGame {
     private final GameState _gameState;
@@ -41,12 +43,19 @@ public class DefaultLotroGame implements LotroGame {
     private final Set<String> _requestedCancel = new HashSet<>();
     private final LotroCardBlueprintLibrary _library;
 
+    private final Consumer<String> statusConsumer;
+
     public DefaultLotroGame(LotroFormat format, Map<String, LotroDeck> decks, UserFeedback userFeedback, final LotroCardBlueprintLibrary library) {
-        this(format, decks, userFeedback, library, "No timer", false, "Test Match");
+        this(format, decks, userFeedback, library, (Consumer<String>) s -> {}, "No timer", false);
     }
 
-    public DefaultLotroGame(LotroFormat format, Map<String, LotroDeck> decks, UserFeedback userFeedback, final LotroCardBlueprintLibrary library,
-            String timerInfo, boolean allowSpectators, String tournamentName ) {
+    public DefaultLotroGame(LotroFormat format, Map<String, LotroDeck> decks, UserFeedback userFeedback, final LotroCardBlueprintLibrary library, Consumer<String> statusConsumer) {
+        this(format, decks, userFeedback, library, statusConsumer, "No timer", false);
+    }
+
+    public DefaultLotroGame(LotroFormat format, Map<String, LotroDeck> decks, UserFeedback userFeedback, final LotroCardBlueprintLibrary library, Consumer<String> statusConsumer,
+                            String timerInfo, boolean allowSpectators) {
+        this.statusConsumer = statusConsumer;
         _library = library;
         _adventure = format.getAdventure();
         _format = format;
@@ -74,23 +83,22 @@ public class DefaultLotroGame implements LotroGame {
             if (lotroDeck.getRing() != null)
                 rings.put(playerId, lotroDeck.getRing());
 
-            if(format.usesMaps()) {
+            if (format.usesMaps()) {
                 maps.put(playerId, lotroDeck.getMap());
             }
 
             var note = "Deck used: <a href='" + lotroDeck.getURL(playerId) + "' target='_blank'>" + lotroDeck.getDeckName() +
                     "</a> [" + lotroDeck.getTargetFormat() + "]<br/><br/>Deck Notes:<br/>";
-            if(lotroDeck.getNotes() != null) {
+            if (lotroDeck.getNotes() != null) {
                 note += lotroDeck.getNotes();
-            }
-            else {
+            } else {
                 note += "No deck notes.";
             }
 
             notes.put(playerId, note);
         }
 
-        if(format.getName().contains("PC")) {
+        if (format.getName().contains("PC")) {
             formatInfo.append(LotroFormat.PCSummary);
         }
 
@@ -103,13 +111,13 @@ public class DefaultLotroGame implements LotroGame {
                 new PlayerOrderFeedback() {
                     @Override
                     public void setPlayerOrder(PlayerOrder playerOrder, String firstPlayer) {
-                        _gameState.init(playerOrder, firstPlayer, cards, ringBearers, rings, maps, library, format);
+                        _gameState.init(statusConsumer, playerOrder, firstPlayer, cards, ringBearers, rings, maps, library, format);
                     }
                 },
                 new PregameSetupFeedback() {
                     @Override
                     public void populatePregameInfo() {
-                        var preGameInfo = new PreGameInfo(decks.keySet().stream().toList(), tournamentName, timerInfo,
+                        var preGameInfo = new PreGameInfo(decks.keySet().stream().toList(), timerInfo,
                                 !allowSpectators, format, formatInfo.toString(), notes, maps);
 
                         _gameState.initPreGame(preGameInfo);
@@ -172,6 +180,7 @@ public class DefaultLotroGame implements LotroGame {
     public void cancelGame() {
         if (!_finished) {
             _cancelled = true;
+            statusConsumer.accept("Cancelled");
 
             if (_gameState != null) {
                 _gameState.sendMessage("Game was cancelled due to an error, the error was logged and will be fixed soon.");
@@ -188,6 +197,7 @@ public class DefaultLotroGame implements LotroGame {
     public void cancelGameRequested() {
         if (!_finished) {
             _cancelled = true;
+            statusConsumer.accept("Cancelled");
 
             if (_gameState != null)
                 _gameState.sendMessage("Game was cancelled, as requested by all parties.");
@@ -219,6 +229,7 @@ public class DefaultLotroGame implements LotroGame {
     }
 
     private void gameWon(String winner, String reason) {
+        statusConsumer.accept("Finished");
         _winnerPlayerId = winner;
 
         if (_gameState != null)
