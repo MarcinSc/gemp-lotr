@@ -28,4 +28,8 @@ interface GameContainerInterface<Event, ObserveSettings> {
         cardId: String,
         responseWriter: ResponseWriter,
     )
+
+    fun concede(gameId: String, playerId: String)
+
+    fun cancel(gameId: String, playerId: String)
 }

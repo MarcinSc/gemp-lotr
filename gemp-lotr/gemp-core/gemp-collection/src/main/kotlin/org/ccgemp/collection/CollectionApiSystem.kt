@@ -3,13 +3,10 @@ package org.ccgemp.collection
 import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
-import com.gempukku.context.lifecycle.LifecycleObserver
-import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.server.ApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpRequest
-import com.gempukku.server.HttpServer
 import com.gempukku.server.ResponseWriter
 import com.gempukku.server.login.LoggedUserInterface
 import com.gempukku.server.login.UserRolesProvider
@@ -65,7 +62,7 @@ class CollectionApiSystem : ApiSystem() {
 
     private fun executeGetCollectionTypes(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
         { request, responseWriter ->
-            val actAsUser = getActingAsUser(loggedUserInterface,userRolesProvider,  request, adminRole, actAsParameter)
+            val actAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
 
             val documentBuilderFactory = DocumentBuilderFactory.newInstance()
             val documentBuilder = documentBuilderFactory.newDocumentBuilder()
@@ -88,7 +85,7 @@ class CollectionApiSystem : ApiSystem() {
 
     private fun executeOpenPack(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
         { request, responseWriter ->
-            val actAsUser = getActingAsUser(loggedUserInterface,userRolesProvider,  request, adminRole, actAsParameter)
+            val actAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
             val collectionType = request.uri.substring(urlPrefix.length + 1)
             val selection = request.getParameter("selection")
             val packId = request.getParameter("pack") ?: throw HttpProcessingException(400)
@@ -107,7 +104,7 @@ class CollectionApiSystem : ApiSystem() {
 
     private fun executeGetCollection(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
         { request, responseWriter ->
-            val actAsUser = getActingAsUser(loggedUserInterface,userRolesProvider,  request, adminRole, actAsParameter)
+            val actAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
             val collectionType = request.uri.substring(urlPrefix.length + 1)
             val filter = request.getParameter("filter") ?: ""
             val start = request.getParameter("start")?.toInt() ?: 0

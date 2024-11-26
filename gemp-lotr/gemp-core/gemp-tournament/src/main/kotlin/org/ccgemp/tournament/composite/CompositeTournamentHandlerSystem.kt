@@ -16,7 +16,6 @@ import org.ccgemp.tournament.TournamentHandler
 import org.ccgemp.tournament.TournamentInfo
 import org.ccgemp.tournament.TournamentInterface
 import org.ccgemp.tournament.TournamentProgress
-import java.time.LocalDateTime
 
 @Exposes(TournamentProcessRegistry::class)
 class CompositeTournamentHandlerSystem :

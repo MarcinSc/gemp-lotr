@@ -2,7 +2,7 @@ package org.ccgemp.game
 
 import com.gempukku.server.ResponseWriter
 
-interface Game<ObserveSettings>: PlayedGame, FinishedGame {
+interface Game<ObserveSettings> : PlayedGame, FinishedGame {
     val gameSettings: GameSettings
     val gameParticipants: Array<GameParticipant>
     val gameResult: GameResult?
@@ -18,6 +18,10 @@ interface Game<ObserveSettings>: PlayedGame, FinishedGame {
     fun produceCardInfo(playerId: String, cardId: String, responseWriter: ResponseWriter): String
 
     fun leaveGame(channelId: String)
+
+    fun cancelGame(playerId: String)
+
+    fun concedeGame(playerId: String)
 
     fun finalizeGame()
 }

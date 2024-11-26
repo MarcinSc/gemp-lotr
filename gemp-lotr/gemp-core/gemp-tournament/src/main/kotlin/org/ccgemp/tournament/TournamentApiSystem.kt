@@ -3,15 +3,11 @@ package org.ccgemp.tournament
 import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
-import com.gempukku.context.lifecycle.LifecycleObserver
-import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.server.ApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpRequest
-import com.gempukku.server.HttpServer
 import com.gempukku.server.ResponseWriter
-import com.gempukku.server.login.LoggedUserInterface
 import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
 import javax.xml.parsers.DocumentBuilderFactory

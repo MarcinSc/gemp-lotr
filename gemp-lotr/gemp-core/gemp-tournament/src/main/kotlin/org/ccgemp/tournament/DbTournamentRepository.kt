@@ -39,31 +39,38 @@ class DbTournamentRepository : TournamentRepository {
         FROM tournament_deck
         """
 
-    override fun createTournament(tournamentId: String, type: String, name: String, startDate: LocalDateTime, parameters: String, stage: String, round: Int) =
-        dbAccess.openDB().runInTransaction { connection, _ ->
-            val sql =
-                """
+    override fun createTournament(
+        tournamentId: String,
+        type: String,
+        name: String,
+        startDate: LocalDateTime,
+        parameters: String,
+        stage: String,
+        round: Int,
+    ) = dbAccess.openDB().runInTransaction { connection, _ ->
+        val sql =
+            """
             INSERT INTO tournament (tournament_id, name, start_date, type, parameters, stage, round) 
             VALUES (:tournamentId, :name, :startDate, :type, :parameters, :stage, :round)
             """.trimIndent()
-            connection
-                .createQuery(sql)
-                .addParameter("tournamentId", tournamentId)
-                .addParameter("name", name)
-                .addParameter("startDate", startDate)
-                .addParameter("type", type)
-                .addParameter("parameters", parameters)
-                .addParameter("stage", stage)
-                .addParameter("round", round)
-                .executeUpdate()
-        }
+        connection
+            .createQuery(sql)
+            .addParameter("tournamentId", tournamentId)
+            .addParameter("name", name)
+            .addParameter("startDate", startDate)
+            .addParameter("type", type)
+            .addParameter("parameters", parameters)
+            .addParameter("stage", stage)
+            .addParameter("round", round)
+            .executeUpdate()
+    }
 
     override fun getUnfinishedOrStartAfter(time: LocalDateTime): List<Tournament> =
         dbAccess.openDB().withConnection(
             StatementRunnableWithResult { connection, _ ->
                 val sql: String =
                     selectTournament +
-                            """
+                        """
                         WHERE stage <> :stage or start_date > :time
                         """.trimIndent()
                 connection
@@ -79,7 +86,7 @@ class DbTournamentRepository : TournamentRepository {
             StatementRunnableWithResult { connection, _ ->
                 val sql: String =
                     selectTournamentMatch +
-                            """
+                        """
                         WHERE tournament_id = :tournamentId
                         """.trimIndent()
                 connection
@@ -94,7 +101,7 @@ class DbTournamentRepository : TournamentRepository {
             StatementRunnableWithResult { connection, _ ->
                 val sql: String =
                     selectTournamentPlayer +
-                            """
+                        """
                         WHERE tournament_id = :tournamentId
                         """.trimIndent()
                 connection
@@ -109,7 +116,7 @@ class DbTournamentRepository : TournamentRepository {
             StatementRunnableWithResult { connection, _ ->
                 val sql: String =
                     selectTournamentDeck +
-                            """
+                        """
                         WHERE tournament_id = :tournamentId
                         """.trimIndent()
                 connection

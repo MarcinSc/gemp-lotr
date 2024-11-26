@@ -2,7 +2,7 @@ package com.gempukku.ostream
 
 class PersistentStateCustomizer<ConsumerType, FromType, ToType>(
     private val delegate: ObjectConsumerCustomizer<ConsumerType, FromType, ToType>,
-): ObjectStreamCustomizer<ConsumerType, FromType, ToType> {
+) : ObjectStreamCustomizer<ConsumerType, FromType, ToType> {
     private val consumers: MutableMap<ConsumerType, ObjectStream<ToType>> = mutableMapOf()
     private val maintainedObjects: MutableMap<String, FromType> = mutableMapOf()
 

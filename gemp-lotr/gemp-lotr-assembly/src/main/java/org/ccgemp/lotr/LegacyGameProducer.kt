@@ -5,12 +5,10 @@ import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.lotro.common.CardType
 import com.gempukku.lotro.common.Keyword
 import com.gempukku.lotro.common.Phase
-import com.gempukku.lotro.common.Token
 import com.gempukku.lotro.common.Zone
 import com.gempukku.lotro.filters.Filters
 import com.gempukku.lotro.game.DefaultUserFeedback
 import com.gempukku.lotro.game.LotroGameMediator
-import com.gempukku.lotro.game.PhysicalCard
 import com.gempukku.lotro.game.state.GameEvent
 import com.gempukku.lotro.logic.GameUtils
 import com.gempukku.lotro.logic.decisions.AwaitingDecision
@@ -49,7 +47,7 @@ class LegacyGameProducer : GameProducer<Set<Phase>> {
                 decks,
                 userFeedback,
                 legacyObjectsProvider.cardLibrary,
-                { status -> statusHolder.set(status)},
+                { status -> statusHolder.set(status) },
                 gameSettings.timeSettings.toString(),
                 !gameSettings.private,
             )
@@ -185,8 +183,11 @@ internal class LegacyGame(
         if (card.zone.isInPlay || card.zone == Zone.HAND) {
             val sb = StringBuilder()
 
-            if (card.zone == Zone.HAND) sb.append("<b>Card is in hand - stats are only provisional</b><br><br>")
-            else if (!Filters.hasActive(lotroGame, card)) sb.append("<b>Card is inactive - current stats may be inaccurate</b><br><br>")
+            if (card.zone == Zone.HAND) {
+                sb.append("<b>Card is in hand - stats are only provisional</b><br><br>")
+            } else if (!Filters.hasActive(lotroGame, card)) {
+                sb.append("<b>Card is inactive - current stats may be inaccurate</b><br><br>")
+            }
 
             sb.append("<b>Affecting card:</b>")
             val modifiers: Collection<Modifier> = lotroGame.modifiersQuerying.getModifiersAffecting(lotroGame, card)
@@ -274,13 +275,17 @@ internal class LegacyGame(
                 if (keyword.isInfoDisplayable) {
                     if (keyword.isMultiples) {
                         val count: Int = lotroGame.modifiersQuerying.getKeywordCount(lotroGame, card, keyword)
-                        if (count > 0) keywords.append(keyword.humanReadable)
-                            .append(" +")
-                            .append(count)
-                            .append(", ")
+                        if (count > 0) {
+                            keywords.append(keyword.humanReadable)
+                                .append(" +")
+                                .append(count)
+                                .append(", ")
+                        }
                     } else {
-                        if (lotroGame.modifiersQuerying.hasKeyword(lotroGame, card, keyword)) keywords.append(keyword.humanReadable)
-                            .append(", ")
+                        if (lotroGame.modifiersQuerying.hasKeyword(lotroGame, card, keyword)) {
+                            keywords.append(keyword.humanReadable)
+                                .append(", ")
+                        }
                     }
                 }
             }
@@ -303,6 +308,20 @@ internal class LegacyGame(
     override fun leaveGame(channelId: String) {
         openChatStreams.removeIf {
             it.channelId == channelId
+        }
+    }
+
+    override fun cancelGame(playerId: String) {
+        if (gameParticipants.any { it.playerId == playerId }) {
+            lotroGame.requestCancel(playerId)
+        }
+    }
+
+    override fun concedeGame(playerId: String) {
+        if (gameParticipants.any { it.playerId == playerId }) {
+            if (!lotroGame.isFinished) {
+                lotroGame.playerLost(playerId, "Concession")
+            }
         }
     }
 

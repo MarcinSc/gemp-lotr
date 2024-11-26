@@ -113,7 +113,7 @@ class GameContainerSystem : GameContainerInterface<Any, Any>, LifecycleObserver,
         val game = gameEntry.game
         val gameContainer = findGameContainer(gameId)
         gameContainer?.executorService?.execute {
-            setPlayerObserveSettingsInThread(game, player, settings)
+            game.setPlayerObserveSettings(player, settings)
         }
     }
 
@@ -135,12 +135,12 @@ class GameContainerSystem : GameContainerInterface<Any, Any>, LifecycleObserver,
         val channelId = generateUniqueId()
         if (gameContainer != null) {
             gameContainer.executorService.execute {
-                joinGameInGameThread(game, playerId, channelId, gameStream)
+                game.joinGame(playerId, channelId, gameStream)
             }
-            return object:Registration {
+            return object : Registration {
                 override fun deregister() {
                     gameContainer.executorService.execute {
-                        leaveGameInGameThread(game, channelId)
+                        game.leaveGame(channelId)
                     }
                 }
             }
@@ -159,19 +159,46 @@ class GameContainerSystem : GameContainerInterface<Any, Any>, LifecycleObserver,
         val container = findGameContainer(gameId)
         return container?.let {
             it.executorService.execute {
-                processDecisionInGameThread(gameEntry.game, playerId, decisionId, decisionValue)
+                gameEntry.game.processDecision(playerId, decisionId, decisionValue)
             }
             true
         } ?: false
     }
 
-    override fun produceCardInfo(gameId: String, playerId: String, cardId: String, responseWriter: ResponseWriter) {
+    override fun produceCardInfo(
+        gameId: String,
+        playerId: String,
+        cardId: String,
+        responseWriter: ResponseWriter,
+    ) {
         val gameEntry = games[gameId] ?: throw HttpProcessingException(404)
 
         val container = findGameContainer(gameId)
         container?.let {
             it.executorService.execute {
-                produceCardInfoInGameThread(gameEntry.game, playerId, cardId, responseWriter)
+                responseWriter.writeHtmlResponse(gameEntry.game.produceCardInfo(playerId, cardId, responseWriter))
+            }
+        }
+    }
+
+    override fun cancel(gameId: String, playerId: String) {
+        val gameEntry = games[gameId] ?: throw HttpProcessingException(404)
+
+        val container = findGameContainer(gameId)
+        container?.let {
+            it.executorService.execute {
+                gameEntry.game.cancelGame(playerId)
+            }
+        }
+    }
+
+    override fun concede(gameId: String, playerId: String) {
+        val gameEntry = games[gameId] ?: throw HttpProcessingException(404)
+
+        val container = findGameContainer(gameId)
+        container?.let {
+            it.executorService.execute {
+                gameEntry.game.concedeGame(playerId)
             }
         }
     }
@@ -185,40 +212,6 @@ class GameContainerSystem : GameContainerInterface<Any, Any>, LifecycleObserver,
     }
 
     private fun findBestContainer(): GameContainer = gameContainers.minBy { it.games.size }
-
-    private fun processDecisionInGameThread(
-        game: Game<Any>,
-        playerId: String,
-        decisionId: String,
-        decisionValue: String,
-    ) {
-        game.processDecision(playerId, decisionId, decisionValue)
-    }
-
-    private fun setPlayerObserveSettingsInThread(
-        game: Game<Any>,
-        playerId: String,
-        settings: Any,
-    ) {
-        game.setPlayerObserveSettings(playerId, settings)
-    }
-
-    private fun joinGameInGameThread(
-        game: Game<Any>,
-        playerId: String,
-        channelId: String,
-        gameStream: GameStream<Any>,
-    ) {
-        game.joinGame(playerId, channelId, gameStream)
-    }
-
-    private fun leaveGameInGameThread(game: Game<Any>, channelId: String) {
-        game.leaveGame(channelId)
-    }
-
-    private fun produceCardInfoInGameThread(game: Game<Any>, playerId: String, cardId: String, responseWriter: ResponseWriter) {
-        responseWriter.writeHtmlResponse(game.produceCardInfo(playerId, cardId, responseWriter))
-    }
 }
 
 internal class GameContainer(

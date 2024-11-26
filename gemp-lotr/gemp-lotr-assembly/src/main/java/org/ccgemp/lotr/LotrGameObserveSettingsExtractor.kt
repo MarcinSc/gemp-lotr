@@ -19,8 +19,9 @@ class LotrGameObserveSettingsExtractor : GameObserveSettingsExtractor<Set<Phase>
         }
         val autoPassCookie = request.getCookie("autoPass")
         if (autoPassCookie != null) {
-            if (autoPassCookie == "false")
+            if (autoPassCookie == "false") {
                 return emptySet()
+            }
         }
         return autoPassDefault
     }

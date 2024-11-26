@@ -8,7 +8,6 @@ import org.ccgemp.tournament.TournamentParticipant
 import org.ccgemp.tournament.TournamentProgress
 import org.ccgemp.tournament.composite.SignupTournamentProcess
 import org.ccgemp.tournament.composite.kickoff.Kickoff
-import java.time.LocalDateTime
 
 const val SIGNUP_OPEN = "SIGNUP_OPEN"
 

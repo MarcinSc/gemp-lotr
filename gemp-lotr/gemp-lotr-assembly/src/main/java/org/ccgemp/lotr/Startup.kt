@@ -122,15 +122,15 @@ private fun createLotrContext(
             parentContext,
             AnnotationSystemResolver(
                 lotrBaseSystems +
-                        createPlayerSystems() +
-                        createJsonSystems() +
-                        createChatSystems() +
-                        createTransferSystems() +
-                        createCollectionSystems() +
-                        createDeckSystems() +
-                        createTournamentSystems() +
-                        createGameSystems() +
-                        lotrSpecificSystems,
+                    createPlayerSystems() +
+                    createJsonSystems() +
+                    createChatSystems() +
+                    createTransferSystems() +
+                    createCollectionSystems() +
+                    createDeckSystems() +
+                    createTournamentSystems() +
+                    createGameSystems() +
+                    lotrSpecificSystems,
             ),
             AnnotationSystemInitializer(lotrPropertyResolver),
             lotrWorkerThreadExecutorSystem,
