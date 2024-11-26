@@ -17,16 +17,32 @@ class DummyDeckSystem : DeckInterface {
         return playerDecks[player]?.firstOrNull { it.name == deckName }
     }
 
-    override fun addDeck(player: String, deck: GameDeck): Boolean {
-        if (findDeck(player, deck.name) != null) {
-            return false
-        }
+    override fun saveDeck(player: String, deck: GameDeck) {
         playerDecks.compute(player) { key, value ->
             value?.let {
                 it.add(deck)
                 it
             } ?: mutableListOf(deck)
         }
+    }
+
+    override fun deleteDeck(player: String, deckName: String) {
+        playerDecks.compute(player) { key, value ->
+            value?.let {
+                it.removeIf { it.name == deckName }
+                it
+            } ?: mutableListOf()
+        }
+    }
+
+    override fun renameDeck(player: String, oldDeckName: String, newDeckName: String): Boolean {
+        val deckToRename = playerDecks[player]?.firstOrNull { it.name == oldDeckName }
+        if (deckToRename == null) {
+            return false
+        }
+
+        playerDecks[player]!!.remove(deckToRename)
+        playerDecks[player]!!.add(GameDeck(newDeckName, deckToRename.notes, deckToRename.targetFormat, deckToRename.deckParts))
         return true
     }
 

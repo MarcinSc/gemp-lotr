@@ -2,11 +2,11 @@ package org.ccgemp.lotr
 
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.lotro.logic.vo.LotroDeck
-import org.ccgemp.deck.DeckSerialization
+import org.ccgemp.deck.DbDeckSerialization
 import org.ccgemp.deck.GameDeck
 
-@Exposes(DeckSerialization::class)
-class LotrDeckSerialization : DeckSerialization {
+@Exposes(DbDeckSerialization::class)
+class LotrDbDeckSerialization : DbDeckSerialization {
     override fun serializeDeck(deck: GameDeck): String {
         val lotroDeck = deck.toLotroDeck()
         return com.gempukku.lotro.db.DeckSerialization.buildContentsFromDeck(lotroDeck)

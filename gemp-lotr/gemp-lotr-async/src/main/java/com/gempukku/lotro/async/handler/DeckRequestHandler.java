@@ -54,12 +54,15 @@ public class DeckRequestHandler extends LotroServerRequestHandler implements Uri
     @Override
     public void handleRequest(String uri, HttpRequest request, Map<Type, Object> context, ResponseWriter responseWriter, String remoteIp) throws Exception {
         if (uri.equals("/list") && request.method() == HttpMethod.GET) {
+            /* migrated */
             listDecks(request, responseWriter);
         } else if (uri.equals("/libraryList") && request.method() == HttpMethod.GET) {
             listLibraryDecks(request, responseWriter);
         } else if (uri.equals("") && request.method() == HttpMethod.GET) {
+            /* migrated */
             getDeck(request, responseWriter);
         } else if (uri.equals("") && request.method() == HttpMethod.POST) {
+            /* migrated */
             saveDeck(request, responseWriter);
         } else if (uri.equals("/library") && request.method() == HttpMethod.GET) {
             getLibraryDeck(request, responseWriter);
@@ -70,8 +73,10 @@ public class DeckRequestHandler extends LotroServerRequestHandler implements Uri
         } else if (uri.equals("/libraryHtml") && request.method() == HttpMethod.GET) {
             getLibraryDeckInHtml(request, responseWriter);
         } else if (uri.equals("/rename") && request.method() == HttpMethod.POST) {
+            /* migrated */
             renameDeck(request, responseWriter);
         } else if (uri.equals("/delete") && request.method() == HttpMethod.POST) {
+            /* migrated */
             deleteDeck(request, responseWriter);
         } else if (uri.equals("/stats") && request.method() == HttpMethod.POST) {
             getDeckStats(request, responseWriter);
@@ -81,8 +86,6 @@ public class DeckRequestHandler extends LotroServerRequestHandler implements Uri
             throw new HttpProcessingException(404);
         }
     }
-
-
 
     private void getAllFormats(HttpRequest request, ResponseWriter responseWriter) throws IOException {
         HttpPostRequestDecoder postDecoder = new HttpPostRequestDecoder(request);

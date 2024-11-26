@@ -11,7 +11,6 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -46,7 +45,7 @@ class DeckSystemTest {
                     setOf(
                         DeckSystem(),
                         DbDeckRepository(),
-                        SimpleDeckSerialization(),
+                        SimpleDbDeckSerialization(),
                         NoopDeckValidation(),
                         DbAccessSystem(),
                         lifecycleSystem,
@@ -67,7 +66,7 @@ class DeckSystemTest {
         assertEquals(0, noPlayerDecks.size)
 
         val newDeck = GameDeck("Name", "Notes", "format", mapOf("ring" to listOf("1", "2"), "ringBearer" to listOf("3,4", "5")))
-        assertTrue(deckSystem.addDeck("test", newDeck))
+        deckSystem.saveDeck("test", newDeck)
 
         val resultDeck = deckSystem.findDeck("test", "Name")
         assertNotNull(resultDeck)

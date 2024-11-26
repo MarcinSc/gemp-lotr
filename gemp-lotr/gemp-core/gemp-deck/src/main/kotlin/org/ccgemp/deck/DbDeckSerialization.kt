@@ -1,6 +1,6 @@
 package org.ccgemp.deck
 
-interface DeckSerialization {
+interface DbDeckSerialization {
     fun serializeDeck(deck: GameDeck): String
 
     fun deserializeDeck(

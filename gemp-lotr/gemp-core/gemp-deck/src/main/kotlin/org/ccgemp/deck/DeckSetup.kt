@@ -4,5 +4,6 @@ fun createDeckSystems(): List<Any> {
     return listOf(
         DeckSystem(),
         DbDeckRepository(),
+        DeckApiSystem(),
     )
 }

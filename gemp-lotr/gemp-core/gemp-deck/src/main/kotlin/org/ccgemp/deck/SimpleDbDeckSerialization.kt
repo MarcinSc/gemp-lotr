@@ -2,8 +2,8 @@ package org.ccgemp.deck
 
 import com.gempukku.context.resolver.expose.Exposes
 
-@Exposes(DeckSerialization::class)
-class SimpleDeckSerialization : DeckSerialization {
+@Exposes(DbDeckSerialization::class)
+class SimpleDbDeckSerialization : DbDeckSerialization {
     override fun serializeDeck(deck: GameDeck): String {
         return deckPartsToString(deck.deckParts)
     }

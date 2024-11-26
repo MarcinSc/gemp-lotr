@@ -5,7 +5,11 @@ interface DeckInterface {
 
     fun findDeck(player: String, deckName: String): GameDeck?
 
-    fun addDeck(player: String, deck: GameDeck): Boolean
+    fun saveDeck(player: String, deck: GameDeck)
+
+    fun renameDeck(player: String, oldDeckName: String, newDeckName: String): Boolean
+
+    fun deleteDeck(player: String, deckName: String)
 
     fun getValidator(format: String): DeckValidator
 }

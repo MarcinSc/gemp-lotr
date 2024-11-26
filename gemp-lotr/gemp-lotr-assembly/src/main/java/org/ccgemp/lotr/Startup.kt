@@ -108,8 +108,9 @@ private fun createLotrContext(
             LotrGameObserveSettingsExtractor(),
             LotrGameEventSinkProducer(),
             // Deck related
-            LotrDeckSerialization(),
+            LotrDbDeckSerialization(),
             LotrDeckValidation(),
+            LotrDeckSerializer(),
             // Tournament related
             LotrTournamentRenderer(),
             // Collection related
