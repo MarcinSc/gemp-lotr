@@ -1,9 +1,12 @@
-package org.ccgemp.lotr
+package org.ccgemp.lotr.collection
 
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.collection.ProductBox
 import org.ccgemp.collection.ProductLibrary
+import org.ccgemp.common.DefaultGempCollection
+import org.ccgemp.common.GempCollection
+import org.ccgemp.lotr.LegacyObjectsProvider
 
 @Exposes(ProductLibrary::class)
 class LotrProductLibrary : ProductLibrary {
@@ -17,12 +20,12 @@ class LotrProductLibrary : ProductLibrary {
     override fun getProductBox(name: String): ProductBox? {
         val productBox = productLibrary.GetProduct(name) ?: return null
         return object : ProductBox {
-            override fun openPack(): List<String> {
-                return productBox.openPack().flatMap {
-                    val product = it.blueprintId
-                    val count = it.count
-                    generateSequence { product }.take(count)
+            override fun openPack(): GempCollection {
+                val result = DefaultGempCollection()
+                productBox.openPack().forEach {
+                    result.addItem(it.blueprintId, it.count)
                 }
+                return result
             }
         }
     }

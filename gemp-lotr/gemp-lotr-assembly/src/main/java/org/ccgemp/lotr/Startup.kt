@@ -18,6 +18,16 @@ import org.ccgemp.db.DbAccessSystem
 import org.ccgemp.deck.createDeckSystems
 import org.ccgemp.game.createGameSystems
 import org.ccgemp.json.createJsonSystems
+import org.ccgemp.lotr.chat.LegacyChatNameDisplayFormatter
+import org.ccgemp.lotr.collection.LotrCollectionContentsSerializer
+import org.ccgemp.lotr.collection.LotrProductLibrary
+import org.ccgemp.lotr.deck.LotrDbDeckSerialization
+import org.ccgemp.lotr.deck.LotrDeckSerializer
+import org.ccgemp.lotr.deck.LotrDeckValidation
+import org.ccgemp.lotr.game.LegacyGameProducer
+import org.ccgemp.lotr.game.LotrGameEventSinkProducer
+import org.ccgemp.lotr.game.LotrGameObserveSettingsExtractor
+import org.ccgemp.lotr.tournament.LotrTournamentRenderer
 import org.ccgemp.server.player.createPlayerSystems
 import org.ccgemp.tournament.createTournamentSystems
 import org.ccgemp.transfer.createTransferSystems

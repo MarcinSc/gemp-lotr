@@ -1,4 +1,4 @@
-package org.ccgemp.lotr
+package org.ccgemp.lotr.deck
 
 import com.gempukku.lotro.logic.vo.LotroDeck
 import org.ccgemp.deck.GameDeck

@@ -1,4 +1,4 @@
-package org.ccgemp.lotr
+package org.ccgemp.lotr.game
 
 import com.gempukku.lotro.common.Token
 import com.gempukku.lotro.common.Zone

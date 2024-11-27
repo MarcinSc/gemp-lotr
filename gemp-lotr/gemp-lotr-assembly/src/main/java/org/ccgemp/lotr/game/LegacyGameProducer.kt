@@ -1,4 +1,4 @@
-package org.ccgemp.lotr
+package org.ccgemp.lotr.game
 
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
@@ -22,6 +22,8 @@ import org.ccgemp.game.GameProducer
 import org.ccgemp.game.GameResult
 import org.ccgemp.game.GameSettings
 import org.ccgemp.game.GameStream
+import org.ccgemp.lotr.LegacyObjectsProvider
+import org.ccgemp.lotr.deck.toLotroDeck
 import java.util.concurrent.atomic.AtomicReference
 import java.util.logging.Level
 import java.util.logging.Logger

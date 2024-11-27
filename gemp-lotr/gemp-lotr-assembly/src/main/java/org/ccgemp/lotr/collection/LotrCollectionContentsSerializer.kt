@@ -1,4 +1,4 @@
-package org.ccgemp.lotr
+package org.ccgemp.lotr.collection
 
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
@@ -8,6 +8,7 @@ import com.gempukku.lotro.game.LotroCardBlueprint
 import org.ccgemp.common.CollectionContentsSerializer
 import org.ccgemp.common.GempCollection
 import org.ccgemp.common.GempCollectionItem
+import org.ccgemp.lotr.LegacyObjectsProvider
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 

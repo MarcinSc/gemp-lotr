@@ -1,10 +1,11 @@
-package org.ccgemp.lotr
+package org.ccgemp.lotr.deck
 
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.deck.DeckValidation
 import org.ccgemp.deck.DeckValidator
 import org.ccgemp.deck.GameDeck
+import org.ccgemp.lotr.LegacyObjectsProvider
 
 @Exposes(DeckValidation::class)
 class LotrDeckValidation : DeckValidation {
@@ -14,8 +15,8 @@ class LotrDeckValidation : DeckValidation {
     override fun getDeckValidator(format: String): DeckValidator {
         val lotroFormat = objectsProvider.formatLibrary.getFormat(format)
         return object : DeckValidator {
-            override fun isValid(deck: GameDeck?): Boolean {
-                return deck != null && lotroFormat.validateDeck(deck.toLotroDeck()).isEmpty()
+            override fun isValid(player: String, deck: GameDeck): Boolean {
+                return lotroFormat.validateDeck(deck.toLotroDeck()).isEmpty()
             }
         }
     }

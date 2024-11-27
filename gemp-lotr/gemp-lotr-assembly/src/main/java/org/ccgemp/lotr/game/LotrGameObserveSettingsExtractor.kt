@@ -1,4 +1,4 @@
-package org.ccgemp.lotr
+package org.ccgemp.lotr.game
 
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.lotro.common.Phase

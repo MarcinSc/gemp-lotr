@@ -1,4 +1,4 @@
-package org.ccgemp.lotr
+package org.ccgemp.lotr.deck
 
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
@@ -13,6 +13,7 @@ import com.gempukku.lotro.logic.vo.LotroDeck
 import org.ccgemp.collection.FilterAndSort
 import org.ccgemp.deck.DeckSerializer
 import org.ccgemp.deck.GameDeck
+import org.ccgemp.lotr.LegacyObjectsProvider
 import org.w3c.dom.Document
 import java.util.Arrays
 import javax.xml.parsers.DocumentBuilderFactory

@@ -1,4 +1,4 @@
-package org.ccgemp.lotr
+package org.ccgemp.lotr.chat
 
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
