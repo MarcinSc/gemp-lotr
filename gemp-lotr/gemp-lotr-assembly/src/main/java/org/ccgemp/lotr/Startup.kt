@@ -22,7 +22,6 @@ import org.ccgemp.game.createGameSystems
 import org.ccgemp.json.createJsonSystems
 import org.ccgemp.lotr.chat.LegacyChatEventSinkProducer
 import org.ccgemp.lotr.chat.LegacyChatNameDisplayFormatter
-import org.ccgemp.lotr.collection.LegacyCollectionContentsSerializer
 import org.ccgemp.lotr.collection.LegacyXmlCollectionModelRenderer
 import org.ccgemp.lotr.collection.LotrProductLibrary
 import org.ccgemp.lotr.deck.LegacyDeckModelRenderer
@@ -119,8 +118,6 @@ private fun createLotrContext(
             DefaultLegacyObjectProvider(),
             // Legacy chat name display
             LegacyChatNameDisplayFormatter(),
-            // Collection related
-            LegacyCollectionContentsSerializer(),
         )
 
     val lotrContext =
