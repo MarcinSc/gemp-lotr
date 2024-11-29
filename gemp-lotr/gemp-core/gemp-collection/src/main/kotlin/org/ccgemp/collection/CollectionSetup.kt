@@ -1,11 +1,18 @@
 package org.ccgemp.collection
 
-fun createCollectionSystems(): List<Any> {
+import org.ccgemp.collection.renderer.CollectionModelRenderer
+import org.ccgemp.collection.renderer.JsonCollectionModelRenderer
+
+fun createCollectionSystems(
+    collectionRepository: CollectionRepository = BaseDbCollectionRepository(),
+    collectionModelRenderer: CollectionModelRenderer = JsonCollectionModelRenderer(),
+): List<Any> {
     return listOf(
         CollectionSystem(),
-        BaseDbCollectionRepository(),
+        collectionRepository,
         FilterAndSortSystem<Any>(),
         CardFilterAndSortSystem<Any>(),
         CollectionApiSystem(),
+        collectionModelRenderer,
     )
 }

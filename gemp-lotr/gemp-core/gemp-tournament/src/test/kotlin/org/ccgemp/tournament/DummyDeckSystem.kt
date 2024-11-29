@@ -1,9 +1,8 @@
 package org.ccgemp.tournament
 
 import com.gempukku.context.resolver.expose.Exposes
-import org.ccgemp.deck.DeckInterface
-import org.ccgemp.common.DeckValidator
 import org.ccgemp.common.GameDeck
+import org.ccgemp.deck.DeckInterface
 
 @Exposes(DeckInterface::class)
 class DummyDeckSystem : DeckInterface {

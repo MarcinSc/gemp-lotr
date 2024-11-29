@@ -5,8 +5,6 @@ dependencies {
     implementation("com.mysql:mysql-connector-j:9.1.0")
     // https://mvnrepository.com/artifact/org.json/json
     implementation("org.json:json:20240303")
-    // https://mvnrepository.com/artifact/org.hjson/hjson
-    implementation("org.hjson:hjson:3.1.0")
     // https://mvnrepository.com/artifact/com.alibaba.fastjson2/fastjson2
     implementation("com.alibaba.fastjson2:fastjson2:2.0.53")
     // https://mvnrepository.com/artifact/commons-io/commons-io

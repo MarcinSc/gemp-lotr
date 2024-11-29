@@ -5,9 +5,6 @@ import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.collection.CollectionInterface
 import org.ccgemp.collection.ProductLibrary
-import org.ccgemp.deck.DeckInterface
-import org.ccgemp.common.DeckValidator
-import org.ccgemp.common.GameDeck
 import org.ccgemp.format.GempFormats
 import org.ccgemp.json.JsonWithConfig
 import org.ccgemp.tournament.composite.TournamentProcess

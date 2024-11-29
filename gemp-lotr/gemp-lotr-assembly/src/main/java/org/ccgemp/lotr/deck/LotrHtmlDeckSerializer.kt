@@ -13,12 +13,11 @@ import com.gempukku.server.HttpProcessingException
 import org.apache.commons.lang3.StringEscapeUtils
 import org.ccgemp.collection.FilterAndSort
 import org.ccgemp.common.GameDeck
-import org.ccgemp.deck.HtmlDeckSerializer
 import org.ccgemp.format.GempFormats
 import org.ccgemp.lotr.LegacyObjectsProvider
 
 @Exposes(HtmlDeckSerializer::class)
-class LotrHtmlDeckSerializer: HtmlDeckSerializer {
+class LotrHtmlDeckSerializer : HtmlDeckSerializer {
     @Inject
     private lateinit var legacyObjectsProvider: LegacyObjectsProvider
 
@@ -28,7 +27,7 @@ class LotrHtmlDeckSerializer: HtmlDeckSerializer {
     @Inject
     private lateinit var gempFormats: GempFormats<LotroFormat>
 
-    override fun serializeDeck(deck: GameDeck, author: String?): String {
+    override fun serializeDeck(author: String?, deck: GameDeck): String {
         val lotroDeck = deck.toLotroDeck()
         val cardLibrary = legacyObjectsProvider.cardLibrary
         val formatLibrary = legacyObjectsProvider.formatLibrary
@@ -36,39 +35,39 @@ class LotrHtmlDeckSerializer: HtmlDeckSerializer {
         val result = StringBuilder()
         result.append(
             """
-<html>
-    <style>
-        body {
-            margin:50;
-        }
-        
-        .tooltip {
-          border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
-          color:#0000FF;
-        }
-        
-        .tooltip span, .tooltip title {
-            display:none;
-        }
-        .tooltip:hover span:not(.click-disabled),.tooltip:active span:not(.click-disabled) {
-            display:block;
-            position:fixed;
-            overflow:hidden;
-            background-color: #FAEBD7;
-            width:auto;
-            z-index:9999;
-            top:20%;
-            left:350px;
-        }
-        /* This prevents tooltip images from automatically shrinking if they are near the window edge.*/
-        .tooltip span > img {
-            max-width:none !important;
-            overflow:hidden;
-        }
-                        
-    </style>
-    <body>
-    """.trimIndent(),
+            <html>
+                <style>
+                    body {
+                        margin:50;
+                    }
+                    
+                    .tooltip {
+                      border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+                      color:#0000FF;
+                    }
+                    
+                    .tooltip span, .tooltip title {
+                        display:none;
+                    }
+                    .tooltip:hover span:not(.click-disabled),.tooltip:active span:not(.click-disabled) {
+                        display:block;
+                        position:fixed;
+                        overflow:hidden;
+                        background-color: #FAEBD7;
+                        width:auto;
+                        z-index:9999;
+                        top:20%;
+                        left:350px;
+                    }
+                    /* This prevents tooltip images from automatically shrinking if they are near the window edge.*/
+                    .tooltip span > img {
+                        max-width:none !important;
+                        overflow:hidden;
+                    }
+                                    
+                </style>
+                <body>
+            """.trimIndent(),
         )
         result.append("<h1>" + StringEscapeUtils.escapeHtml3(deck.name) + "</h1>")
         result.append("<h2>Format: " + StringEscapeUtils.escapeHtml3(deck.targetFormat) + "</h2>")
@@ -99,14 +98,16 @@ class LotrHtmlDeckSerializer: HtmlDeckSerializer {
         result.append("<br/>")
         result.append("<b>Free Peoples Draw Deck:</b><br/>")
         for (item in filterAndSort.process<CardCollection.Item>(
-            "side:FREE_PEOPLE", "cardType,culture,name",
+            "side:FREE_PEOPLE",
+            "cardType,culture,name",
             deckCards.all,
         )) result.append(item.count.toString() + "x " + generateCardTooltip(item.blueprintId) + "<br/>")
 
         result.append("<br/>")
         result.append("<b>Shadow Draw Deck:</b><br/>")
         for (item in filterAndSort.process<CardCollection.Item>(
-            "side:SHADOW", "cardType,culture,name",
+            "side:SHADOW",
+            "cardType,culture,name",
             deckCards.all,
         )) result.append(item.count.toString() + "x " + generateCardTooltip(item.blueprintId) + "<br/>")
 
@@ -124,8 +125,11 @@ class LotrHtmlDeckSerializer: HtmlDeckSerializer {
         var shadowCount = 0
         for (card in lotroDeck.getDrawDeckCards()) {
             val side: Side = legacyObjectsProvider.cardLibrary.getLotroCardBlueprint(card).getSide()
-            if (side == Side.SHADOW) shadowCount++
-            else if (side == Side.FREE_PEOPLE) fpCount++
+            if (side == Side.SHADOW) {
+                shadowCount++
+            } else if (side == Side.FREE_PEOPLE) {
+                fpCount++
+            }
         }
 
         val sb = java.lang.StringBuilder()
@@ -162,11 +166,12 @@ class LotrHtmlDeckSerializer: HtmlDeckSerializer {
     private fun validateFormat(name: String): LotroFormat? {
         var validatedFormat = legacyObjectsProvider.formatLibrary.getFormat(name)
         if (validatedFormat == null) {
-            validatedFormat = try {
-                legacyObjectsProvider.formatLibrary.getFormatByName(name)
-            } catch (ex: Exception) {
-                legacyObjectsProvider.formatLibrary.getFormatByName("Anything Goes")
-            }
+            validatedFormat =
+                try {
+                    legacyObjectsProvider.formatLibrary.getFormatByName(name)
+                } catch (ex: Exception) {
+                    legacyObjectsProvider.formatLibrary.getFormatByName("Anything Goes")
+                }
         }
 
         return validatedFormat
@@ -199,10 +204,11 @@ class LotrHtmlDeckSerializer: HtmlDeckSerializer {
         val cardnum = parts[1].replace("*", "").replace("T", "").toInt()
 
         val id = "LOTR-EN" + set + subset + String.format("%03d", cardnum) + "." + String.format("%01d", version)
-        val result = ("<span class=\"tooltip\">" + GameUtils.getFullName(bp)
-                + "<span><img class=\"ttimage\" src=\"https://wiki.lotrtcgpc.net/images/" + id + "_card.jpg\" ></span></span>")
+        val result = (
+            "<span class=\"tooltip\">" + GameUtils.getFullName(bp) +
+                "<span><img class=\"ttimage\" src=\"https://wiki.lotrtcgpc.net/images/" + id + "_card.jpg\" ></span></span>"
+        )
 
         return result
     }
-
 }

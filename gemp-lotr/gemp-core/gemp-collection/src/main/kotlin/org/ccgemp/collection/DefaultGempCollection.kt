@@ -1,4 +1,4 @@
-package org.ccgemp.common
+package org.ccgemp.collection
 
 class DefaultGempCollection : GempCollection {
     override val all: Iterable<GempCollectionItem>

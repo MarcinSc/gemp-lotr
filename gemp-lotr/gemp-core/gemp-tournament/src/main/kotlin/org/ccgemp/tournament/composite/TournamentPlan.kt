@@ -1,7 +1,7 @@
 package org.ccgemp.tournament.composite
 
-import org.ccgemp.common.splitText
 import org.ccgemp.common.GameDeck
+import org.ccgemp.common.splitText
 import org.ccgemp.game.GameSettings
 import org.ccgemp.tournament.FINISHED_STAGE
 import org.ccgemp.tournament.TournamentGameRecipe

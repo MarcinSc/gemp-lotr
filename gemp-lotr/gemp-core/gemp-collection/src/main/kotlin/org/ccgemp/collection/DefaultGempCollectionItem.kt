@@ -1,4 +1,4 @@
-package org.ccgemp.common
+package org.ccgemp.collection
 
 data class DefaultGempCollectionItem(
     override val product: String,

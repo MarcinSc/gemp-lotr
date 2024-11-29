@@ -10,16 +10,17 @@ import com.gempukku.server.ServerRequestHandler
 import com.gempukku.server.login.LoggedUserInterface
 import com.gempukku.server.login.UserRolesProvider
 import com.gempukku.server.login.getActingAsUser
+import org.ccgemp.deck.renderer.DeckModelRenderer
 
 class DeckApiSystem : ApiSystem() {
     @Inject
     private lateinit var deckInterface: DeckInterface
 
     @Inject
-    private lateinit var deckSerializer: DeckSerializer
+    private lateinit var deckModelRenderer: DeckModelRenderer
 
     @Inject
-    private lateinit var htmlDeckSerializer: HtmlDeckSerializer
+    private lateinit var deckDeserializer: DeckDeserializer
 
     @Inject
     private lateinit var loggedUserInterface: LoggedUserInterface
@@ -49,16 +50,6 @@ class DeckApiSystem : ApiSystem() {
                 executeGetDeck(),
             ),
             server.registerRequestHandler(
-                HttpMethod.GET,
-                "^$urlPrefix/html$",
-                executeGetDeckHtml(),
-            ),
-            server.registerRequestHandler(
-                HttpMethod.POST,
-                "^$urlPrefix/stats",
-                executeGetDeckStats(),
-            ),
-            server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$urlPrefix$",
                 executeSaveDeck(),
@@ -82,7 +73,7 @@ class DeckApiSystem : ApiSystem() {
 
             val playerDecks = deckInterface.getPlayerDecks(actingAsUser.userId)
 
-            responseWriter.writeXmlResponse(deckSerializer.renderDeckList(playerDecks))
+            deckModelRenderer.renderListDecks(actingAsUser.userId, playerDecks, responseWriter)
         }
 
     private fun executeGetDeck(): ServerRequestHandler =
@@ -92,17 +83,7 @@ class DeckApiSystem : ApiSystem() {
 
             val deck = deckInterface.findDeck(actingAsUser.userId, deckName) ?: throw HttpProcessingException(404)
 
-            responseWriter.writeXmlResponse(deckSerializer.renderDeck(deck))
-        }
-
-    private fun executeGetDeckHtml(): ServerRequestHandler =
-        ServerRequestHandler { request, responseWriter ->
-            val actingAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
-            val deckName = request.getParameter("deckName") ?: throw HttpProcessingException(400)
-
-            val deck = deckInterface.findDeck(actingAsUser.userId, deckName) ?: throw HttpProcessingException(404)
-
-            responseWriter.writeHtmlResponse(htmlDeckSerializer.serializeDeck(deck, actingAsUser.userId))
+            deckModelRenderer.renderGetDeck(actingAsUser.userId, deck, responseWriter)
         }
 
     private fun executeSaveDeck(): ServerRequestHandler =
@@ -113,7 +94,7 @@ class DeckApiSystem : ApiSystem() {
             val notes = request.getParameter("notes") ?: throw HttpProcessingException(400)
             val deckContents = request.getParameter("deckContents") ?: throw HttpProcessingException(400)
 
-            val deck = deckSerializer.deserializeDeck(deckName, targetFormat, notes, deckContents) ?: throw HttpProcessingException(400)
+            val deck = deckDeserializer.deserializeDeck(deckName, targetFormat, notes, deckContents) ?: throw HttpProcessingException(400)
 
             deckInterface.saveDeck(actingAsUser.userId, deck)
 
@@ -142,15 +123,5 @@ class DeckApiSystem : ApiSystem() {
             deckInterface.deleteDeck(actingAsUser.userId, deckName)
 
             responseWriter.writeXmlResponse(null)
-        }
-
-    private fun executeGetDeckStats(): ServerRequestHandler =
-        ServerRequestHandler { request, responseWriter ->
-            val targetFormat = request.getParameter("targetFormat") ?: throw HttpProcessingException(400)
-            val deckContents = request.getParameter("deckContents") ?: throw HttpProcessingException(400)
-
-            val deck = deckSerializer.deserializeDeck("Temp Deck", targetFormat, "", deckContents) ?: throw HttpProcessingException(400)
-
-            responseWriter.writeHtmlResponse(htmlDeckSerializer.serializeValidation(deck, targetFormat))
         }
 }

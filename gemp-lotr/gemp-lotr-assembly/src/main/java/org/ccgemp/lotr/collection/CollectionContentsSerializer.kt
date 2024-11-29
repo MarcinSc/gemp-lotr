@@ -1,5 +1,7 @@
-package org.ccgemp.common
+package org.ccgemp.lotr.collection
 
+import org.ccgemp.collection.GempCollection
+import org.ccgemp.collection.GempCollectionItem
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 

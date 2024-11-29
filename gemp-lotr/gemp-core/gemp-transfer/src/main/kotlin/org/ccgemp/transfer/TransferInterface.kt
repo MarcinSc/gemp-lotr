@@ -1,6 +1,6 @@
 package org.ccgemp.transfer
 
-import org.ccgemp.common.GempCollection
+import org.ccgemp.collection.GempCollection
 
 interface TransferInterface {
     fun addTransferTo(

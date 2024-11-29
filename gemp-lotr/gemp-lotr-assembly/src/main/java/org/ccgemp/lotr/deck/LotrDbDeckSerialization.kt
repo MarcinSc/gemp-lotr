@@ -2,8 +2,8 @@ package org.ccgemp.lotr.deck
 
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.lotro.logic.vo.LotroDeck
-import org.ccgemp.deck.DbDeckSerialization
 import org.ccgemp.common.GameDeck
+import org.ccgemp.deck.DbDeckSerialization
 
 @Exposes(DbDeckSerialization::class)
 class LotrDbDeckSerialization : DbDeckSerialization {

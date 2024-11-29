@@ -7,8 +7,8 @@ import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.context.update.UpdatedSystem
 import com.gempukku.ostream.ObjectStream
 import com.gempukku.server.HttpProcessingException
-import org.ccgemp.deck.DeckInterface
 import org.ccgemp.common.GameDeck
+import org.ccgemp.deck.DeckInterface
 import org.ccgemp.deck.toDeckParts
 import org.ccgemp.deck.toDeckString
 import org.ccgemp.game.GameContainerInterface

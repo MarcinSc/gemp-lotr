@@ -10,20 +10,19 @@ import com.gempukku.server.ServerRequestHandler
 import com.gempukku.server.login.LoggedUserInterface
 import com.gempukku.server.login.UserRolesProvider
 import com.gempukku.server.login.getActingAsUser
+import org.ccgemp.deck.DeckDeserializer
 import org.ccgemp.deck.DeckInterface
-import org.ccgemp.deck.DeckSerializer
-import org.ccgemp.deck.HtmlDeckSerializer
 import org.ccgemp.lotr.LegacyObjectsProvider
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.Base64
 
-class DeckShareApiSystem: ApiSystem() {
+class LegacyDeckShareApiSystem : ApiSystem() {
     @Inject
     private lateinit var deckInterface: DeckInterface
 
     @Inject
-    private lateinit var deckSerializer: DeckSerializer
+    private lateinit var deckDeserializer: DeckDeserializer
 
     @Inject
     private lateinit var loggedUserInterface: LoggedUserInterface
@@ -73,7 +72,7 @@ class DeckShareApiSystem: ApiSystem() {
             val base64 = Base64.getEncoder().encodeToString(code.toByteArray(StandardCharsets.UTF_8))
             val result = URLEncoder.encode(base64, StandardCharsets.UTF_8)
 
-            responseWriter.writeHtmlResponse(url+result)
+            responseWriter.writeHtmlResponse(url + result)
         }
 
     private fun executeGetShared(): ServerRequestHandler =
@@ -85,6 +84,6 @@ class DeckShareApiSystem: ApiSystem() {
 
             val deck = deckInterface.findDeck(fields[0], fields[1]) ?: throw HttpProcessingException(404)
 
-            responseWriter.writeHtmlResponse(htmlDeckSerializer.serializeDeck(deck, fields[0]))
+            responseWriter.writeHtmlResponse(htmlDeckSerializer.serializeDeck(fields[0], deck))
         }
 }

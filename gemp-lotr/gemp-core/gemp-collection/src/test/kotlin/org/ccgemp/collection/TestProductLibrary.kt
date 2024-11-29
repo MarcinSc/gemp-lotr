@@ -1,8 +1,6 @@
 package org.ccgemp.collection
 
 import com.gempukku.context.resolver.expose.Exposes
-import org.ccgemp.common.DefaultGempCollection
-import org.ccgemp.common.GempCollection
 
 @Exposes(ProductLibrary::class)
 class TestProductLibrary : ProductLibrary {

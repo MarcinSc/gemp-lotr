@@ -1,4 +1,4 @@
-package org.ccgemp.common
+package org.ccgemp.collection
 
 interface GempCollectionItem {
     val product: String

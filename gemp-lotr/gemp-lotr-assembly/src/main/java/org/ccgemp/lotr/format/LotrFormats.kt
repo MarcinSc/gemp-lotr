@@ -28,6 +28,10 @@ class LotrFormats : GempFormats<LotroFormat> {
             override fun isValid(deck: GameDeck): Boolean {
                 return lotroFormat.validateDeck(deck.toLotroDeck()).isEmpty()
             }
+
+            override fun getValidationErrors(deck: GameDeck): List<String> {
+                return lotroFormat.validateDeck(deck.toLotroDeck())
+            }
         }
     }
 }

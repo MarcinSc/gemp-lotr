@@ -2,10 +2,10 @@ package org.ccgemp.lotr.collection
 
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
+import org.ccgemp.collection.DefaultGempCollection
+import org.ccgemp.collection.GempCollection
 import org.ccgemp.collection.ProductBox
 import org.ccgemp.collection.ProductLibrary
-import org.ccgemp.common.DefaultGempCollection
-import org.ccgemp.common.GempCollection
 import org.ccgemp.lotr.LegacyObjectsProvider
 
 @Exposes(ProductLibrary::class)

@@ -3,7 +3,6 @@ package org.ccgemp.tournament.composite.misc
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
-import org.ccgemp.deck.DeckInterface
 import org.ccgemp.format.GempFormats
 import org.ccgemp.json.JsonWithConfig
 import org.ccgemp.tournament.composite.TournamentProcess

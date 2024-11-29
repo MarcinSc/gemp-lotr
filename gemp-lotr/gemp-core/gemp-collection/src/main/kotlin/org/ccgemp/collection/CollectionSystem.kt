@@ -3,9 +3,6 @@ package org.ccgemp.collection
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectList
 import com.gempukku.context.resolver.expose.Exposes
-import org.ccgemp.common.DefaultGempCollection
-import org.ccgemp.common.GempCollection
-import org.ccgemp.transfer.TransferInterface
 
 @Exposes(CollectionInterface::class)
 class CollectionSystem : CollectionInterface {
@@ -18,8 +15,8 @@ class CollectionSystem : CollectionInterface {
     @InjectList
     private lateinit var collectionTypeProviders: List<CollectionTypeProvider>
 
-    @Inject(allowsNull = true)
-    private var transferInterface: TransferInterface? = null
+    @InjectList
+    private lateinit var transferObservers: List<TransferObserver>
 
     private val collectionCache: MutableMap<CollectionCacheKey, GempCollection> = mutableMapOf()
 
@@ -124,12 +121,20 @@ class CollectionSystem : CollectionInterface {
 
     private fun internalRemoveFromCollection(collectionInfo: CollectionInfo, collectionChange: CollectionChange) {
         repository.removeFromCollection(collectionInfo, collectionChange)
-        transferInterface?.addTransferFrom(collectionInfo.player!!, collectionChange.reason, collectionInfo.type!!, collectionChange.collection)
+        transferObservers.forEach { it.transferredFrom(collectionInfo.player!!, collectionChange.reason, collectionInfo.type!!, collectionChange.collection) }
     }
 
     private fun internalAddToCollection(collectionInfo: CollectionInfo, collectionChange: CollectionChange) {
         repository.addToCollection(collectionInfo, collectionChange)
-        transferInterface?.addTransferTo(collectionInfo.player!!, collectionChange.reason, collectionChange.notify, collectionInfo.type!!, collectionChange.collection)
+        transferObservers.forEach {
+            it.transferredTo(
+                collectionInfo.player!!,
+                collectionChange.reason,
+                collectionChange.notify,
+                collectionInfo.type!!,
+                collectionChange.collection,
+            )
+        }
     }
 }
 

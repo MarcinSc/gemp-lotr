@@ -1,7 +1,5 @@
 package org.ccgemp.collection
 
-import org.ccgemp.common.GempCollection
-
 interface CollectionInterface {
     fun getPlayerCollectionTypes(player: String): List<CollectionType>
 

@@ -5,15 +5,14 @@ import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.lotro.common.CardType
 import com.gempukku.lotro.common.Side
 import com.gempukku.lotro.game.LotroCardBlueprint
-import org.ccgemp.common.CollectionContentsSerializer
-import org.ccgemp.common.GempCollection
-import org.ccgemp.common.GempCollectionItem
+import org.ccgemp.collection.GempCollection
+import org.ccgemp.collection.GempCollectionItem
 import org.ccgemp.lotr.LegacyObjectsProvider
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 
 @Exposes(CollectionContentsSerializer::class)
-class LotrCollectionContentsSerializer : CollectionContentsSerializer {
+class LegacyCollectionContentsSerializer : CollectionContentsSerializer {
     @Inject
     private lateinit var legacyObjectsProvider: LegacyObjectsProvider
 

@@ -12,15 +12,14 @@ import com.gempukku.server.ServerResponseHeaderProcessor
 import com.gempukku.server.login.LoggedUserInterface
 import com.gempukku.server.login.UserRolesProvider
 import com.gempukku.server.login.getActingAsUser
-import org.ccgemp.common.CollectionContentsSerializer
-import javax.xml.parsers.DocumentBuilderFactory
+import org.ccgemp.transfer.renderer.TransferModelRenderer
 
 class TransferApiSystem : ApiSystem() {
     @Inject
     private lateinit var transferInterface: TransferInterface
 
     @Inject
-    private lateinit var collectionContentsSerializer: CollectionContentsSerializer
+    private lateinit var transferModelRenderer: TransferModelRenderer
 
     @Inject
     private lateinit var loggedUserInterface: LoggedUserInterface
@@ -77,21 +76,6 @@ class TransferApiSystem : ApiSystem() {
                 throw HttpProcessingException(404)
             }
 
-            val documentBuilderFactory = DocumentBuilderFactory.newInstance()
-            val documentBuilder = documentBuilderFactory.newDocumentBuilder()
-
-            val doc = documentBuilder.newDocument()
-
-            val deliveryElem = doc.createElement("delivery")
-
-            transfers.forEach {
-                val collection = collectionContentsSerializer.serializeCollectionToXml(doc, it.value)
-                collection.setAttribute("type", it.key)
-                deliveryElem.appendChild(collection)
-            }
-
-            doc.appendChild(deliveryElem)
-
-            responseWriter.writeXmlResponse(doc)
+            transferModelRenderer.renderGetDelivery(actAsUser.userId, transfers, responseWriter)
         }
 }

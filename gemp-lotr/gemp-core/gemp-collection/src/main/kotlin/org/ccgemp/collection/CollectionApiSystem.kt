@@ -11,9 +11,7 @@ import com.gempukku.server.ResponseWriter
 import com.gempukku.server.login.LoggedUserInterface
 import com.gempukku.server.login.UserRolesProvider
 import com.gempukku.server.login.getActingAsUser
-import org.ccgemp.common.CollectionContentsSerializer
-import org.ccgemp.common.GempCollectionItem
-import javax.xml.parsers.DocumentBuilderFactory
+import org.ccgemp.collection.renderer.CollectionModelRenderer
 
 class CollectionApiSystem : ApiSystem() {
     @Inject
@@ -29,7 +27,7 @@ class CollectionApiSystem : ApiSystem() {
     private lateinit var filterAndSort: FilterAndSort<GempCollectionItem>
 
     @Inject
-    private lateinit var collectionContentsSerializer: CollectionContentsSerializer
+    private lateinit var collectionModelRenderer: CollectionModelRenderer
 
     @InjectValue("server.collection.urlPrefix")
     private lateinit var urlPrefix: String
@@ -64,23 +62,7 @@ class CollectionApiSystem : ApiSystem() {
         { request, responseWriter ->
             val actAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
 
-            val documentBuilderFactory = DocumentBuilderFactory.newInstance()
-            val documentBuilder = documentBuilderFactory.newDocumentBuilder()
-
-            val doc = documentBuilder.newDocument()
-
-            val collectionsElem = doc.createElement("collections")
-
-            collectionInterface.getPlayerCollectionTypes(actAsUser.userId).forEach { collectionType ->
-                val collectionElem = doc.createElement("collection")
-                collectionElem.setAttribute("type", collectionType.type)
-                collectionElem.setAttribute("name", collectionType.name)
-                collectionElem.setAttribute("format", collectionType.format)
-                collectionsElem.appendChild(collectionElem)
-            }
-            doc.appendChild(collectionsElem)
-
-            responseWriter.writeXmlResponse(doc)
+            collectionModelRenderer.renderGetCollectionTypes(actAsUser.userId, collectionInterface.getPlayerCollectionTypes(actAsUser.userId), responseWriter)
         }
 
     private fun executeOpenPack(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
@@ -92,14 +74,7 @@ class CollectionApiSystem : ApiSystem() {
 
             val packContents = collectionInterface.openPackInCollection(actAsUser.userId, collectionType, packId, selection) ?: throw HttpProcessingException(404)
 
-            val documentBuilderFactory = DocumentBuilderFactory.newInstance()
-            val documentBuilder = documentBuilderFactory.newDocumentBuilder()
-
-            val doc = documentBuilder.newDocument()
-
-            doc.appendChild(collectionContentsSerializer.serializeCollectionToXml(doc, packContents))
-
-            responseWriter.writeXmlResponse(doc)
+            collectionModelRenderer.renderOpenPack(actAsUser.userId, packContents, responseWriter)
         }
 
     private fun executeGetCollection(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
@@ -115,13 +90,6 @@ class CollectionApiSystem : ApiSystem() {
             val filteredResult =
                 filterAndSort.process(filter, null, collection.all)
 
-            val documentBuilderFactory = DocumentBuilderFactory.newInstance()
-            val documentBuilder = documentBuilderFactory.newDocumentBuilder()
-
-            val doc = documentBuilder.newDocument()
-
-            doc.appendChild(collectionContentsSerializer.serializeCardListToXml(doc, filteredResult, start, count))
-
-            responseWriter.writeXmlResponse(doc)
+            collectionModelRenderer.renderGetCollection(actAsUser.userId, filteredResult, start, count, responseWriter)
         }
 }
