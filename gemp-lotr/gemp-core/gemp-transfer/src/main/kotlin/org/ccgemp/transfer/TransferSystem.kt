@@ -4,33 +4,23 @@ import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.collection.DefaultGempCollection
 import org.ccgemp.collection.GempCollection
+import org.ccgemp.collection.TransferObserver
 import org.ccgemp.common.mergeTexts
 import org.ccgemp.common.splitText
 
-@Exposes(TransferInterface::class)
-class TransferSystem : TransferInterface {
+@Exposes(TransferInterface::class, TransferObserver::class)
+class TransferSystem : TransferInterface, TransferObserver {
     @Inject
     private lateinit var transferRepository: TransferRepository
 
-    override fun addTransferFrom(
-        player: String,
-        reason: String,
-        collectionType: String,
-        collection: GempCollection,
-    ) {
-        if (collection.all.iterator().hasNext()) {
+    override fun transferredFrom(player: String, reason: String, collectionType: String, collection: GempCollection) {
+        if (collection.all.isNotEmpty()) {
             transferRepository.addTransfer(player, reason, false, collectionType, "from", serializeCollection(collection))
         }
     }
 
-    override fun addTransferTo(
-        player: String,
-        reason: String,
-        notifyPlayer: Boolean,
-        collectionType: String,
-        collection: GempCollection,
-    ) {
-        if (collection.all.iterator().hasNext()) {
+    override fun transferredTo(player: String, reason: String, notifyPlayer: Boolean, collectionType: String, collection: GempCollection) {
+        if (collection.all.isNotEmpty()) {
             transferRepository.addTransfer(player, reason, notifyPlayer, collectionType, "to", serializeCollection(collection))
         }
     }

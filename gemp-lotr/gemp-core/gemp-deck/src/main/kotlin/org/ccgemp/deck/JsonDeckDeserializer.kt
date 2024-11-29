@@ -15,7 +15,7 @@ class JsonDeckDeserializer : DeckDeserializer {
         targetFormat: String,
         notes: String,
         contents: String,
-    ): GameDeck? {
+    ): GameDeck {
         val deckContents = jsonProvider.readJson(contents)
 
         val deckPartMap = mutableMapOf<String, List<String>>()

@@ -1,10 +1,10 @@
 package org.ccgemp.collection
 
 class DefaultGempCollection : GempCollection {
-    override val all: Iterable<GempCollectionItem>
-        get() = items.values
-
     private val items: MutableMap<String, GempCollectionItem> = mutableMapOf()
+
+    override val all: Collection<GempCollectionItem>
+        get() = items.values
 
     constructor()
 
