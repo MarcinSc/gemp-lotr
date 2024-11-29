@@ -13,7 +13,6 @@ import com.gempukku.server.HttpProcessingException
 import org.apache.commons.lang3.StringEscapeUtils
 import org.ccgemp.collection.FilterAndSort
 import org.ccgemp.common.GameDeck
-import org.ccgemp.format.GempFormats
 import org.ccgemp.lotr.LegacyObjectsProvider
 
 @Exposes(HtmlDeckSerializer::class)
@@ -23,9 +22,6 @@ class LotrHtmlDeckSerializer : HtmlDeckSerializer {
 
     @Inject
     private lateinit var filterAndSort: FilterAndSort<Any>
-
-    @Inject
-    private lateinit var gempFormats: GempFormats<LotroFormat>
 
     override fun serializeDeck(author: String?, deck: GameDeck): String {
         val lotroDeck = deck.toLotroDeck()

@@ -3,47 +3,24 @@ package org.ccgemp.lotr.deck
 import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
-import com.gempukku.server.ApiSystem
+import com.gempukku.server.AuthorizedApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.ServerRequestHandler
-import com.gempukku.server.login.LoggedUserInterface
-import com.gempukku.server.login.UserRolesProvider
-import com.gempukku.server.login.getActingAsUser
-import org.ccgemp.deck.DeckDeserializer
 import org.ccgemp.deck.DeckInterface
-import org.ccgemp.lotr.LegacyObjectsProvider
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.Base64
 
-class LegacyDeckShareApiSystem : ApiSystem() {
+class LegacyDeckShareApiSystem : AuthorizedApiSystem() {
     @Inject
     private lateinit var deckInterface: DeckInterface
-
-    @Inject
-    private lateinit var deckDeserializer: DeckDeserializer
-
-    @Inject
-    private lateinit var loggedUserInterface: LoggedUserInterface
-
-    @Inject
-    private lateinit var userRolesProvider: UserRolesProvider
-
-    @Inject
-    private lateinit var legacyObjectsProvider: LegacyObjectsProvider
 
     @Inject
     private lateinit var htmlDeckSerializer: HtmlDeckSerializer
 
     @InjectValue("server.deck.urlPrefix")
     private lateinit var urlPrefix: String
-
-    @InjectValue("roles.admin")
-    private lateinit var adminRole: String
-
-    @InjectValue("parameterNames.actAsParameter")
-    private lateinit var actAsParameter: String
 
     override fun registerAPIs(): List<Registration> {
         return listOf(
@@ -62,7 +39,7 @@ class LegacyDeckShareApiSystem : ApiSystem() {
 
     private fun executeShareDeck(): ServerRequestHandler =
         ServerRequestHandler { request, responseWriter ->
-            val actingAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+            val actingAsUser = getActingAsUser(request)
             val deckName = request.getParameter("deckName") ?: throw HttpProcessingException(400)
 
             val url = "$urlPrefix/getShared?id="

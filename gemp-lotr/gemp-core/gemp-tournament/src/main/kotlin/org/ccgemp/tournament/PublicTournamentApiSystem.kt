@@ -11,7 +11,7 @@ import com.gempukku.server.ResponseWriter
 import org.ccgemp.tournament.renderer.TournamentModelRenderer
 import java.util.regex.Pattern
 
-class TournamentApiSystem : ApiSystem() {
+class PublicTournamentApiSystem : ApiSystem() {
     @Inject
     private lateinit var tournamentInterface: TournamentInterface
 

@@ -3,25 +3,16 @@ package org.ccgemp.server.player.admin
 import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
-import com.gempukku.server.ApiSystem
+import com.gempukku.server.AuthorizedApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpRequest
 import com.gempukku.server.ResponseWriter
-import com.gempukku.server.login.LoggedUserInterface
-import com.gempukku.server.login.UserRolesProvider
-import com.gempukku.server.login.validateHasRole
 import javax.xml.parsers.DocumentBuilderFactory
 
-class AdminPlayerApiSystem : ApiSystem() {
+class AdminPlayerApiSystem : AuthorizedApiSystem() {
     @Inject
     private lateinit var playerInterface: AdminPlayerInterface
-
-    @Inject
-    private lateinit var loggedUserSystem: LoggedUserInterface
-
-    @Inject
-    private lateinit var userRolesProvider: UserRolesProvider
 
     @InjectValue("server.banPlayer.url")
     private lateinit var banPlayerUrl: String
@@ -49,32 +40,32 @@ class AdminPlayerApiSystem : ApiSystem() {
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$banPlayerUrl$",
-                validateHasRole(executeBanPlayer(), loggedUserSystem, userRolesProvider, adminRole),
+                validateIsAdmin(executeBanPlayer()),
             ),
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$banPlayersUrl$",
-                validateHasRole(executeBanPlayers(), loggedUserSystem, userRolesProvider, adminRole),
+                validateIsAdmin(executeBanPlayers()),
             ),
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$banPlayerTemporarilyUrl$",
-                validateHasRole(executeBanPlayerTemporarily(), loggedUserSystem, userRolesProvider, adminRole),
+                validateIsAdmin(executeBanPlayerTemporarily()),
             ),
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$unbanPlayerUrl",
-                validateHasRole(executeUnbanPlayer(), loggedUserSystem, userRolesProvider, adminRole),
+                validateIsAdmin(executeUnbanPlayer()),
             ),
             server.registerRequestHandler(
                 HttpMethod.GET,
                 "^$getPlayerRolesUrl$",
-                validateHasRole(executeGetPlayerRoles(), loggedUserSystem, userRolesProvider, adminRole),
+                validateIsAdmin(executeGetPlayerRoles()),
             ),
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$setPlayerRolesUrl",
-                validateHasRole(executeSetPlayerRoles(), loggedUserSystem, userRolesProvider, adminRole),
+                validateIsAdmin(executeSetPlayerRoles()),
             ),
         )
     }

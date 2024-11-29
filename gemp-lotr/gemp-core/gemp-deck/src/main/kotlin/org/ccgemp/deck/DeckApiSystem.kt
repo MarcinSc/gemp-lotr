@@ -3,16 +3,13 @@ package org.ccgemp.deck
 import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
-import com.gempukku.server.ApiSystem
+import com.gempukku.server.AuthorizedApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.ServerRequestHandler
-import com.gempukku.server.login.LoggedUserInterface
-import com.gempukku.server.login.UserRolesProvider
-import com.gempukku.server.login.getActingAsUser
 import org.ccgemp.deck.renderer.DeckModelRenderer
 
-class DeckApiSystem : ApiSystem() {
+class DeckApiSystem : AuthorizedApiSystem() {
     @Inject
     private lateinit var deckInterface: DeckInterface
 
@@ -22,20 +19,8 @@ class DeckApiSystem : ApiSystem() {
     @Inject
     private lateinit var deckDeserializer: DeckDeserializer
 
-    @Inject
-    private lateinit var loggedUserInterface: LoggedUserInterface
-
-    @Inject
-    private lateinit var userRolesProvider: UserRolesProvider
-
     @InjectValue("server.deck.urlPrefix")
     private lateinit var urlPrefix: String
-
-    @InjectValue("roles.admin")
-    private lateinit var adminRole: String
-
-    @InjectValue("parameterNames.actAsParameter")
-    private lateinit var actAsParameter: String
 
     override fun registerAPIs(): List<Registration> {
         return listOf(
@@ -69,7 +54,7 @@ class DeckApiSystem : ApiSystem() {
 
     private fun executeListDecks(): ServerRequestHandler =
         ServerRequestHandler { request, responseWriter ->
-            val actingAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+            val actingAsUser = getActingAsUser(request)
 
             val playerDecks = deckInterface.getPlayerDecks(actingAsUser.userId)
 
@@ -78,7 +63,7 @@ class DeckApiSystem : ApiSystem() {
 
     private fun executeGetDeck(): ServerRequestHandler =
         ServerRequestHandler { request, responseWriter ->
-            val actingAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+            val actingAsUser = getActingAsUser(request)
             val deckName = request.getParameter("deckName") ?: throw HttpProcessingException(400)
 
             val deck = deckInterface.findDeck(actingAsUser.userId, deckName) ?: throw HttpProcessingException(404)
@@ -88,7 +73,7 @@ class DeckApiSystem : ApiSystem() {
 
     private fun executeSaveDeck(): ServerRequestHandler =
         ServerRequestHandler { request, responseWriter ->
-            val actingAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+            val actingAsUser = getActingAsUser(request)
             val deckName = request.getParameter("deckName") ?: throw HttpProcessingException(400)
             val targetFormat = request.getParameter("targetFormat") ?: throw HttpProcessingException(400)
             val notes = request.getParameter("notes") ?: throw HttpProcessingException(400)
@@ -103,7 +88,7 @@ class DeckApiSystem : ApiSystem() {
 
     private fun executeRenameDeck(): ServerRequestHandler =
         ServerRequestHandler { request, responseWriter ->
-            val actingAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+            val actingAsUser = getActingAsUser(request)
             val deckName = request.getParameter("deckName") ?: throw HttpProcessingException(400)
             val oldDeckName = request.getParameter("oldDeckName") ?: throw HttpProcessingException(400)
 
@@ -117,7 +102,7 @@ class DeckApiSystem : ApiSystem() {
 
     private fun executeDeleteDeck(): ServerRequestHandler =
         ServerRequestHandler { request, responseWriter ->
-            val actingAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+            val actingAsUser = getActingAsUser(request)
             val deckName = request.getParameter("deckName") ?: throw HttpProcessingException(400)
 
             deckInterface.deleteDeck(actingAsUser.userId, deckName)

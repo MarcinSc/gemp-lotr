@@ -13,13 +13,24 @@ class TransferSystem : TransferInterface, TransferObserver {
     @Inject
     private lateinit var transferRepository: TransferRepository
 
-    override fun transferredFrom(player: String, reason: String, collectionType: String, collection: GempCollection) {
+    override fun transferredFrom(
+        player: String,
+        reason: String,
+        collectionType: String,
+        collection: GempCollection,
+    ) {
         if (collection.all.isNotEmpty()) {
             transferRepository.addTransfer(player, reason, false, collectionType, "from", serializeCollection(collection))
         }
     }
 
-    override fun transferredTo(player: String, reason: String, notifyPlayer: Boolean, collectionType: String, collection: GempCollection) {
+    override fun transferredTo(
+        player: String,
+        reason: String,
+        notifyPlayer: Boolean,
+        collectionType: String,
+        collection: GempCollection,
+    ) {
         if (collection.all.isNotEmpty()) {
             transferRepository.addTransfer(player, reason, notifyPlayer, collectionType, "to", serializeCollection(collection))
         }

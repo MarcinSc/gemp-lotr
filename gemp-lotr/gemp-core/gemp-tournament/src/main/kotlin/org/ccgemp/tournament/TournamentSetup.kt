@@ -34,7 +34,7 @@ fun createTournamentSystems(tournamentModelRenderer: TournamentModelRenderer): L
         TournamentStandingsSystem(),
         ModifiedMedianStandingsProvider(),
         // API
-        TournamentApiSystem(),
+        PublicTournamentApiSystem(),
         PrivateTournamentApiSystem(),
         AdminTournamentApiSystem(),
         tournamentModelRenderer,

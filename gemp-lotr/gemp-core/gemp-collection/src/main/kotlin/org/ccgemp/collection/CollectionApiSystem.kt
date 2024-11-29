@@ -3,25 +3,16 @@ package org.ccgemp.collection
 import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
-import com.gempukku.server.ApiSystem
+import com.gempukku.server.AuthorizedApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpRequest
 import com.gempukku.server.ResponseWriter
-import com.gempukku.server.login.LoggedUserInterface
-import com.gempukku.server.login.UserRolesProvider
-import com.gempukku.server.login.getActingAsUser
 import org.ccgemp.collection.renderer.CollectionModelRenderer
 
-class CollectionApiSystem : ApiSystem() {
+class CollectionApiSystem : AuthorizedApiSystem() {
     @Inject
     private lateinit var collectionInterface: CollectionInterface
-
-    @Inject
-    private lateinit var loggedUserInterface: LoggedUserInterface
-
-    @Inject
-    private lateinit var userRolesProvider: UserRolesProvider
 
     @Inject
     private lateinit var filterAndSort: FilterAndSort<GempCollectionItem>
@@ -31,12 +22,6 @@ class CollectionApiSystem : ApiSystem() {
 
     @InjectValue("server.collection.urlPrefix")
     private lateinit var urlPrefix: String
-
-    @InjectValue("roles.admin")
-    private lateinit var adminRole: String
-
-    @InjectValue("parameterNames.actAsParameter")
-    private lateinit var actAsParameter: String
 
     override fun registerAPIs(): List<Registration> {
         return listOf(
@@ -60,14 +45,14 @@ class CollectionApiSystem : ApiSystem() {
 
     private fun executeGetCollectionTypes(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
         { request, responseWriter ->
-            val actAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+            val actAsUser = getActingAsUser(request)
 
             collectionModelRenderer.renderGetCollectionTypes(actAsUser.userId, collectionInterface.getPlayerCollectionTypes(actAsUser.userId), responseWriter)
         }
 
     private fun executeOpenPack(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
         { request, responseWriter ->
-            val actAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+            val actAsUser = getActingAsUser(request)
             val collectionType = request.uri.substring(urlPrefix.length + 1)
             val selection = request.getParameter("selection")
             val packId = request.getParameter("pack") ?: throw HttpProcessingException(400)
@@ -79,7 +64,7 @@ class CollectionApiSystem : ApiSystem() {
 
     private fun executeGetCollection(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
         { request, responseWriter ->
-            val actAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+            val actAsUser = getActingAsUser(request)
             val collectionType = request.uri.substring(urlPrefix.length + 1)
             val filter = request.getParameter("filter") ?: ""
             val start = request.getParameter("start")?.toInt() ?: 0

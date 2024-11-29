@@ -3,13 +3,10 @@ package org.ccgemp.tournament
 import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
-import com.gempukku.server.ApiSystem
+import com.gempukku.server.AuthorizedApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.ServerRequestHandler
-import com.gempukku.server.login.LoggedUserInterface
-import com.gempukku.server.login.UserRolesProvider
-import com.gempukku.server.login.validateHasRole
 import org.ccgemp.json.JsonProvider
 import org.ccgemp.tournament.composite.kickoff.ManualKickoff
 import org.ccgemp.tournament.composite.pairing.ManualPairing
@@ -18,15 +15,9 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
 
-class AdminTournamentApiSystem : ApiSystem() {
+class AdminTournamentApiSystem : AuthorizedApiSystem() {
     @Inject
     private lateinit var tournamentInterface: TournamentInterface
-
-    @Inject
-    private lateinit var loggedUserInterface: LoggedUserInterface
-
-    @Inject
-    private lateinit var userRolesProvider: UserRolesProvider
 
     @Inject
     private lateinit var manualKickoff: ManualKickoff
@@ -60,27 +51,27 @@ class AdminTournamentApiSystem : ApiSystem() {
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$manualKickoffUrlPrefix/([^/]*)/([^/]*)$",
-                validateHasRole(executeManualKickoff(), loggedUserInterface, userRolesProvider, adminRole),
+                validateIsAdmin(executeManualKickoff()),
             ),
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$manualPairingUrlPrefix/([^/]*)/([^/]*)$",
-                validateHasRole(executeManualPairing(), loggedUserInterface, userRolesProvider, adminRole),
+                validateIsAdmin(executeManualPairing()),
             ),
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$dropSwitchUrlPrefix/([^/]*)$",
-                validateHasRole(executeDropSwitch(), loggedUserInterface, userRolesProvider, adminRole),
+                validateIsAdmin(executeDropSwitch()),
             ),
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$setPlayerDeckUrlPrefix/([^/]*)$",
-                validateHasRole(executeSetPlayerDeck(), loggedUserInterface, userRolesProvider, adminRole),
+                validateIsAdmin(executeSetPlayerDeck()),
             ),
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$createTournamentUrlPrefix/([^/]*)$",
-                validateHasRole(executeCreateTournament(), loggedUserInterface, userRolesProvider, adminRole),
+                validateIsAdmin(executeCreateTournament()),
             ),
         )
     }
