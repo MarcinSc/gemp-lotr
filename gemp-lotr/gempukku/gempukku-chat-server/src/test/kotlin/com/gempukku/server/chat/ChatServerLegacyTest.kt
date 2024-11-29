@@ -8,7 +8,7 @@ import com.gempukku.context.initializer.inject.property.YamlPropertyResolver
 import com.gempukku.context.lifecycle.LifecycleSystem
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
 import com.gempukku.context.update.UpdatingSystem
-import com.gempukku.server.chat.polling.legacy.LegacyChatEventSinkProducer
+import com.gempukku.server.chat.polling.json.JsonChatEventSinkProducer
 import com.gempukku.server.login.LoggedUser
 import com.gempukku.server.netty.NettyServerSystem
 import com.gempukku.server.polling.LongPollingSystem
@@ -49,7 +49,7 @@ class ChatServerLegacyTest {
                         lifecycleSystem,
                         chatSystem,
                         ChatApiSystem(),
-                        LegacyChatEventSinkProducer(),
+                        JsonChatEventSinkProducer(),
                         NettyServerSystem(),
                         loggedUser,
                         SimpleUserRolesProvider(),

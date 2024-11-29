@@ -3,7 +3,6 @@ package org.ccgemp.lotr.chat
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
-import com.gempukku.server.chat.ChatNameDisplayFormatter
 import org.ccgemp.server.player.PlayerInterface
 
 @Exposes(ChatNameDisplayFormatter::class)

@@ -17,8 +17,10 @@ import org.ccgemp.collection.ExtendedDbCollectionRepository
 import org.ccgemp.collection.createCollectionSystems
 import org.ccgemp.db.DbAccessSystem
 import org.ccgemp.deck.createDeckSystems
+import org.ccgemp.format.createFormatSystems
 import org.ccgemp.game.createGameSystems
 import org.ccgemp.json.createJsonSystems
+import org.ccgemp.lotr.chat.LegacyChatEventSinkProducer
 import org.ccgemp.lotr.chat.LegacyChatNameDisplayFormatter
 import org.ccgemp.lotr.collection.LegacyCollectionContentsSerializer
 import org.ccgemp.lotr.collection.LegacyXmlCollectionModelRenderer
@@ -30,7 +32,7 @@ import org.ccgemp.lotr.format.LotrFormats
 import org.ccgemp.lotr.game.LegacyGameProducer
 import org.ccgemp.lotr.game.LotrGameEventSinkProducer
 import org.ccgemp.lotr.game.LotrGameObserveSettingsExtractor
-import org.ccgemp.lotr.tournament.LotrTournamentRenderer
+import org.ccgemp.lotr.tournament.LegacyTournamentModelRenderer
 import org.ccgemp.lotr.transfer.LegacyXmlTransferModelRenderer
 import org.ccgemp.server.player.createPlayerSystems
 import org.ccgemp.tournament.createTournamentSystems
@@ -117,16 +119,7 @@ private fun createLotrContext(
             DefaultLegacyObjectProvider(),
             // Legacy chat name display
             LegacyChatNameDisplayFormatter(),
-            // Legacy game running
-            LegacyGameProducer(),
-            LotrGameObserveSettingsExtractor(),
-            LotrGameEventSinkProducer(),
-            // Deck related
-            LotrFormats(),
-            // Tournament related
-            LotrTournamentRenderer(),
             // Collection related
-            LotrProductLibrary(),
             LegacyCollectionContentsSerializer(),
         )
 
@@ -135,14 +128,15 @@ private fun createLotrContext(
             parentContext,
             AnnotationSystemResolver(
                 lotrBaseSystems +
+                    createFormatSystems(LotrFormats()) +
                     createPlayerSystems() +
                     createJsonSystems() +
-                    createChatSystems() +
+                    createChatSystems(LegacyChatEventSinkProducer()) +
                     createTransferSystems(LegacyXmlTransferModelRenderer()) +
-                    createCollectionSystems(ExtendedDbCollectionRepository(), LegacyXmlCollectionModelRenderer()) +
+                    createCollectionSystems(ExtendedDbCollectionRepository(), LegacyXmlCollectionModelRenderer(), LotrProductLibrary()) +
                     createDeckSystems(LegacyDeckModelRenderer(), LotrDeckDeserializer(), LotrDbDeckSerialization()) +
-                    createTournamentSystems() +
-                    createGameSystems() +
+                    createTournamentSystems(LegacyTournamentModelRenderer()) +
+                    createGameSystems(LotrGameEventSinkProducer(), LotrGameObserveSettingsExtractor(), LegacyGameProducer()) +
                     lotrSpecificSystems,
             ),
             AnnotationSystemInitializer(lotrPropertyResolver),

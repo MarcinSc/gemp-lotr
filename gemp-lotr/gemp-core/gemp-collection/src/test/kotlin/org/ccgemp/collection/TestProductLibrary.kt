@@ -4,7 +4,7 @@ import com.gempukku.context.resolver.expose.Exposes
 
 @Exposes(ProductLibrary::class)
 class TestProductLibrary : ProductLibrary {
-    override fun getProductBox(name: String): ProductBox? {
+    override fun findProductBox(name: String): ProductBox? {
         if (name == "selection") {
             return object : ProductBox {
                 override fun openPack(): GempCollection {

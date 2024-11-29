@@ -1,4 +1,4 @@
-package com.gempukku.server.chat.polling.legacy
+package org.ccgemp.lotr.chat
 
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
@@ -6,7 +6,6 @@ import com.gempukku.server.ResponseWriter
 import com.gempukku.server.chat.ChatEvent
 import com.gempukku.server.chat.ChatEventSinkProducer
 import com.gempukku.server.chat.ChatInterface
-import com.gempukku.server.chat.ChatNameDisplayFormatter
 import com.gempukku.server.polling.EventSink
 
 @Exposes(ChatEventSinkProducer::class)

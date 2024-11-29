@@ -17,7 +17,7 @@ class LotrProductLibrary : ProductLibrary {
         legacyObjectsProvider.productLibrary
     }
 
-    override fun getProductBox(name: String): ProductBox? {
+    override fun findProductBox(name: String): ProductBox? {
         val productBox = productLibrary.GetProduct(name) ?: return null
         return object : ProductBox {
             override fun openPack(): GempCollection {

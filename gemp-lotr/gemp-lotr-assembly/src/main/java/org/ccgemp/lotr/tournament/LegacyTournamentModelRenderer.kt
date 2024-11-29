@@ -8,31 +8,74 @@ import com.gempukku.lotro.game.CardItem
 import com.gempukku.lotro.game.DefaultCardCollection
 import com.gempukku.lotro.game.LotroCardBlueprint
 import com.gempukku.lotro.logic.GameUtils
+import com.gempukku.server.ResponseWriter
 import org.apache.commons.text.StringEscapeUtils.escapeHtml3
 import org.ccgemp.collection.FilterAndSort
 import org.ccgemp.common.GameDeck
 import org.ccgemp.lotr.LegacyObjectsProvider
 import org.ccgemp.lotr.deck.toLotroDeck
 import org.ccgemp.tournament.TournamentClientInfo
-import org.ccgemp.tournament.TournamentRenderer
+import org.ccgemp.tournament.renderer.TournamentModelRenderer
+import java.time.format.DateTimeFormatter
+import javax.xml.parsers.DocumentBuilderFactory
 
-@Exposes(TournamentRenderer::class)
-class LotrTournamentRenderer : TournamentRenderer {
+@Exposes(TournamentModelRenderer::class)
+class LegacyTournamentModelRenderer : TournamentModelRenderer {
     @Inject
     private lateinit var objectsProvider: LegacyObjectsProvider
 
     @Inject
     private lateinit var filterAndSort: FilterAndSort<CardItem>
 
-    override fun renderDecksHtml(tournament: TournamentClientInfo, player: String): String {
-        return surroundWithReadoutHeaderAndFooter(renderDecks(tournament.players.first { it.player == player }.decks.values, player))
+    private val minuteFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+
+    override fun renderGetTournaments(tournaments: List<TournamentClientInfo>, responseWriter: ResponseWriter) {
+        val documentBuilderFactory = DocumentBuilderFactory.newInstance()
+        val documentBuilder = documentBuilderFactory.newDocumentBuilder()
+
+        val doc = documentBuilder.newDocument()
+        val tournamentsElem = doc.createElement("tournaments")
+
+        tournaments.forEach { tournament ->
+            val tournamentElem = doc.createElement("tournament")
+            tournamentElem.setAttribute("id", tournament.id)
+            tournamentElem.setAttribute("name", tournament.name)
+            tournamentElem.setAttribute("format", "")
+            tournamentElem.setAttribute("collection", "")
+            tournamentElem.setAttribute("round", "")
+            tournamentElem.setAttribute("startDate", minuteFormatter.format(tournament.startDate))
+            tournamentElem.setAttribute("stage", tournament.status)
+            tournamentsElem.appendChild(tournamentElem)
+        }
+
+        doc.appendChild(tournamentsElem)
+
+        responseWriter.writeXmlResponse(doc)
     }
 
-    override fun renderReportHtml(tournament: TournamentClientInfo): String {
+    override fun renderGetTournamentDecks(player: String, decks: List<GameDeck>, responseWriter: ResponseWriter) {
+        responseWriter.writeHtmlResponse(
+            surroundWithReadoutHeaderAndFooter(renderDecks(decks, player)),
+        )
+    }
+
+    override fun renderGetTournamentInfo(tournament: TournamentClientInfo, responseWriter: ResponseWriter) {
+        responseWriter.writeHtmlResponse(
+            renderReportHtml(tournament),
+        )
+    }
+
+    override fun renderGetTournamentReport(tournament: TournamentClientInfo, responseWriter: ResponseWriter) {
+        responseWriter.writeHtmlResponse(
+            renderInfoHtml(tournament),
+        )
+    }
+
+    private fun renderReportHtml(tournament: TournamentClientInfo): String {
         TODO("Not yet implemented")
     }
 
-    override fun renderInfoHtml(tournament: TournamentClientInfo): String {
+    private fun renderInfoHtml(tournament: TournamentClientInfo): String {
         TODO("Not yet implemented")
     }
 

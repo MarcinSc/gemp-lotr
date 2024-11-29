@@ -6,6 +6,7 @@ import org.ccgemp.collection.renderer.JsonCollectionModelRenderer
 fun createCollectionSystems(
     collectionRepository: CollectionRepository = BaseDbCollectionRepository(),
     collectionModelRenderer: CollectionModelRenderer = JsonCollectionModelRenderer(),
+    productLibrary: ProductLibrary,
 ): List<Any> {
     return listOf(
         CollectionSystem(),
@@ -14,5 +15,6 @@ fun createCollectionSystems(
         CardFilterAndSortSystem<Any>(),
         CollectionApiSystem(),
         collectionModelRenderer,
+        productLibrary,
     )
 }

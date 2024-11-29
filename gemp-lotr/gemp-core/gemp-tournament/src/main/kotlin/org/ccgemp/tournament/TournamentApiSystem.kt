@@ -8,21 +8,18 @@ import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpRequest
 import com.gempukku.server.ResponseWriter
-import java.time.format.DateTimeFormatter
+import org.ccgemp.tournament.renderer.TournamentModelRenderer
 import java.util.regex.Pattern
-import javax.xml.parsers.DocumentBuilderFactory
 
 class TournamentApiSystem : ApiSystem() {
     @Inject
     private lateinit var tournamentInterface: TournamentInterface
 
     @Inject
-    private lateinit var tournamentRenderer: TournamentRenderer
+    private lateinit var tournamentModelRenderer: TournamentModelRenderer
 
     @InjectValue("server.tournament.urlPrefix")
     private lateinit var urlPrefix: String
-
-    private val minuteFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
     override fun registerAPIs(): List<Registration> {
         return listOf(
@@ -58,14 +55,14 @@ class TournamentApiSystem : ApiSystem() {
         { request, responseWriter ->
             val liveTournaments = tournamentInterface.getLiveTournaments()
 
-            sendTournamentInfo(liveTournaments, responseWriter)
+            tournamentModelRenderer.renderGetTournaments(liveTournaments, responseWriter)
         }
 
     private fun executeGetHistoricTournaments(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
         { request, responseWriter ->
             val historicTournaments = tournamentInterface.getHistoricTournaments()
 
-            sendTournamentInfo(historicTournaments, responseWriter)
+            tournamentModelRenderer.renderGetTournaments(historicTournaments, responseWriter)
         }
 
     private fun executeGetTournamentDecks(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
@@ -81,8 +78,9 @@ class TournamentApiSystem : ApiSystem() {
             if (!tournament.finished) {
                 throw HttpProcessingException(403)
             }
+            val decks = tournament.players.firstOrNull { it.player == player } ?: throw HttpProcessingException(404)
 
-            responseWriter.writeHtmlResponse(tournamentRenderer.renderDecksHtml(tournament, player))
+            tournamentModelRenderer.renderGetTournamentDecks(player, decks.decks.values.toList(), responseWriter)
         }
 
     private fun executeGetTournamentReport(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
@@ -98,7 +96,7 @@ class TournamentApiSystem : ApiSystem() {
                 throw HttpProcessingException(403)
             }
 
-            responseWriter.writeHtmlResponse(tournamentRenderer.renderReportHtml(tournament))
+            tournamentModelRenderer.renderGetTournamentReport(tournament, responseWriter)
         }
 
     private fun executeGetTournamentInfo(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
@@ -111,32 +109,6 @@ class TournamentApiSystem : ApiSystem() {
                 throw HttpProcessingException(404)
             }
 
-            responseWriter.writeHtmlResponse(tournamentRenderer.renderInfoHtml(tournament))
+            tournamentModelRenderer.renderGetTournamentInfo(tournament, responseWriter)
         }
-
-    private fun sendTournamentInfo(historicTournaments: List<TournamentClientInfo>, responseWriter: ResponseWriter) {
-        val documentBuilderFactory = DocumentBuilderFactory.newInstance()
-        val documentBuilder = documentBuilderFactory.newDocumentBuilder()
-
-        val doc = documentBuilder.newDocument()
-        val tournaments = doc.createElement("tournaments")
-
-        historicTournaments.forEach { tournament ->
-            val tournamentElem = doc.createElement("tournament")
-            tournamentElem.setAttribute("id", tournament.id)
-            tournamentElem.setAttribute("name", tournament.name)
-            // TODO: remove the unused attributes
-            tournamentElem.setAttribute("format", "")
-            tournamentElem.setAttribute("collection", "")
-            tournamentElem.setAttribute("round", "")
-            tournamentElem.setAttribute("startDate", minuteFormatter.format(tournament.startDate))
-            // TODO: rename stage to status
-            tournamentElem.setAttribute("stage", tournament.status)
-            tournaments.appendChild(tournamentElem)
-        }
-
-        doc.appendChild(tournaments)
-
-        responseWriter.writeXmlResponse(doc)
-    }
 }

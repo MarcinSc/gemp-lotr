@@ -12,8 +12,9 @@ import org.ccgemp.tournament.composite.pairing.SwissPairingProvider
 import org.ccgemp.tournament.composite.pairing.TournamentPairingSystem
 import org.ccgemp.tournament.composite.standing.ModifiedMedianStandingsProvider
 import org.ccgemp.tournament.composite.standing.TournamentStandingsSystem
+import org.ccgemp.tournament.renderer.TournamentModelRenderer
 
-fun createTournamentSystems(): List<Any> {
+fun createTournamentSystems(tournamentModelRenderer: TournamentModelRenderer): List<Any> {
     return listOf(
         TournamentSystem(),
         DbTournamentRepository(),
@@ -36,5 +37,6 @@ fun createTournamentSystems(): List<Any> {
         TournamentApiSystem(),
         PrivateTournamentApiSystem(),
         AdminTournamentApiSystem(),
+        tournamentModelRenderer,
     )
 }

@@ -7,6 +7,7 @@ import com.gempukku.lotro.common.Side
 import com.gempukku.lotro.game.LotroCardBlueprint
 import org.ccgemp.collection.GempCollection
 import org.ccgemp.collection.GempCollectionItem
+import org.ccgemp.collection.ProductLibrary
 import org.ccgemp.lotr.LegacyObjectsProvider
 import org.w3c.dom.Document
 import org.w3c.dom.Element
@@ -16,11 +17,11 @@ class LegacyCollectionContentsSerializer : CollectionContentsSerializer {
     @Inject
     private lateinit var legacyObjectsProvider: LegacyObjectsProvider
 
+    @Inject
+    private lateinit var productLibrary: ProductLibrary
+
     private val cardLibrary by lazy {
         legacyObjectsProvider.cardLibrary
-    }
-    private val productLibrary by lazy {
-        legacyObjectsProvider.productLibrary
     }
 
     override fun serializeCollectionToXml(document: Document, collection: GempCollection): Element {
@@ -72,9 +73,11 @@ class LegacyCollectionContentsSerializer : CollectionContentsSerializer {
                     pack.setAttribute("count", item.count.toString())
                     pack.setAttribute("blueprintId", blueprintId)
                     if (item.type == com.gempukku.lotro.game.CardCollection.Item.Type.SELECTION) {
-                        val contents = productLibrary.GetProduct(blueprintId).openPack()
+                        val contents = productLibrary.findProductBox(blueprintId)!!.openPack()
                         val contentsStr = StringBuilder()
-                        for (content in contents) contentsStr.append(content.blueprintId).append("|")
+                        contents.all.forEach { item ->
+                            contentsStr.append(item.product)
+                        }
                         contentsStr.delete(contentsStr.length - 1, contentsStr.length)
                         pack.setAttribute("contents", contentsStr.toString())
                     }

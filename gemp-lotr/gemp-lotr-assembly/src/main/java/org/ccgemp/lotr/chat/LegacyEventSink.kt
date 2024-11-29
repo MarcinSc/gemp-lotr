@@ -1,9 +1,8 @@
-package com.gempukku.server.chat.polling.legacy
+package org.ccgemp.lotr.chat
 
 import com.gempukku.server.ResponseWriter
 import com.gempukku.server.chat.ChatInterface
 import com.gempukku.server.chat.ChatMessage
-import com.gempukku.server.chat.ChatNameDisplayFormatter
 import com.gempukku.server.chat.polling.ChatEvent
 import com.gempukku.server.chat.polling.ChatEventVisitor
 import com.gempukku.server.polling.EventSink

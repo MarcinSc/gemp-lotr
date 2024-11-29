@@ -93,7 +93,7 @@ class CollectionSystem : CollectionInterface {
         val removeCollection = DefaultGempCollection()
         removeCollection.addItem(packId, 1)
 
-        val productBox = productLibrary.getProductBox(packId) ?: return null
+        val productBox = productLibrary.findProductBox(packId) ?: return null
         val openedPack = productBox.openPack()
         if (productLibrary.isSelection(packId)) {
             if (selection == null || openedPack.getItemCount(selection) < 1) {

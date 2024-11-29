@@ -61,7 +61,7 @@ class DeckBuildingTournamentProcesses : LifecycleObserver {
             SealedTournamentProcess(
                 collectionInterface,
                 collectionType,
-                productLibrary.getProductBox(def.getString("product", null))!!,
+                productLibrary.findProductBox(def.getString("product", null))!!,
                 def.getString("deckType", null),
                 gempFormats.getValidator(def.getString("format", null)),
                 kickoffRegistry.create(JsonWithConfig(def.get("productKickoff").asObject(), KickoffConfig(it.config.tournamentId))),
