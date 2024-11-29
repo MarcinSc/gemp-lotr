@@ -1,6 +1,6 @@
 package org.ccgemp.tournament
 
-import org.ccgemp.deck.GameDeck
+import org.ccgemp.common.GameDeck
 import org.ccgemp.game.GameSettings
 
 interface TournamentHandler<TournamentData> {

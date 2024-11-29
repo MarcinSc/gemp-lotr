@@ -64,19 +64,6 @@ class CollectionSystem : CollectionInterface {
         return true
     }
 
-    override fun getPlayerCollection(player: String, type: String): GempCollection? {
-        val collectionCacheKey = CollectionCacheKey(player, type)
-        return collectionCache.getOrPut(collectionCacheKey) {
-            val collectionInfo = repository.findPlayerCollection(player, type) ?: return null
-            val entries = repository.getPlayerCollectionEntries(setOf(collectionInfo)).groupBy { it.collection_id }[collectionInfo.id]
-            val result = DefaultGempCollection()
-            entries?.forEach {
-                result.addItem(it.product!!, it.quantity)
-            }
-            result
-        }
-    }
-
     override fun getPlayerCollections(type: String): Map<String, GempCollection> {
         val collectionInfos = repository.findCollectionsByType(type)
         val entries = repository.getPlayerCollectionEntries(collectionInfos.toSet()).groupBy { it.collection_id }

@@ -1,6 +1,7 @@
 package org.ccgemp.deck
 
 import com.gempukku.context.resolver.expose.Exposes
+import org.ccgemp.common.GameDeck
 
 @Exposes(DbDeckSerialization::class)
 class SimpleDbDeckSerialization : DbDeckSerialization {

@@ -6,8 +6,9 @@ import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.collection.CollectionInterface
 import org.ccgemp.collection.ProductLibrary
 import org.ccgemp.deck.DeckInterface
-import org.ccgemp.deck.DeckValidator
-import org.ccgemp.deck.GameDeck
+import org.ccgemp.common.DeckValidator
+import org.ccgemp.common.GameDeck
+import org.ccgemp.format.GempFormats
 import org.ccgemp.json.JsonWithConfig
 import org.ccgemp.tournament.composite.TournamentProcess
 import org.ccgemp.tournament.composite.TournamentProcessConfig
@@ -51,7 +52,7 @@ class DeckBuildingTournamentProcesses : LifecycleObserver {
     private lateinit var productLibrary: ProductLibrary
 
     @Inject
-    private lateinit var deckInterface: DeckInterface
+    private lateinit var gempFormats: GempFormats<Any>
 
     @Inject
     private lateinit var kickoffRegistry: TournamentKickoffRegistry
@@ -65,7 +66,7 @@ class DeckBuildingTournamentProcesses : LifecycleObserver {
                 collectionType,
                 productLibrary.getProductBox(def.getString("product", null))!!,
                 def.getString("deckType", null),
-                InCollectionValidator(deckInterface.getValidator(def.getString("format", null)), collectionType),
+                gempFormats.getValidator(def.getString("format", null)),
                 kickoffRegistry.create(JsonWithConfig(def.get("productKickoff").asObject(), KickoffConfig(it.config.tournamentId))),
                 kickoffRegistry.create(JsonWithConfig(def.get("buildEndKickoff").asObject(), KickoffConfig(it.config.tournamentId))),
             )
@@ -74,25 +75,5 @@ class DeckBuildingTournamentProcesses : LifecycleObserver {
             "sealed",
             sealedTournamentProcess,
         )
-    }
-
-    inner class InCollectionValidator(
-        private val formatValidator: DeckValidator,
-        private val collectionType: String,
-    ) : DeckValidator {
-        override fun isValid(player: String, deck: GameDeck): Boolean {
-            return formatValidator.isValid(player, deck) && hasCardsInCollection(player, deck)
-        }
-
-        private fun hasCardsInCollection(player: String, deck: GameDeck): Boolean {
-            val playerCollection = collectionInterface.getPlayerCollection(player, collectionType) ?: return false
-            val cardCounts = deck.deckParts.flatMap { it.value }.groupingBy { it }.eachCount()
-            cardCounts.forEach {
-                if (playerCollection.getItemCount(it.key) < it.value) {
-                    return false
-                }
-            }
-            return true
-        }
     }
 }

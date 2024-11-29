@@ -2,14 +2,12 @@ package org.ccgemp.deck
 
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
+import org.ccgemp.common.GameDeck
 
 @Exposes(DeckInterface::class)
 class DeckSystem : DeckInterface {
     @Inject
     private lateinit var dbDeckSerialization: DbDeckSerialization
-
-    @Inject
-    private lateinit var deckValidation: DeckValidation
 
     @Inject
     private lateinit var repository: DeckRepository
@@ -37,9 +35,5 @@ class DeckSystem : DeckInterface {
 
     override fun deleteDeck(player: String, deckName: String) {
         repository.deleteDeck(player, deckName)
-    }
-
-    override fun getValidator(format: String): DeckValidator {
-        return deckValidation.getDeckValidator(format)
     }
 }

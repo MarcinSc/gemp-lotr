@@ -10,7 +10,7 @@ import com.gempukku.lotro.game.LotroCardBlueprint
 import com.gempukku.lotro.logic.GameUtils
 import org.apache.commons.text.StringEscapeUtils.escapeHtml3
 import org.ccgemp.collection.FilterAndSort
-import org.ccgemp.deck.GameDeck
+import org.ccgemp.common.GameDeck
 import org.ccgemp.lotr.LegacyObjectsProvider
 import org.ccgemp.lotr.deck.toLotroDeck
 import org.ccgemp.tournament.TournamentClientInfo

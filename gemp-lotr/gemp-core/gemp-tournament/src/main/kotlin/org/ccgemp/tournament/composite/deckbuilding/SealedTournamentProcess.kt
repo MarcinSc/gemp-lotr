@@ -3,8 +3,8 @@ package org.ccgemp.tournament.composite.deckbuilding
 import org.ccgemp.collection.CollectionChange
 import org.ccgemp.collection.CollectionInterface
 import org.ccgemp.collection.ProductBox
-import org.ccgemp.deck.DeckValidator
-import org.ccgemp.deck.GameDeck
+import org.ccgemp.common.DeckValidator
+import org.ccgemp.common.GameDeck
 import org.ccgemp.tournament.FINISHED_STAGE
 import org.ccgemp.tournament.TournamentMatch
 import org.ccgemp.tournament.TournamentParticipant
@@ -35,7 +35,18 @@ class SealedTournamentProcess(
         decks: List<GameDeck>,
     ): Boolean {
         if (stage == DECK_BUILDING && decks.size == 1) {
-            return deckValidator.isValid(player, decks[0])
+            val deck = decks[0]
+            if (!deckValidator.isValid(deck)) {
+                return false
+            }
+            val sealedCollection = collectionInterface.findPlayerCollection(player, collectionType) ?: return false
+            val cardCounts = deck.deckParts.flatMap { it.value }.groupingBy { it }.eachCount()
+            cardCounts.forEach {
+                if (sealedCollection.getItemCount(it.key) < it.value) {
+                    return false
+                }
+            }
+            return true
         }
         return false
     }

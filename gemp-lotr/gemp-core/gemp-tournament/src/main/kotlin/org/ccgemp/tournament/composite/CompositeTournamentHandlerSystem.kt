@@ -5,7 +5,7 @@ import com.gempukku.context.initializer.inject.InjectList
 import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
-import org.ccgemp.deck.GameDeck
+import org.ccgemp.common.GameDeck
 import org.ccgemp.game.GameSettings
 import org.ccgemp.json.JsonProvider
 import org.ccgemp.json.JsonWithConfig

@@ -23,7 +23,7 @@ import org.ccgemp.lotr.collection.LotrCollectionContentsSerializer
 import org.ccgemp.lotr.collection.LotrProductLibrary
 import org.ccgemp.lotr.deck.LotrDbDeckSerialization
 import org.ccgemp.lotr.deck.LotrDeckSerializer
-import org.ccgemp.lotr.deck.LotrDeckValidation
+import org.ccgemp.lotr.format.LotrFormats
 import org.ccgemp.lotr.game.LegacyGameProducer
 import org.ccgemp.lotr.game.LotrGameEventSinkProducer
 import org.ccgemp.lotr.game.LotrGameObserveSettingsExtractor
@@ -119,7 +119,7 @@ private fun createLotrContext(
             LotrGameEventSinkProducer(),
             // Deck related
             LotrDbDeckSerialization(),
-            LotrDeckValidation(),
+            LotrFormats(),
             LotrDeckSerializer(),
             // Tournament related
             LotrTournamentRenderer(),

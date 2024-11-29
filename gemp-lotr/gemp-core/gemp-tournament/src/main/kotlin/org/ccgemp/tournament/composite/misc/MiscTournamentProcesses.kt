@@ -4,6 +4,7 @@ import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.deck.DeckInterface
+import org.ccgemp.format.GempFormats
 import org.ccgemp.json.JsonWithConfig
 import org.ccgemp.tournament.composite.TournamentProcess
 import org.ccgemp.tournament.composite.TournamentProcessConfig
@@ -81,7 +82,7 @@ class MiscTournamentProcesses : LifecycleObserver {
     private lateinit var standingsRegistry: TournamentStandingsRegistry
 
     @Inject
-    private lateinit var deckInterface: DeckInterface
+    private lateinit var gempFormats: GempFormats<Any>
 
     @Inject
     private lateinit var kickoffRegistry: TournamentKickoffRegistry
@@ -132,7 +133,7 @@ class MiscTournamentProcesses : LifecycleObserver {
             Signup(
                 allowedPlayers,
                 deckTypes,
-                formats.map { deckInterface.getValidator(it) },
+                formats.map { gempFormats.getValidator(it) },
                 kickoffRegistry.create(JsonWithConfig(def.get("kickoff").asObject(), KickoffConfig(it.config.tournamentId))),
             )
         }

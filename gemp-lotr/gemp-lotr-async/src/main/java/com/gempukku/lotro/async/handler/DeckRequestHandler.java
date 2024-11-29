@@ -57,6 +57,7 @@ public class DeckRequestHandler extends LotroServerRequestHandler implements Uri
             /* migrated */
             listDecks(request, responseWriter);
         } else if (uri.equals("/libraryList") && request.method() == HttpMethod.GET) {
+            /* migrated */
             listLibraryDecks(request, responseWriter);
         } else if (uri.equals("") && request.method() == HttpMethod.GET) {
             /* migrated */
@@ -65,12 +66,16 @@ public class DeckRequestHandler extends LotroServerRequestHandler implements Uri
             /* migrated */
             saveDeck(request, responseWriter);
         } else if (uri.equals("/library") && request.method() == HttpMethod.GET) {
+            /* migrated */
             getLibraryDeck(request, responseWriter);
         } else if (uri.equals("/share") && request.method() == HttpMethod.GET) {
+            /* migrated */
             shareDeck(request, responseWriter);
         } else if (uri.equals("/html") && request.method() == HttpMethod.GET) {
+            /* migrated */
             getDeckInHtml(request, responseWriter);
         } else if (uri.equals("/libraryHtml") && request.method() == HttpMethod.GET) {
+            /* migrated */
             getLibraryDeckInHtml(request, responseWriter);
         } else if (uri.equals("/rename") && request.method() == HttpMethod.POST) {
             /* migrated */

@@ -19,6 +19,9 @@ class DeckApiSystem : ApiSystem() {
     private lateinit var deckSerializer: DeckSerializer
 
     @Inject
+    private lateinit var htmlDeckSerializer: HtmlDeckSerializer
+
+    @Inject
     private lateinit var loggedUserInterface: LoggedUserInterface
 
     @Inject
@@ -44,6 +47,16 @@ class DeckApiSystem : ApiSystem() {
                 HttpMethod.GET,
                 "^$urlPrefix$",
                 executeGetDeck(),
+            ),
+            server.registerRequestHandler(
+                HttpMethod.GET,
+                "^$urlPrefix/html$",
+                executeGetDeckHtml(),
+            ),
+            server.registerRequestHandler(
+                HttpMethod.POST,
+                "^$urlPrefix/stats",
+                executeGetDeckStats(),
             ),
             server.registerRequestHandler(
                 HttpMethod.POST,
@@ -80,6 +93,16 @@ class DeckApiSystem : ApiSystem() {
             val deck = deckInterface.findDeck(actingAsUser.userId, deckName) ?: throw HttpProcessingException(404)
 
             responseWriter.writeXmlResponse(deckSerializer.renderDeck(deck))
+        }
+
+    private fun executeGetDeckHtml(): ServerRequestHandler =
+        ServerRequestHandler { request, responseWriter ->
+            val actingAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+            val deckName = request.getParameter("deckName") ?: throw HttpProcessingException(400)
+
+            val deck = deckInterface.findDeck(actingAsUser.userId, deckName) ?: throw HttpProcessingException(404)
+
+            responseWriter.writeHtmlResponse(htmlDeckSerializer.serializeDeck(deck, actingAsUser.userId))
         }
 
     private fun executeSaveDeck(): ServerRequestHandler =
@@ -119,5 +142,15 @@ class DeckApiSystem : ApiSystem() {
             deckInterface.deleteDeck(actingAsUser.userId, deckName)
 
             responseWriter.writeXmlResponse(null)
+        }
+
+    private fun executeGetDeckStats(): ServerRequestHandler =
+        ServerRequestHandler { request, responseWriter ->
+            val targetFormat = request.getParameter("targetFormat") ?: throw HttpProcessingException(400)
+            val deckContents = request.getParameter("deckContents") ?: throw HttpProcessingException(400)
+
+            val deck = deckSerializer.deserializeDeck("Temp Deck", targetFormat, "", deckContents) ?: throw HttpProcessingException(400)
+
+            responseWriter.writeHtmlResponse(htmlDeckSerializer.serializeValidation(deck, targetFormat))
         }
 }

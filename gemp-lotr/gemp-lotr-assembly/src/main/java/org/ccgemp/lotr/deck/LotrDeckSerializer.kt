@@ -12,7 +12,7 @@ import com.gempukku.lotro.game.LotroFormat
 import com.gempukku.lotro.logic.vo.LotroDeck
 import org.ccgemp.collection.FilterAndSort
 import org.ccgemp.deck.DeckSerializer
-import org.ccgemp.deck.GameDeck
+import org.ccgemp.common.GameDeck
 import org.ccgemp.lotr.LegacyObjectsProvider
 import org.w3c.dom.Document
 import java.util.Arrays
@@ -25,6 +25,11 @@ class LotrDeckSerializer : DeckSerializer {
 
     @Inject
     private lateinit var filterAndSort: FilterAndSort<Any>
+
+    private val defaultSortComparator = Comparator.comparing { deck: GameDeck ->
+        val format = legacyObjectsProvider.formatLibrary.getFormat(deck.targetFormat)
+        String.format("%02d", format.order) + format.name + deck.name
+    }
 
     override fun deserializeDeck(
         name: String,
@@ -51,29 +56,22 @@ class LotrDeckSerializer : DeckSerializer {
         }
     }
 
-    override fun renderDeckList(decks: List<GameDeck>): Document {
-        val decksWithFormat = decks.mapTo(mutableListOf()) { legacyObjectsProvider.formatLibrary.getFormat(it.targetFormat) to it.name }
+    override fun renderDeckList(decks: List<GameDeck>, comparator: Comparator<GameDeck>?): Document {
+        val sortedDecks = decks.sortedWith(comparator ?: defaultSortComparator)
 
-        decksWithFormat.sortWith(
-            Comparator.comparing { deck: Pair<LotroFormat, String> ->
-                val format = deck.first
-                String.format("%02d", format.order) + format.name + deck.second
-            },
-        )
-
-        return convertDeckNamesToXML(decksWithFormat)
+        return renderFormatAndDeckNames(sortedDecks.map { it.name to legacyObjectsProvider.formatLibrary.getFormat(it.targetFormat) })
     }
 
-    private fun convertDeckNamesToXML(decks: List<Pair<LotroFormat, String>>): Document {
+    private fun renderFormatAndDeckNames(decks: List<Pair<String, LotroFormat>>): Document {
         val documentBuilderFactory = DocumentBuilderFactory.newInstance()
         val documentBuilder = documentBuilderFactory.newDocumentBuilder()
         val doc = documentBuilder.newDocument()
         val decksElem = doc.createElement("decks")
 
-        for ((key, value) in decks) {
+        for ((deckName, deckFormat) in decks) {
             val deckElem = doc.createElement("deck")
-            deckElem.textContent = value
-            deckElem.setAttribute("targetFormat", key.name)
+            deckElem.textContent = deckName
+            deckElem.setAttribute("targetFormat", deckFormat.name)
             decksElem.appendChild(deckElem)
         }
         doc.appendChild(decksElem)

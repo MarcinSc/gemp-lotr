@@ -110,7 +110,7 @@ class CollectionApiSystem : ApiSystem() {
             val start = request.getParameter("start")?.toInt() ?: 0
             val count = request.getParameter("count")?.toInt() ?: 10
 
-            val collection = collectionInterface.getPlayerCollection(actAsUser.userId, collectionType) ?: throw HttpProcessingException(404)
+            val collection = collectionInterface.findPlayerCollection(actAsUser.userId, collectionType) ?: throw HttpProcessingException(404)
 
             val filteredResult =
                 filterAndSort.process(filter, null, collection.all)

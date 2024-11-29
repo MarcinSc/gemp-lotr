@@ -5,6 +5,7 @@ import com.gempukku.context.initializer.inject.AnnotationSystemInitializer
 import com.gempukku.context.initializer.inject.property.YamlPropertyResolver
 import com.gempukku.context.lifecycle.LifecycleSystem
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
+import org.ccgemp.common.GameDeck
 import org.ccgemp.db.DbAccessSystem
 import org.ccgemp.db.DbTest
 import org.junit.jupiter.api.AfterAll
@@ -46,7 +47,6 @@ class DeckSystemTest {
                         DeckSystem(),
                         DbDeckRepository(),
                         SimpleDbDeckSerialization(),
-                        NoopDeckValidation(),
                         DbAccessSystem(),
                         lifecycleSystem,
                     ),

@@ -1,5 +1,6 @@
 package org.ccgemp.deck
 
+import org.ccgemp.common.GameDeck
 import org.ccgemp.common.mergeTexts
 import org.ccgemp.common.splitText
 

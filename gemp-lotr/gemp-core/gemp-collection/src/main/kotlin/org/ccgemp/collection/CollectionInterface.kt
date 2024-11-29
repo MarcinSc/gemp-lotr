@@ -11,8 +11,6 @@ interface CollectionInterface {
 
     fun addToPlayerCollection(player: String, type: String, collectionChange: CollectionChange): Boolean
 
-    fun getPlayerCollection(player: String, type: String): GempCollection?
-
     fun getPlayerCollections(type: String): Map<String, GempCollection>
 
     fun openPackInCollection(

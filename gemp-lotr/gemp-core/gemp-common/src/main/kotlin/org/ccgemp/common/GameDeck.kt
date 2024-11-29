@@ -1,4 +1,4 @@
-package org.ccgemp.deck
+package org.ccgemp.common
 
 data class GameDeck(
     val name: String,

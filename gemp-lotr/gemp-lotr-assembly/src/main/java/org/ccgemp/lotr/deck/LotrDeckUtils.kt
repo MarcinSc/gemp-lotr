@@ -1,7 +1,7 @@
 package org.ccgemp.lotr.deck
 
 import com.gempukku.lotro.logic.vo.LotroDeck
-import org.ccgemp.deck.GameDeck
+import org.ccgemp.common.GameDeck
 
 const val RING_PART = "ring"
 const val RING_BEARER_PART = "rindBearer"

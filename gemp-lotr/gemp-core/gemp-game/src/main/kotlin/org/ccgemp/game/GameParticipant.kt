@@ -1,6 +1,6 @@
 package org.ccgemp.game
 
-import org.ccgemp.deck.GameDeck
+import org.ccgemp.common.GameDeck
 
 data class GameParticipant(
     val playerId: String,

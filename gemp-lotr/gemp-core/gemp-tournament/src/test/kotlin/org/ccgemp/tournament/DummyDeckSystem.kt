@@ -2,8 +2,8 @@ package org.ccgemp.tournament
 
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.deck.DeckInterface
-import org.ccgemp.deck.DeckValidator
-import org.ccgemp.deck.GameDeck
+import org.ccgemp.common.DeckValidator
+import org.ccgemp.common.GameDeck
 
 @Exposes(DeckInterface::class)
 class DummyDeckSystem : DeckInterface {
@@ -44,13 +44,5 @@ class DummyDeckSystem : DeckInterface {
         playerDecks[player]!!.remove(deckToRename)
         playerDecks[player]!!.add(GameDeck(newDeckName, deckToRename.notes, deckToRename.targetFormat, deckToRename.deckParts))
         return true
-    }
-
-    override fun getValidator(format: String): DeckValidator {
-        return object : DeckValidator {
-            override fun isValid(player: String, deck: GameDeck): Boolean {
-                return true
-            }
-        }
     }
 }
