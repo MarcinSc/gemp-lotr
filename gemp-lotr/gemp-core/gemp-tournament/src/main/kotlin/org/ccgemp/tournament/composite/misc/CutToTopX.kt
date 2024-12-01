@@ -23,7 +23,7 @@ class CutToTopX(
         val notDroppedPlayers = players.filter { !it.dropped }.map { it.player }
 
         val standings = standings.createStandings(round, players, matches)
-        val notDroppedPlayersInStandingsOrder = standings.filter { notDroppedPlayers.contains(it.name) }.map { it.name }
+        val notDroppedPlayersInStandingsOrder = standings.filter { notDroppedPlayers.contains(it.player) }.map { it.player }
         val survivingPlayers = notDroppedPlayersInStandingsOrder.take(x)
 
         val playersToDrop = notDroppedPlayersInStandingsOrder - survivingPlayers.toSet()

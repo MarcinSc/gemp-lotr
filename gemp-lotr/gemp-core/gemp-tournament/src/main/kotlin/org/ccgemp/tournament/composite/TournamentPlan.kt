@@ -11,7 +11,7 @@ import org.ccgemp.tournament.composite.standing.PlayerStanding
 import org.ccgemp.tournament.composite.standing.Standings
 
 class TournamentPlan(
-    private val standings: Standings
+    private val standings: Standings,
 ) {
     private val processes: MutableList<TournamentProcess> = mutableListOf()
     private val roundMatchProcesses: MutableMap<Int, MatchesTournamentProcess> = mutableMapOf()

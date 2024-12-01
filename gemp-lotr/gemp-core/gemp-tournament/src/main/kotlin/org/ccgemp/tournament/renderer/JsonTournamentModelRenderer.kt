@@ -10,7 +10,7 @@ import org.hjson.JsonObject
 import java.time.format.DateTimeFormatter
 
 @Exposes(TournamentModelRenderer::class)
-class JsonTournamentModelRenderer: TournamentModelRenderer {
+class JsonTournamentModelRenderer : TournamentModelRenderer {
     private val minuteFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
     override fun renderGetTournamentDecks(player: String, decks: List<GameDeck>, responseWriter: ResponseWriter) {
@@ -65,7 +65,7 @@ class JsonTournamentModelRenderer: TournamentModelRenderer {
         val standingsArray = JsonArray()
         standings.forEach { standing ->
             val standingObj = JsonObject()
-            standingObj.set("name", standing.name)
+            standingObj.set("name", standing.player)
             standingObj.set("standing", standing.standing)
             standingObj.set("points", standing.points)
             standing.stats.forEach {

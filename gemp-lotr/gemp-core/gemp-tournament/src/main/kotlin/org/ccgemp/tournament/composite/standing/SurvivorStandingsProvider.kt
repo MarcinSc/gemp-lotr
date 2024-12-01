@@ -37,12 +37,12 @@ private class SurvivorStandings(
             val playersPlayedInRound = acceptedMatches.filter { it.round == evaluatedRound }.flatMapTo(mutableSetOf()) { it.players }
             val playersToPlace = playersPlayedInRound - placedPlayers
             var lastStandingInSecondary = -1
-            secondaryStandings.filter { it.name in playersToPlace }.forEach {
+            secondaryStandings.filter { it.player in playersToPlace }.forEach {
                 if (it.standing == lastStandingInSecondary) {
-                    result.add(PlayerStanding(it.name, standing, it.points, it.stats))
+                    result.add(PlayerStanding(it.player, standing, it.points, it.stats))
                 } else {
                     standing = result.size + 1
-                    result.add(PlayerStanding(it.name, standing, it.points, it.stats))
+                    result.add(PlayerStanding(it.player, standing, it.points, it.stats))
                 }
                 lastStandingInSecondary = it.standing
             }
@@ -51,8 +51,8 @@ private class SurvivorStandings(
         // Players that did not play any games
         standing = result.size + 1
         val remainingPlayers = players.filter { it.player !in placedPlayers }.map { it.player }
-        secondaryStandings.filter { it.name in remainingPlayers }.forEach {
-            result.add(PlayerStanding(it.name, standing, it.points, it.stats))
+        secondaryStandings.filter { it.player in remainingPlayers }.forEach {
+            result.add(PlayerStanding(it.player, standing, it.points, it.stats))
         }
         return result
     }

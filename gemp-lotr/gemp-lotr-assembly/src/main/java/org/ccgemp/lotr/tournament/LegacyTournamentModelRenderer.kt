@@ -91,11 +91,11 @@ class LegacyTournamentModelRenderer : TournamentModelRenderer {
         sections.add(summary.toString())
 
         for (standing in standings) {
-            val playerName = standing.name
+            val playerName = standing.player
 
             val player = tournament.players.firstOrNull { it.player == playerName }
             if (player != null) {
-                sections.add("<h2>"+player.player+"</h2>")
+                sections.add("<h2>" + player.player + "</h2>")
                 player.decks.values.forEach { deck ->
                     sections.add(renderDeck(deck, null))
                 }
@@ -130,7 +130,7 @@ class LegacyTournamentModelRenderer : TournamentModelRenderer {
     }
 
     private fun setStandingAttributes(standing: PlayerStanding, standingElem: Element) {
-        standingElem.setAttribute("player", standing.name)
+        standingElem.setAttribute("player", standing.player)
         standingElem.setAttribute("standing", standing.standing.toString())
         standingElem.setAttribute("points", standing.points.toString())
         standingElem.setAttribute("gamesPlayed", standing.stats["gamesPlayer"].toString())

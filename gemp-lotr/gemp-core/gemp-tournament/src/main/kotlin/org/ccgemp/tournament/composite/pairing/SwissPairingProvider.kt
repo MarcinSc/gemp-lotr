@@ -57,7 +57,7 @@ class SwissPairing(
 
         val notByeMatches = matches.filter { !it.bye }
         val notDroppedPlayers = players.filter { !it.dropped }.map { it.player }
-        val notDroppedStandings = standings.filter { notDroppedPlayers.contains(it.name) }
+        val notDroppedStandings = standings.filter { notDroppedPlayers.contains(it.player) }
 
         val maxNumberOfPoints = notDroppedStandings.maxOf { it.points }
 
@@ -225,7 +225,7 @@ class SwissPairing(
     private fun groupPlayersByBracket(maxNumberOfPoints: Int, standings: List<PlayerStanding>): List<MutableList<String>> {
         val playersByPoints = arrayOfNulls<MutableList<String>>(maxNumberOfPoints + 1)
         for (currentStanding in standings) {
-            val playerName: String = currentStanding.name
+            val playerName: String = currentStanding.player
             val points = currentStanding.points
             var playersByPoint = playersByPoints[maxNumberOfPoints - points]
             if (playersByPoint == null) {

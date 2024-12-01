@@ -66,7 +66,13 @@ class DeckSystemTest {
         val noPlayerDecks = deckSystem.getPlayerDecks("test")
         assertEquals(0, noPlayerDecks.size)
 
-        val newDeck = GameDeck("Name", "Notes", "format", mapOf("ring" to listOf(GameDeckItem("1", 1), GameDeckItem("2", 1)), "ringBearer" to listOf(GameDeckItem("3,4", 1), GameDeckItem("5", 1))))
+        val newDeck =
+            GameDeck(
+                "Name",
+                "Notes",
+                "format",
+                mapOf("ring" to listOf(GameDeckItem("1", 1), GameDeckItem("2", 1)), "ringBearer" to listOf(GameDeckItem("3,4", 1), GameDeckItem("5", 1))),
+            )
         deckSystem.saveDeck("test", newDeck)
 
         val resultDeck = deckSystem.findDeck("test", "Name")

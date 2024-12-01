@@ -24,5 +24,6 @@ interface TournamentHandler<TournamentData> {
     fun getRegisterDeckTypes(tournament: TournamentInfo<TournamentData>): List<String>
 
     fun getPlayedDeckType(tournament: TournamentInfo<TournamentData>, round: Int): String
+
     fun getStandings(tournament: TournamentInfo<TournamentData>): List<PlayerStanding>
 }

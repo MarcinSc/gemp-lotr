@@ -183,7 +183,7 @@ private class ModifiedMedianStandings(
             if (lastStanding == null || comparator.compare(eventStanding, lastStanding) != 0) {
                 standing = position
             }
-            val newStanding = PlayerStanding(eventStanding.name, standing, eventStanding.points, eventStanding.stats)
+            val newStanding = PlayerStanding(eventStanding.player, standing, eventStanding.points, eventStanding.stats)
             result.add(newStanding)
             position++
             lastStanding = eventStanding
@@ -215,12 +215,12 @@ private class ModifiedMedianStandings(
         override fun compare(o1: PlayerStanding, o2: PlayerStanding): Int {
             val result =
                 matches.firstOrNull { x: TournamentMatch ->
-                    (x.loser == o1.name && x.winner == o2.name) ||
-                        (x.loser == o2.name && x.winner == o1.name)
+                    (x.loser == o1.player && x.winner == o2.player) ||
+                        (x.loser == o2.player && x.winner == o1.player)
                 }
 
             return if (result != null) {
-                if (result.winner == o1.name) {
+                if (result.winner == o1.player) {
                     1
                 } else {
                     -1
