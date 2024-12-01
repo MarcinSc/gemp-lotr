@@ -1,43 +1,10 @@
 package org.ccgemp.tournament.composite.pairing
 
-import com.gempukku.context.initializer.inject.Inject
-import com.gempukku.context.lifecycle.LifecycleObserver
-import com.gempukku.context.resolver.expose.Exposes
-import org.ccgemp.json.JsonWithConfig
 import org.ccgemp.tournament.TournamentMatch
 import org.ccgemp.tournament.TournamentParticipant
 import org.ccgemp.tournament.composite.standing.PlayerStanding
 import org.ccgemp.tournament.composite.standing.Standings
-import org.ccgemp.tournament.composite.standing.StandingsConfig
-import org.ccgemp.tournament.composite.standing.TournamentStandingsRegistry
 import java.util.concurrent.ThreadLocalRandom
-
-/**
- * Example configuration
- * {@code
- * {
- *      type: swiss
- *      standings: {
- *          type: modifiedMedian
- *      }
- * }
- * }
- */
-@Exposes(LifecycleObserver::class)
-class SwissPairingProvider : LifecycleObserver {
-    @Inject
-    private lateinit var registry: TournamentPairingRegistry
-
-    @Inject
-    private lateinit var standingsRegistry: TournamentStandingsRegistry
-
-    override fun afterContextStartup() {
-        val pairingProvider: (JsonWithConfig<PairingConfig>) -> Pairing = {
-            SwissPairing(standingsRegistry.create(JsonWithConfig(it.json.get("standings").asObject(), StandingsConfig(it.config.tournamentId))))
-        }
-        registry.register("swiss", pairingProvider)
-    }
-}
 
 class SwissPairing(
     private val standings: Standings,
@@ -100,6 +67,10 @@ class SwissPairing(
 
         // We can't pair, just finish the tournament
         return null
+    }
+
+    override fun shouldDropLoser(round: Int, player: String, players: List<TournamentParticipant>, matches: List<TournamentMatch>): Boolean {
+        return false
     }
 
     private fun tryPairBracketAndFurther(

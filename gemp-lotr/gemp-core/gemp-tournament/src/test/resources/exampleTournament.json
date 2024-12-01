@@ -127,9 +127,14 @@
         "pause": 180000
       },
       "pairing": {
-        "type": "manual"
-      },
-      "dropLosers": true
+        "type": "singleElimination",
+        "standings": {
+          "type": "modifiedMedian",
+          "pointsForWin": 1,
+          "pointsForLoss": 0
+        },
+        "afterRound": 9
+      }
     }
   ]
 }

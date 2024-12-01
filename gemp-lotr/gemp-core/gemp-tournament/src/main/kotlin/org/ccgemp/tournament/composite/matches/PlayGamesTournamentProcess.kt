@@ -22,7 +22,6 @@ class PlayGamesTournamentProcess(
     override val byeGroup: String,
     private val kickoff: Kickoff,
     private val pairing: Pairing,
-    private val dropLosers: Boolean,
 ) : MatchesTournamentProcess {
     override fun processTournament(
         round: Int,
@@ -63,9 +62,9 @@ class PlayGamesTournamentProcess(
                         it.round == round && !it.finished
                     }
                 ) {
-                    if (dropLosers) {
-                        matches.filter { it.round == round && !it.bye }.forEach {
-                            val loser = it.loser!!
+                    matches.filter { it.round == round && !it.bye }.forEach {
+                        val loser = it.loser!!
+                        if (pairing.shouldDropLoser(round, loser, players, matches)) {
                             tournamentProgress.dropPlayer(loser)
                         }
                     }

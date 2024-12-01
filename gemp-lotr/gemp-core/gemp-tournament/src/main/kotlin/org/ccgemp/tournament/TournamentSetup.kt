@@ -7,8 +7,8 @@ import org.ccgemp.tournament.composite.kickoff.TimedKickoffProvider
 import org.ccgemp.tournament.composite.kickoff.TournamentKickoffSystem
 import org.ccgemp.tournament.composite.matches.MatchTournamentProcesses
 import org.ccgemp.tournament.composite.misc.MiscTournamentProcesses
+import org.ccgemp.tournament.composite.pairing.AutomaticPairingProvider
 import org.ccgemp.tournament.composite.pairing.ManualPairingProvider
-import org.ccgemp.tournament.composite.pairing.SwissPairingProvider
 import org.ccgemp.tournament.composite.pairing.TournamentPairingSystem
 import org.ccgemp.tournament.composite.standing.ModifiedMedianStandingsProvider
 import org.ccgemp.tournament.composite.standing.RoundLimitStandingsProvider
@@ -31,7 +31,7 @@ fun createTournamentSystems(tournamentModelRenderer: TournamentModelRenderer = J
         ManualKickoffProvider(),
         // Pairing
         TournamentPairingSystem(),
-        SwissPairingProvider(),
+        AutomaticPairingProvider(),
         ManualPairingProvider(),
         // Standings
         TournamentStandingsSystem(),
