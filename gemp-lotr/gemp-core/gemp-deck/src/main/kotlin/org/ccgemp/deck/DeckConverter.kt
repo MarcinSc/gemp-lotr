@@ -1,6 +1,7 @@
 package org.ccgemp.deck
 
 import org.ccgemp.common.GameDeck
+import org.ccgemp.common.GameDeckItem
 import org.ccgemp.common.mergeTexts
 import org.ccgemp.common.splitText
 
@@ -33,20 +34,21 @@ fun GameDeck?.toDeckString(): String {
     return listOf(name, notes, targetFormat, deckPartsToString(deckParts)).mergeTexts(DECK_VALUES_JOIN)
 }
 
-fun toDeckParts(text: String): Map<String, List<String>> {
+fun toDeckParts(text: String): Map<String, List<GameDeckItem>> {
     val parts = text.splitText(DECK_PARTS_JOIN)
-    val result = mutableMapOf<String, List<String>>()
-    parts.forEach {
-        val partSplit = it.splitText(DECK_PART_VALUES_JOIN)
-        result[partSplit[0]] = partSplit[1].splitText(CARD_JOIN)
+    val result = mutableMapOf<String, List<GameDeckItem>>()
+    parts.forEach { part ->
+        val partSplit = part.splitText(DECK_PART_VALUES_JOIN)
+        val counts = partSplit[1].splitText(CARD_JOIN).groupingBy { it }.eachCount()
+        result[partSplit[0]] = counts.map { GameDeckItem(it.key, it.value) }
     }
     return result
 }
 
-fun deckPartsToString(deckParts: Map<String, List<String>>): String {
+fun deckPartsToString(deckParts: Map<String, List<GameDeckItem>>): String {
     val values =
         deckParts.map {
-            listOf(it.key, it.value.mergeTexts(CARD_JOIN)).mergeTexts(DECK_PART_VALUES_JOIN)
+            listOf(it.key, it.value.flatMap { item -> MutableList(item.count) { item.card } }.mergeTexts(CARD_JOIN)).mergeTexts(DECK_PART_VALUES_JOIN)
         }
     return values.mergeTexts(DECK_PARTS_JOIN)
 }

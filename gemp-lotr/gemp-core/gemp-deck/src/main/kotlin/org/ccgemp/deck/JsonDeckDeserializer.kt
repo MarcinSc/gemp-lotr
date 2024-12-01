@@ -3,6 +3,7 @@ package org.ccgemp.deck
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
 import org.ccgemp.common.GameDeck
+import org.ccgemp.common.GameDeckItem
 import org.ccgemp.json.JsonProvider
 
 @Exposes(DeckDeserializer::class)
@@ -18,15 +19,15 @@ class JsonDeckDeserializer : DeckDeserializer {
     ): GameDeck {
         val deckContents = jsonProvider.readJson(contents)
 
-        val deckPartMap = mutableMapOf<String, List<String>>()
+        val deckPartMap = mutableMapOf<String, List<GameDeckItem>>()
 
         deckContents.forEach { section ->
             val deckPartName = section.name
             val deckPartContents =
                 section.value.asArray().map {
                     it.asString()
-                }
-            deckPartMap.put(deckPartName, deckPartContents)
+                }.groupingBy { it }.eachCount()
+            deckPartMap.put(deckPartName, deckPartContents.map { cardCount -> GameDeckItem(cardCount.key, cardCount.value) })
         }
         return GameDeck(name, notes, targetFormat, deckPartMap)
     }

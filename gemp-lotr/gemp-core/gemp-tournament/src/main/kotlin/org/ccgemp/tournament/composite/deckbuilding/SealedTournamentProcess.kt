@@ -40,9 +40,9 @@ class SealedTournamentProcess(
                 return false
             }
             val sealedCollection = collectionInterface.findPlayerCollection(player, collectionType) ?: return false
-            val cardCounts = deck.deckParts.flatMap { it.value }.groupingBy { it }.eachCount()
+            val cardCounts = deck.deckParts.flatMap { it.value }
             cardCounts.forEach {
-                if (sealedCollection.getItemCount(it.key) < it.value) {
+                if (sealedCollection.getItemCount(it.card) < it.count) {
                     return false
                 }
             }

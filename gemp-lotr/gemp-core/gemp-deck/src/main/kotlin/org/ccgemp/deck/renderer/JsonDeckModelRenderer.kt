@@ -18,10 +18,11 @@ class JsonDeckModelRenderer : DeckModelRenderer {
         deck.deckParts.forEach { part ->
             val jsonPart = JsonObject()
             jsonPart.set("name", part.key)
-            val cards = JsonArray()
+            val cards = JsonObject()
             part.value.forEach { card ->
-                cards.add(card)
+                cards.set(card.card, card.count)
             }
+            jsonPart.set("cards", cards)
             parts.add(jsonPart)
         }
         root.set("contents", parts)

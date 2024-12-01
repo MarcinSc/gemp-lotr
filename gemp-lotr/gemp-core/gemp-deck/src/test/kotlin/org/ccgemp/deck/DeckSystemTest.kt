@@ -6,6 +6,7 @@ import com.gempukku.context.initializer.inject.property.YamlPropertyResolver
 import com.gempukku.context.lifecycle.LifecycleSystem
 import com.gempukku.context.resolver.expose.AnnotationSystemResolver
 import org.ccgemp.common.GameDeck
+import org.ccgemp.common.GameDeckItem
 import org.ccgemp.db.DbAccessSystem
 import org.ccgemp.db.DbTest
 import org.junit.jupiter.api.AfterAll
@@ -65,7 +66,7 @@ class DeckSystemTest {
         val noPlayerDecks = deckSystem.getPlayerDecks("test")
         assertEquals(0, noPlayerDecks.size)
 
-        val newDeck = GameDeck("Name", "Notes", "format", mapOf("ring" to listOf("1", "2"), "ringBearer" to listOf("3,4", "5")))
+        val newDeck = GameDeck("Name", "Notes", "format", mapOf("ring" to listOf(GameDeckItem("1", 1), GameDeckItem("2", 1)), "ringBearer" to listOf(GameDeckItem("3,4", 1), GameDeckItem("5", 1))))
         deckSystem.saveDeck("test", newDeck)
 
         val resultDeck = deckSystem.findDeck("test", "Name")
@@ -75,8 +76,8 @@ class DeckSystemTest {
         assertEquals("format", resultDeck.targetFormat)
         val deckParts = resultDeck.deckParts
         assertEquals(2, deckParts.size)
-        assertEquals(listOf("1", "2"), deckParts["ring"])
-        assertEquals(listOf("3,4", "5"), deckParts["ringBearer"])
+        assertEquals(listOf(GameDeckItem("1", 1), GameDeckItem("2", 1)), deckParts["ring"])
+        assertEquals(listOf(GameDeckItem("3,4", 1), GameDeckItem("5", 1)), deckParts["ringBearer"])
 
         val playerDecks = deckSystem.getPlayerDecks("test")
         assertEquals(1, playerDecks.size)

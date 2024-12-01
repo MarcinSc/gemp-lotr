@@ -14,9 +14,10 @@ import org.ccgemp.tournament.composite.standing.ModifiedMedianStandingsProvider
 import org.ccgemp.tournament.composite.standing.RoundLimitStandingsProvider
 import org.ccgemp.tournament.composite.standing.SurvivorStandingsProvider
 import org.ccgemp.tournament.composite.standing.TournamentStandingsSystem
+import org.ccgemp.tournament.renderer.JsonTournamentModelRenderer
 import org.ccgemp.tournament.renderer.TournamentModelRenderer
 
-fun createTournamentSystems(tournamentModelRenderer: TournamentModelRenderer): List<Any> {
+fun createTournamentSystems(tournamentModelRenderer: TournamentModelRenderer = JsonTournamentModelRenderer()): List<Any> {
     return listOf(
         TournamentSystem(),
         DbTournamentRepository(),
