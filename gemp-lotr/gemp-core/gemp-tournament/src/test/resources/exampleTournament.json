@@ -1,4 +1,16 @@
 {
+  "standings": {
+    "type": "survivor",
+    "secondaryStandings": {
+      "type": "roundLimit",
+      "round": 9,
+      "standings": {
+        "type": "modifiedMedian",
+        "pointsForWin": 1,
+        "pointsForLoss": 0
+      }
+    }
+  },
   "processes": [
     {
       "type": "pauseUntil",

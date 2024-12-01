@@ -1,5 +1,6 @@
 package org.ccgemp.tournament
 
+import org.ccgemp.tournament.composite.standing.PlayerStanding
 import java.time.LocalDateTime
 
 interface TournamentInterface {
@@ -17,7 +18,9 @@ interface TournamentInterface {
 
     fun getHistoricTournaments(): List<TournamentClientInfo>
 
-    fun getTournament(tournamentId: String): TournamentClientInfo?
+    fun findTournament(tournamentId: String): TournamentClientInfo?
+
+    fun getStandings(tournamentId: String): List<PlayerStanding>
 
     fun joinTournament(tournamentId: String, player: String, deckNames: List<String>)
 

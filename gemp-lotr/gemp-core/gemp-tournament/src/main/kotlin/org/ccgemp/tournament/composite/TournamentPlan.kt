@@ -7,8 +7,12 @@ import org.ccgemp.tournament.FINISHED_STAGE
 import org.ccgemp.tournament.TournamentGameRecipe
 import org.ccgemp.tournament.TournamentInfo
 import org.ccgemp.tournament.TournamentProgress
+import org.ccgemp.tournament.composite.standing.PlayerStanding
+import org.ccgemp.tournament.composite.standing.Standings
 
-class TournamentPlan {
+class TournamentPlan(
+    private val standings: Standings
+) {
     private val processes: MutableList<TournamentProcess> = mutableListOf()
     private val roundMatchProcesses: MutableMap<Int, MatchesTournamentProcess> = mutableMapOf()
     private val pairingGroups: MutableMap<Int, String> = mutableMapOf()
@@ -52,6 +56,10 @@ class TournamentPlan {
 
     fun getGameSettings(round: Int): GameSettings {
         return roundMatchProcesses[round]!!.gameSettings
+    }
+
+    fun getPlayerStandings(tournament: TournamentInfo<TournamentPlan>): List<PlayerStanding> {
+        return standings.createStandings(tournament.round, tournament.players, tournament.matches)
     }
 
     fun canJoinTournament(tournament: TournamentInfo<TournamentPlan>, player: String): Boolean {

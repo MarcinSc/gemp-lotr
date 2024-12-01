@@ -11,6 +11,8 @@ import org.ccgemp.tournament.composite.pairing.ManualPairingProvider
 import org.ccgemp.tournament.composite.pairing.SwissPairingProvider
 import org.ccgemp.tournament.composite.pairing.TournamentPairingSystem
 import org.ccgemp.tournament.composite.standing.ModifiedMedianStandingsProvider
+import org.ccgemp.tournament.composite.standing.RoundLimitStandingsProvider
+import org.ccgemp.tournament.composite.standing.SurvivorStandingsProvider
 import org.ccgemp.tournament.composite.standing.TournamentStandingsSystem
 import org.ccgemp.tournament.renderer.TournamentModelRenderer
 
@@ -33,6 +35,8 @@ fun createTournamentSystems(tournamentModelRenderer: TournamentModelRenderer): L
         // Standings
         TournamentStandingsSystem(),
         ModifiedMedianStandingsProvider(),
+        SurvivorStandingsProvider(),
+        RoundLimitStandingsProvider(),
         // API
         PublicTournamentApiSystem(),
         PrivateTournamentApiSystem(),

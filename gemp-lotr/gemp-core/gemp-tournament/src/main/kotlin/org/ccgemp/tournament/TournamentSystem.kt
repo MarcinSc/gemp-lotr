@@ -16,6 +16,7 @@ import org.ccgemp.game.GameParticipant
 import org.ccgemp.game.GameResultListener
 import org.ccgemp.game.GameSettings
 import org.ccgemp.state.ServerStateInterface
+import org.ccgemp.tournament.composite.standing.PlayerStanding
 import java.time.LocalDateTime
 
 const val FINISHED_STAGE = "FINISHED"
@@ -95,8 +96,13 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
         return loadedTournaments.values.filter { it.status == FINISHED_STAGE }.toList()
     }
 
-    override fun getTournament(tournamentId: String): TournamentClientInfo? {
+    override fun findTournament(tournamentId: String): TournamentClientInfo? {
         return loadedTournaments[tournamentId]
+    }
+
+    override fun getStandings(tournamentId: String): List<PlayerStanding> {
+        val tournament = loadedTournaments[tournamentId] ?: throw HttpProcessingException(404)
+        return tournament.handler.getStandings(tournament)
     }
 
     override fun joinTournament(tournamentId: String, player: String, deckNames: List<String>) {

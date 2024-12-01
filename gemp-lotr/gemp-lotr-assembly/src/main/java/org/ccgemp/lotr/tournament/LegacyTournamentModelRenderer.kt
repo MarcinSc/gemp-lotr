@@ -15,7 +15,11 @@ import org.ccgemp.common.GameDeck
 import org.ccgemp.lotr.LegacyObjectsProvider
 import org.ccgemp.lotr.deck.toLotroDeck
 import org.ccgemp.tournament.TournamentClientInfo
+import org.ccgemp.tournament.composite.standing.PlayerStanding
 import org.ccgemp.tournament.renderer.TournamentModelRenderer
+import org.w3c.dom.Document
+import org.w3c.dom.Element
+import java.text.DecimalFormat
 import java.time.format.DateTimeFormatter
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -59,24 +63,84 @@ class LegacyTournamentModelRenderer : TournamentModelRenderer {
         )
     }
 
-    override fun renderGetTournamentInfo(tournament: TournamentClientInfo, responseWriter: ResponseWriter) {
-        responseWriter.writeHtmlResponse(
-            renderReportHtml(tournament),
+    override fun renderGetTournamentInfo(tournament: TournamentClientInfo, standings: List<PlayerStanding>, responseWriter: ResponseWriter) {
+        responseWriter.writeXmlResponse(
+            renderInfo(tournament, standings),
         )
     }
 
-    override fun renderGetTournamentReport(tournament: TournamentClientInfo, responseWriter: ResponseWriter) {
+    override fun renderGetTournamentReport(tournament: TournamentClientInfo, standings: List<PlayerStanding>, responseWriter: ResponseWriter) {
         responseWriter.writeHtmlResponse(
-            renderInfoHtml(tournament),
+            renderReportHtml(tournament, standings),
         )
     }
 
-    private fun renderReportHtml(tournament: TournamentClientInfo): String {
-        TODO("Not yet implemented")
+    private fun renderReportHtml(tournament: TournamentClientInfo, standings: List<PlayerStanding>): String {
+        val tournamentStart = tournament.startDate
+
+        val games = tournament.matches
+
+        val lastRound = games.maxOf { it.round }
+
+        val summary = java.lang.StringBuilder()
+        summary
+            .append("<h1>").append(escapeHtml3(tournament.name)).append("</h1>")
+            .append("<ul>")
+            .append("<li>Total Rounds: ").append(lastRound).append("</li>")
+            .append("<li>Start: ").append(tournamentStart.format(minuteFormatter)).append("</li>")
+            .append("</ul><br/><br/><hr>")
+
+        val sections = ArrayList<String>()
+        sections.add(summary.toString())
+
+        for (standing in standings) {
+            val playerName = standing.name
+
+            val player = tournament.players.firstOrNull { it.player == playerName }
+            if (player != null) {
+                sections.add("<h2>"+player.player+"</h2>")
+                player.decks.values.forEach { deck ->
+                    sections.add(renderDeck(deck, null))
+                }
+            }
+        }
+
+        return surroundWithReadoutHeaderAndFooter(sections)
     }
 
-    private fun renderInfoHtml(tournament: TournamentClientInfo): String {
-        TODO("Not yet implemented")
+    private fun renderInfo(tournament: TournamentClientInfo, standings: List<PlayerStanding>): Document {
+        val documentBuilderFactory = DocumentBuilderFactory.newInstance()
+        val documentBuilder = documentBuilderFactory.newDocumentBuilder()
+
+        val doc = documentBuilder.newDocument()
+
+        val tournamentElem: Element = doc.createElement("tournament")
+
+        tournamentElem.setAttribute("id", tournament.id)
+        tournamentElem.setAttribute("name", tournament.name)
+        tournamentElem.setAttribute("round", tournament.round.toString())
+        tournamentElem.setAttribute("stage", tournament.status)
+
+        for (standing in standings) {
+            val standingElem: Element = doc.createElement("tournamentStanding")
+            setStandingAttributes(standing, standingElem)
+            tournamentElem.appendChild(standingElem)
+        }
+
+        doc.appendChild(tournamentElem)
+
+        return doc
+    }
+
+    private fun setStandingAttributes(standing: PlayerStanding, standingElem: Element) {
+        standingElem.setAttribute("player", standing.name)
+        standingElem.setAttribute("standing", standing.standing.toString())
+        standingElem.setAttribute("points", standing.points.toString())
+        standingElem.setAttribute("gamesPlayed", standing.stats["gamesPlayer"].toString())
+        val format = DecimalFormat("##0.00%")
+        standingElem.setAttribute("opponentWin", format.format(standing.stats["opponentWinRate"]?.toDouble()))
+        standingElem.setAttribute("medianScore", standing.stats["medianScore"].toString())
+        standingElem.setAttribute("cumulativeScore", standing.stats["cumulativeScore"].toString())
     }
 
     private fun surroundWithReadoutHeaderAndFooter(fragments: List<String>): String {

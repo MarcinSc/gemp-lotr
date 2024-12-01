@@ -11,6 +11,7 @@ data class TournamentMatch(
     val bye = playerTwo == BYE_NAME
     val finished = winner != null
     val loser = if (winner != null && !bye) (listOf(playerOne, playerTwo) - winner).first() else null
+    val players = if (bye) listOf(playerOne) else listOf(playerOne, playerTwo)
 
     fun hasPlayer(name: String): Boolean {
         return playerOne == name || playerTwo == name

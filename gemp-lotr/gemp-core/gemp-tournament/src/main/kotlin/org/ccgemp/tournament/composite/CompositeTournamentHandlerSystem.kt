@@ -16,6 +16,9 @@ import org.ccgemp.tournament.TournamentHandler
 import org.ccgemp.tournament.TournamentInfo
 import org.ccgemp.tournament.TournamentInterface
 import org.ccgemp.tournament.TournamentProgress
+import org.ccgemp.tournament.composite.standing.PlayerStanding
+import org.ccgemp.tournament.composite.standing.StandingsConfig
+import org.ccgemp.tournament.composite.standing.TournamentStandingsRegistry
 
 @Exposes(TournamentProcessRegistry::class)
 class CompositeTournamentHandlerSystem :
@@ -28,6 +31,9 @@ class CompositeTournamentHandlerSystem :
 
     @Inject
     private lateinit var jsonProvider: JsonProvider
+
+    @Inject
+    private lateinit var standingsRegistry: TournamentStandingsRegistry
 
     @InjectList
     private lateinit var tournamentUnloadNotified: List<CompositeTournamentUnloadNotified>
@@ -49,8 +55,10 @@ class CompositeTournamentHandlerSystem :
     }
 
     override fun initializeTournament(tournament: Tournament): TournamentPlan {
-        val tournamentPlan = TournamentPlan()
-        jsonProvider.readJson(tournament.parameters).get("processes").asArray().map { it.asObject() }.forEach {
+        val tournamentParameters = jsonProvider.readJson(tournament.parameters)
+        val standings = standingsRegistry.create(JsonWithConfig(tournamentParameters.get("standings").asObject(), StandingsConfig(tournament.tournamentId)))
+        val tournamentPlan = TournamentPlan(standings)
+        tournamentParameters.get("processes").asArray().map { it.asObject() }.forEach {
             val process = create(JsonWithConfig(it, TournamentProcessConfig(tournament.tournamentId, 1 + tournamentPlan.rounds)))
             tournamentPlan.addProcess(process)
         }
@@ -97,6 +105,10 @@ class CompositeTournamentHandlerSystem :
             return "Finished"
         }
         return tournament.data.getTournamentStatus(tournament)
+    }
+
+    override fun getStandings(tournament: TournamentInfo<TournamentPlan>): List<PlayerStanding> {
+        return tournament.data.getPlayerStandings(tournament)
     }
 
     override fun unloadTournament(tournament: TournamentInfo<TournamentPlan>) {

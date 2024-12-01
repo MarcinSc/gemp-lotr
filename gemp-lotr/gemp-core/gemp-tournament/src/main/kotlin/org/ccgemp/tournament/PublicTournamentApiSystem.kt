@@ -71,7 +71,7 @@ class PublicTournamentApiSystem : ApiSystem() {
             val matcher = pattern.matcher(request.uri)
             val tournamentId = matcher.group(1)
             val player = matcher.group(2)
-            val tournament = tournamentInterface.getTournament(tournamentId)
+            val tournament = tournamentInterface.findTournament(tournamentId)
             if (tournament == null) {
                 throw HttpProcessingException(404)
             }
@@ -88,15 +88,10 @@ class PublicTournamentApiSystem : ApiSystem() {
             val pattern = Pattern.compile("^$urlPrefix/([^/]*)/report/html$")
             val matcher = pattern.matcher(request.uri)
             val tournamentId = matcher.group(1)
-            val tournament = tournamentInterface.getTournament(tournamentId)
-            if (tournament == null) {
-                throw HttpProcessingException(404)
-            }
-            if (!tournament.finished) {
-                throw HttpProcessingException(403)
-            }
+            val tournament = tournamentInterface.findTournament(tournamentId)?.takeIf { it.finished } ?: throw HttpProcessingException(404)
+            val standings = tournamentInterface.getStandings(tournamentId)
 
-            tournamentModelRenderer.renderGetTournamentReport(tournament, responseWriter)
+            tournamentModelRenderer.renderGetTournamentReport(tournament, standings, responseWriter)
         }
 
     private fun executeGetTournamentInfo(): (request: HttpRequest, responseWriter: ResponseWriter) -> Unit =
@@ -104,11 +99,9 @@ class PublicTournamentApiSystem : ApiSystem() {
             val pattern = Pattern.compile("^$urlPrefix/([^/]*)$")
             val matcher = pattern.matcher(request.uri)
             val tournamentId = matcher.group(1)
-            val tournament = tournamentInterface.getTournament(tournamentId)
-            if (tournament == null) {
-                throw HttpProcessingException(404)
-            }
+            val tournament = tournamentInterface.findTournament(tournamentId) ?: throw HttpProcessingException(404)
+            val standings = tournamentInterface.getStandings(tournamentId)
 
-            tournamentModelRenderer.renderGetTournamentInfo(tournament, responseWriter)
+            tournamentModelRenderer.renderGetTournamentInfo(tournament, standings, responseWriter)
         }
 }

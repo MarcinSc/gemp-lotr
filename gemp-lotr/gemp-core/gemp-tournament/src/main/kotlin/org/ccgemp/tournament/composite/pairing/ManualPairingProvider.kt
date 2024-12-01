@@ -43,7 +43,7 @@ class ManualPairingProvider : LifecycleObserver, CompositeTournamentUnloadNotifi
 
     override fun pairRound(tournamentId: String, round: Int, pairing: RoundPairing): Boolean {
         val pairings = tournamentPairings[tournamentId] ?: return false
-        val tournament = tournamentInterface.getTournament(tournamentId) ?: return false
+        val tournament = tournamentInterface.findTournament(tournamentId) ?: return false
         if (!isValidPairings(tournament, pairing)) {
             return false
         }

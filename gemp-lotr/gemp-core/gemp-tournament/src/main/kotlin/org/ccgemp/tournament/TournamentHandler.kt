@@ -2,6 +2,7 @@ package org.ccgemp.tournament
 
 import org.ccgemp.common.GameDeck
 import org.ccgemp.game.GameSettings
+import org.ccgemp.tournament.composite.standing.PlayerStanding
 
 interface TournamentHandler<TournamentData> {
     fun validateTournament(tournament: Tournament): Boolean
@@ -23,4 +24,5 @@ interface TournamentHandler<TournamentData> {
     fun getRegisterDeckTypes(tournament: TournamentInfo<TournamentData>): List<String>
 
     fun getPlayedDeckType(tournament: TournamentInfo<TournamentData>, round: Int): String
+    fun getStandings(tournament: TournamentInfo<TournamentData>): List<PlayerStanding>
 }
