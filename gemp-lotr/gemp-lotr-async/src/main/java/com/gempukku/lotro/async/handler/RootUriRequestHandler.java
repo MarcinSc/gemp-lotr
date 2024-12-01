@@ -43,7 +43,7 @@ public class RootUriRequestHandler implements UriRequestHandler {
         String originAllowedPattern = AppConfig.getProperty("origin.allowed.pattern");
         originPattern = Pattern.compile(originAllowedPattern);
         _hallRequestHandler = new HallRequestHandler(context, longPollingSystem);
-        /* partially migrated */
+        /* migrated */
         _deckRequestHandler = new DeckRequestHandler(context);
         /* migrated */
         _loginRequestHandler = new LoginRequestHandler(context);

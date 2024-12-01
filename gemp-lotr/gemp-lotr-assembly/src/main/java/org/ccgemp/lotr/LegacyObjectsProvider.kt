@@ -8,4 +8,5 @@ interface LegacyObjectsProvider {
     val formatLibrary: LotroFormatLibrary
     val cardLibrary: LotroCardBlueprintLibrary
     val productLibrary: ProductLibrary
+    val draftLibrary: SoloDraftLibrary
 }

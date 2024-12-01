@@ -54,34 +54,24 @@ public class DeckRequestHandler extends LotroServerRequestHandler implements Uri
     @Override
     public void handleRequest(String uri, HttpRequest request, Map<Type, Object> context, ResponseWriter responseWriter, String remoteIp) throws Exception {
         if (uri.equals("/list") && request.method() == HttpMethod.GET) {
-            /* migrated */
             listDecks(request, responseWriter);
         } else if (uri.equals("/libraryList") && request.method() == HttpMethod.GET) {
-            /* migrated */
             listLibraryDecks(request, responseWriter);
         } else if (uri.equals("") && request.method() == HttpMethod.GET) {
-            /* migrated */
             getDeck(request, responseWriter);
         } else if (uri.equals("") && request.method() == HttpMethod.POST) {
-            /* migrated */
             saveDeck(request, responseWriter);
         } else if (uri.equals("/library") && request.method() == HttpMethod.GET) {
-            /* migrated */
             getLibraryDeck(request, responseWriter);
         } else if (uri.equals("/share") && request.method() == HttpMethod.GET) {
-            /* migrated */
             shareDeck(request, responseWriter);
         } else if (uri.equals("/html") && request.method() == HttpMethod.GET) {
-            /* migrated */
             getDeckInHtml(request, responseWriter);
         } else if (uri.equals("/libraryHtml") && request.method() == HttpMethod.GET) {
-            /* migrated */
             getLibraryDeckInHtml(request, responseWriter);
         } else if (uri.equals("/rename") && request.method() == HttpMethod.POST) {
-            /* migrated */
             renameDeck(request, responseWriter);
         } else if (uri.equals("/delete") && request.method() == HttpMethod.POST) {
-            /* migrated */
             deleteDeck(request, responseWriter);
         } else if (uri.equals("/stats") && request.method() == HttpMethod.POST) {
             getDeckStats(request, responseWriter);

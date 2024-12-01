@@ -100,7 +100,12 @@ class ManualPairingProvider : LifecycleObserver, CompositeTournamentUnloadNotifi
             return tournamentPairings[tournamentId]?.get(round)
         }
 
-        override fun shouldDropLoser(round: Int, player: String, players: List<TournamentParticipant>, matches: List<TournamentMatch>): Boolean {
+        override fun shouldDropLoser(
+            round: Int,
+            player: String,
+            players: List<TournamentParticipant>,
+            matches: List<TournamentMatch>,
+        ): Boolean {
             return false
         }
     }

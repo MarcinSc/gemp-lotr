@@ -16,4 +16,7 @@ dependencies {
     api(project(":gempukku:gempukku-chat-server"))
     api(project(":gempukku:gempukku-netty-server"))
     implementation(kotlin("stdlib-jdk8"))
+
+    // https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
+    implementation("com.googlecode.json-simple:json-simple:1.1.1")
 }

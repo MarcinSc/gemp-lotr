@@ -5,7 +5,6 @@ import org.ccgemp.tournament.composite.standing.PlayerStanding
 import kotlin.math.ceil
 import kotlin.math.log2
 
-
 fun pairBracket(
     standings: List<PlayerStanding>,
     players: List<String>,

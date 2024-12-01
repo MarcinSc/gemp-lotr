@@ -1,11 +1,8 @@
 package org.ccgemp.tournament.composite.pairing
 
-import com.google.common.math.IntMath
 import org.ccgemp.tournament.TournamentMatch
 import org.ccgemp.tournament.TournamentParticipant
 import org.ccgemp.tournament.composite.standing.Standings
-import kotlin.math.ceil
-import kotlin.math.log2
 
 class SingleEliminationPairing(
     private val standings: Standings,
@@ -34,7 +31,12 @@ class SingleEliminationPairing(
         return RoundPairing(pairings, byes)
     }
 
-    override fun shouldDropLoser(round: Int, player: String, players: List<TournamentParticipant>, matches: List<TournamentMatch>): Boolean {
+    override fun shouldDropLoser(
+        round: Int,
+        player: String,
+        players: List<TournamentParticipant>,
+        matches: List<TournamentMatch>,
+    ): Boolean {
         return true
     }
 }

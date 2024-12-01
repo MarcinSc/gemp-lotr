@@ -8,7 +8,7 @@ import org.ccgemp.tournament.composite.standing.StandingsConfig
 import org.ccgemp.tournament.composite.standing.TournamentStandingsRegistry
 
 @Exposes(LifecycleObserver::class)
-class AutomaticPairingProvider: LifecycleObserver {
+class AutomaticPairingProvider : LifecycleObserver {
     @Inject
     private lateinit var registry: TournamentPairingRegistry
 

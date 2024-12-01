@@ -1,8 +1,11 @@
 package org.ccgemp.format
 
-fun <Format> createFormatSystems(gempFormats: GempFormats<Format>): List<Any> {
+import org.ccgemp.format.renderer.FormatModelRenderer
+
+fun <Format> createFormatSystems(gempFormats: GempFormats<Format>, formatModelRenderer: FormatModelRenderer<Format>): List<Any> {
     return listOf(
-        FormatApiSystem(),
+        FormatApiSystem<Format>(),
         gempFormats,
+        formatModelRenderer,
     )
 }

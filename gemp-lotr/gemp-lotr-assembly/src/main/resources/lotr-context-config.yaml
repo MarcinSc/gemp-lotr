@@ -29,6 +29,8 @@ server:
     urlPrefix: /gemp-lotr-server/deck
   game:
     urlPrefix: /gemp-lotr-server/game
+  format:
+    urlPrefix: /gemp-lotr-server/format
   delivery:
     url: /gemp-lotr-server/delivery
   delivery-notify:
