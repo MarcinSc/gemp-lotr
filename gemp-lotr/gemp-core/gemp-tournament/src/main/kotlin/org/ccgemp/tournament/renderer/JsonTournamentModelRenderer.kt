@@ -79,6 +79,47 @@ class JsonTournamentModelRenderer : TournamentModelRenderer {
     }
 
     override fun renderGetTournamentReport(tournament: TournamentClientInfo, standings: List<PlayerStanding>, responseWriter: ResponseWriter) {
-        renderGetTournamentInfo(tournament, standings, responseWriter)
+        val root = JsonObject()
+
+        root.set("id", tournament.id)
+        root.set("name", tournament.name)
+        root.set("startDate", minuteFormatter.format(tournament.startDate))
+        root.set("status", tournament.status)
+
+        val standingsArray = JsonArray()
+        standings.forEach { standing ->
+            val standingObj = JsonObject()
+            standingObj.set("name", standing.player)
+            standingObj.set("standing", standing.standing)
+            standingObj.set("points", standing.points)
+            standing.stats.forEach {
+                standingObj.set(it.key, it.value.toFloat())
+            }
+
+            val decks = JsonArray()
+            tournament.players.find { it.player == standing.player }?.decks?.values?.forEach { deck ->
+                val deckObj = JsonObject()
+                deckObj.set("name", deck.name)
+                val parts = JsonArray()
+                deck.deckParts.forEach { part ->
+                    val jsonPart = JsonObject()
+                    jsonPart.set("name", part.key)
+                    val cards = JsonObject()
+                    part.value.forEach { card ->
+                        cards.set(card.card, card.count)
+                    }
+                    jsonPart.set("cards", cards)
+                    parts.add(jsonPart)
+                }
+                deckObj.set("contents", parts)
+                decks.add(deckObj)
+            }
+            standingObj.set("decks", decks)
+
+            standingsArray.add(standingObj)
+        }
+        root.set("standings", standingsArray)
+
+        responseWriter.writeJsonResponse(root.toString())
     }
 }

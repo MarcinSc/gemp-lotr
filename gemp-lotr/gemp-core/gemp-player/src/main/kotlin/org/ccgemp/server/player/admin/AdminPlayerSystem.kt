@@ -2,6 +2,8 @@ package org.ccgemp.server.player.admin
 
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
+import org.ccgemp.common.TimeProvider
+import org.ccgemp.common.toEpochMilli
 import org.ccgemp.server.player.PlayerRepository
 
 val DAY_IN_MILIS: Long = 1000 * 60 * 60 * 24
@@ -10,6 +12,8 @@ val DAY_IN_MILIS: Long = 1000 * 60 * 60 * 24
 class AdminPlayerSystem : AdminPlayerInterface {
     @Inject
     private lateinit var playerRepository: PlayerRepository
+    @Inject
+    private lateinit var timeProvider: TimeProvider
 
     override fun banPlayer(login: String): Boolean {
         val player = playerRepository.findPlayerByLogin(login)
@@ -34,7 +38,7 @@ class AdminPlayerSystem : AdminPlayerInterface {
     override fun banPlayerTemporarily(login: String, days: Int): Boolean {
         val player = playerRepository.findPlayerByLogin(login)
         return if (player != null) {
-            playerRepository.banPlayerTemporarily(player, System.currentTimeMillis() + days * DAY_IN_MILIS)
+            playerRepository.banPlayerTemporarily(player, timeProvider.now().plusDays(days.toLong()).toEpochMilli())
             true
         } else {
             false

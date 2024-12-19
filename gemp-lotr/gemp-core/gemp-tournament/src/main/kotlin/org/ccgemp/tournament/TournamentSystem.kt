@@ -7,6 +7,7 @@ import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.context.update.UpdatedSystem
 import com.gempukku.ostream.ObjectStream
 import com.gempukku.server.HttpProcessingException
+import org.ccgemp.common.TimeProvider
 import org.ccgemp.common.GameDeck
 import org.ccgemp.deck.DeckInterface
 import org.ccgemp.deck.toDeckParts
@@ -31,6 +32,9 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
 
     @Inject
     private lateinit var gameContainerInterface: GameContainerInterface<Any, Any>
+
+    @Inject
+    private lateinit var timeProvider: TimeProvider
 
     @Inject(allowsNull = true)
     private var serverState: ServerStateInterface? = null
@@ -212,7 +216,7 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
             if (tournamentInfo.stage != FINISHED_STAGE) {
                 handler.progressTournament(tournamentInfo, DefaultTournamentProgress(tournamentInfo))
             }
-            if (tournamentInfo.stage == FINISHED_STAGE && tournamentInfo.startDate.isBefore(LocalDateTime.now().minusHours(tournamentLingerHours))) {
+            if (tournamentInfo.stage == FINISHED_STAGE && tournamentInfo.startDate.isBefore(timeProvider.now().minusHours(tournamentLingerHours))) {
                 handler.unloadTournament(tournamentInfo)
                 tournamentsToUnload.add(tournamentId)
                 removeTournamentState(tournamentInfo)
@@ -254,7 +258,7 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
     }
 
     private fun initialize() {
-        repository.getUnfinishedOrStartAfter(LocalDateTime.now().minusHours(tournamentLingerHours)).forEach { tournament ->
+        repository.getUnfinishedOrStartAfter(timeProvider.now().minusHours(tournamentLingerHours)).forEach { tournament ->
             val tournamentHandler = findHandler(tournament.type)
 
             addTournamentInternal(tournamentHandler, tournament)

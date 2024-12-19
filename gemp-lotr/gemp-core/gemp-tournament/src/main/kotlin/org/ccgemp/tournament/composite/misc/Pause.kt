@@ -1,17 +1,21 @@
 package org.ccgemp.tournament.composite.misc
 
+import org.ccgemp.common.TimeProvider
 import org.ccgemp.tournament.FINISHED_STAGE
 import org.ccgemp.tournament.TournamentMatch
 import org.ccgemp.tournament.TournamentParticipant
 import org.ccgemp.tournament.TournamentProgress
 import org.ccgemp.tournament.composite.TournamentProcess
+import java.time.Duration
+import java.time.LocalDateTime
 
 const val PAUSED = "PAUSED"
 
 class Pause(
-    private val time: Long,
+    private val timeProvider: TimeProvider,
+    private val time: Duration,
 ) : TournamentProcess {
-    private var pauseStart: Long = 0
+    private var pauseStart: LocalDateTime = timeProvider.now()
 
     override fun processTournament(
         round: Int,
@@ -24,12 +28,12 @@ class Pause(
     ) {
         when (stage) {
             "" -> {
-                pauseStart = System.currentTimeMillis()
+                pauseStart = timeProvider.now()
                 tournamentProgress.updateState(round, PAUSED)
             }
 
             PAUSED -> {
-                if (pauseStart + time <= System.currentTimeMillis()) {
+                if (pauseStart.plus(time).isBefore(timeProvider.now())) {
                     tournamentProgress.updateState(round, FINISHED_STAGE)
                 }
             }

@@ -3,6 +3,7 @@ package org.ccgemp.tournament.composite.misc
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
+import org.ccgemp.common.TimeProvider
 import org.ccgemp.format.GempFormats
 import org.ccgemp.json.JsonWithConfig
 import org.ccgemp.tournament.composite.TournamentProcess
@@ -12,6 +13,7 @@ import org.ccgemp.tournament.composite.kickoff.KickoffConfig
 import org.ccgemp.tournament.composite.kickoff.TournamentKickoffRegistry
 import org.ccgemp.tournament.composite.standing.StandingsConfig
 import org.ccgemp.tournament.composite.standing.TournamentStandingsRegistry
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -75,6 +77,9 @@ import java.time.format.DateTimeFormatter
 @Exposes(LifecycleObserver::class)
 class MiscTournamentProcesses : LifecycleObserver {
     @Inject
+    private lateinit var timeProvider: TimeProvider
+
+    @Inject
     private lateinit var processRegistry: TournamentProcessRegistry
 
     @Inject
@@ -99,7 +104,8 @@ class MiscTournamentProcesses : LifecycleObserver {
         val pause: (JsonWithConfig<TournamentProcessConfig>) -> TournamentProcess = {
             val def = it.json
             Pause(
-                def.getLong("time", 0),
+                timeProvider,
+                Duration.ofMillis(def.getLong("time", 0)),
             )
         }
         processRegistry.register("pause", pause)

@@ -8,6 +8,7 @@ dependencies {
     api(project(":gemp-core:gemp-collection"))
     api(project(":gemp-core:gemp-db"))
     api(project(":gemp-core:gemp-game"))
+    api(project(":gemp-core:gemp-league"))
     api(project(":gemp-core:gemp-player"))
     api(project(":gemp-core:gemp-tournament"))
     api(project(":gemp-core:gemp-transfer"))

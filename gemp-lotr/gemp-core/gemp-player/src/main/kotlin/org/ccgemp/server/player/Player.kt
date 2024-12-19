@@ -1,5 +1,9 @@
 package org.ccgemp.server.player
 
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset.UTC
+
 data class Player(
     val id: Int = 0,
     val name: String,
@@ -12,4 +16,9 @@ data class Player(
     val lastIp: String?,
 ) {
     fun hasRole(role: String): Boolean = type.contains(role, true)
+    fun bannedToLocalDateTime(): LocalDateTime? {
+        return bannedUntil?.let {
+            Instant.ofEpochMilli(it).atZone(UTC).toLocalDateTime()
+        }
+    }
 }
