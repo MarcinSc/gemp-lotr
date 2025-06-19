@@ -69,7 +69,6 @@ class MatchTournamentProcesses : LifecycleObserver {
                 def.getString("byeGroup", "1"),
                 kickoffRegistry.create(JsonWithConfig(def.get("kickoff").asObject(), KickoffConfig(it.config.tournamentId))),
                 pairingRegistry.create(JsonWithConfig(def.get("pairing").asObject(), PairingConfig(it.config.tournamentId))),
-                def.getBoolean("dropLosers", false),
             )
         }
         processRegistry.register(

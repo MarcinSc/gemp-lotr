@@ -3,26 +3,16 @@ package org.ccgemp.game
 import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
-import com.gempukku.server.ApiSystem
+import com.gempukku.server.AuthorizedApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.ServerRequestHandler
-import com.gempukku.server.login.LoggedUserInterface
-import com.gempukku.server.login.UserRolesProvider
-import com.gempukku.server.login.getActingAsUser
-import com.gempukku.server.login.hasRole
 import com.gempukku.server.polling.LongPolling
 import java.util.regex.Pattern
 
-class GameApiSystem<GameEvent, ObserveSettings> : ApiSystem() {
+class GameApiSystem<GameEvent, ObserveSettings> : AuthorizedApiSystem() {
     @InjectValue("server.game.urlPrefix")
     private lateinit var urlPrefix: String
-
-    @Inject
-    private lateinit var loggedUserInterface: LoggedUserInterface
-
-    @Inject
-    private lateinit var userRolesProvider: UserRolesProvider
 
     @Inject
     private lateinit var longPolling: LongPolling
@@ -35,12 +25,6 @@ class GameApiSystem<GameEvent, ObserveSettings> : ApiSystem() {
 
     @Inject(allowsNull = true)
     private var observeSettingsExtractor: GameObserveSettingsExtractor<ObserveSettings>? = null
-
-    @InjectValue("roles.admin")
-    private lateinit var adminRole: String
-
-    @InjectValue("parameterNames.actAsParameter")
-    private lateinit var actAsParameter: String
 
     @InjectValue("parameterNames.pollId")
     private lateinit var pollIdParameterName: String
@@ -79,13 +63,13 @@ class GameApiSystem<GameEvent, ObserveSettings> : ApiSystem() {
         ServerRequestHandler { request, responseWriter ->
             val gameId = request.uri.substring(urlPrefix.length + 1)
             val actAsUser =
-                getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+                getActingAsUser(request)
             val gatheringGameStream = GatheringGameStream<GameEvent>()
             val added =
                 gameContainerInterface.joinGame(
                     gameId,
                     actAsUser.userId,
-                    hasRole(loggedUserInterface, userRolesProvider, request, adminRole),
+                    isAdmin(request),
                     gatheringGameStream,
                 )
             if (added == null) {
@@ -108,7 +92,7 @@ class GameApiSystem<GameEvent, ObserveSettings> : ApiSystem() {
         ServerRequestHandler { request, responseWriter ->
             val gameId = request.uri.substring(urlPrefix.length + 1)
             val actAsUser =
-                getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+                getActingAsUser(request)
 
             val decisionId = request.getParameter("decisionId")
             val decisionValue = request.getParameter("decisionValue")
@@ -141,7 +125,7 @@ class GameApiSystem<GameEvent, ObserveSettings> : ApiSystem() {
 
             val cardId = request.getParameter("cardId") ?: throw HttpProcessingException(400)
 
-            val actAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+            val actAsUser = getActingAsUser(request)
 
             gameContainerInterface.produceCardInfo(gameId, actAsUser.userId, cardId, responseWriter)
         }
@@ -152,7 +136,7 @@ class GameApiSystem<GameEvent, ObserveSettings> : ApiSystem() {
             val matcher = pattern.matcher(request.uri)
             val gameId = matcher.group(1)
 
-            val actAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+            val actAsUser = getActingAsUser(request)
 
             gameContainerInterface.concede(gameId, actAsUser.userId)
 
@@ -165,7 +149,7 @@ class GameApiSystem<GameEvent, ObserveSettings> : ApiSystem() {
             val matcher = pattern.matcher(request.uri)
             val gameId = matcher.group(1)
 
-            val actAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+            val actAsUser = getActingAsUser(request)
 
             gameContainerInterface.cancel(gameId, actAsUser.userId)
 

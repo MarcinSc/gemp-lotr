@@ -82,8 +82,6 @@ public class DeckRequestHandler extends LotroServerRequestHandler implements Uri
         }
     }
 
-
-
     private void getAllFormats(HttpRequest request, ResponseWriter responseWriter) throws IOException {
         HttpPostRequestDecoder postDecoder = new HttpPostRequestDecoder(request);
         try {

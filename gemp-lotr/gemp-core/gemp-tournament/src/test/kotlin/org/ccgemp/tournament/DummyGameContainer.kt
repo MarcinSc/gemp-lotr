@@ -44,4 +44,10 @@ class DummyGameContainer<GameEvent, ObserveSettings> : GameContainerInterface<Ga
     ) {
         responseWriter.writeHtmlResponse("")
     }
+
+    override fun cancel(gameId: String, playerId: String) {
+    }
+
+    override fun concede(gameId: String, playerId: String) {
+    }
 }

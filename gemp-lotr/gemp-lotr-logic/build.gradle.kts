@@ -9,8 +9,6 @@ dependencies {
     implementation("commons-io:commons-io:2.17.0")
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     implementation("org.apache.commons:commons-lang3:3.17.0")
-    // https://mvnrepository.com/artifact/org.hjson/hjson
-    implementation("org.hjson:hjson:3.1.0")
     // https://mvnrepository.com/artifact/com.alibaba.fastjson2/fastjson2
     implementation("com.alibaba.fastjson2:fastjson2:2.0.53")
 }

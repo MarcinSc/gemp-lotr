@@ -3,4 +3,5 @@ plugins {
 }
 
 dependencies {
+    api(project(":gempukku:gempukku-server"))
 }

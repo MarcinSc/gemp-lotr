@@ -43,6 +43,7 @@ public class RootUriRequestHandler implements UriRequestHandler {
         String originAllowedPattern = AppConfig.getProperty("origin.allowed.pattern");
         originPattern = Pattern.compile(originAllowedPattern);
         _hallRequestHandler = new HallRequestHandler(context, longPollingSystem);
+        /* migrated */
         _deckRequestHandler = new DeckRequestHandler(context);
         /* migrated */
         _loginRequestHandler = new LoginRequestHandler(context);
@@ -54,6 +55,7 @@ public class RootUriRequestHandler implements UriRequestHandler {
         _collectionRequestHandler = new CollectionRequestHandler(context);
         /* migrated */
         _deliveryRequestHandler = new DeliveryRequestHandler(context);
+        /* migrated */
         _gameRequestHandler = new GameRequestHandler(context, longPollingSystem);
         _leagueRequestHandler = new LeagueRequestHandler(context);
         _merchantRequestHandler = new MerchantRequestHandler(context);

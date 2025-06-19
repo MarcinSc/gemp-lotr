@@ -43,7 +43,7 @@ class ManualPairingProvider : LifecycleObserver, CompositeTournamentUnloadNotifi
 
     override fun pairRound(tournamentId: String, round: Int, pairing: RoundPairing): Boolean {
         val pairings = tournamentPairings[tournamentId] ?: return false
-        val tournament = tournamentInterface.getTournament(tournamentId) ?: return false
+        val tournament = tournamentInterface.findTournament(tournamentId) ?: return false
         if (!isValidPairings(tournament, pairing)) {
             return false
         }
@@ -86,6 +86,10 @@ class ManualPairingProvider : LifecycleObserver, CompositeTournamentUnloadNotifi
     inner class ManualPairing(
         private val tournamentId: String,
     ) : Pairing {
+        override fun isReady(round: Int): Boolean {
+            return tournamentPairings[tournamentId]?.get(round) != null
+        }
+
         override fun createPairings(
             round: Int,
             players: List<TournamentParticipant>,
@@ -96,8 +100,13 @@ class ManualPairingProvider : LifecycleObserver, CompositeTournamentUnloadNotifi
             return tournamentPairings[tournamentId]?.get(round)
         }
 
-        override fun isReady(round: Int): Boolean {
-            return tournamentPairings[tournamentId]?.get(round) != null
+        override fun shouldDropLoser(
+            round: Int,
+            player: String,
+            players: List<TournamentParticipant>,
+            matches: List<TournamentMatch>,
+        ): Boolean {
+            return false
         }
     }
 }

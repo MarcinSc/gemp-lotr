@@ -1,6 +1,6 @@
 package org.ccgemp.tournament
 
-import org.ccgemp.deck.GameDeck
+import org.ccgemp.common.GameDeck
 
 class TournamentParticipant(
     val player: String,

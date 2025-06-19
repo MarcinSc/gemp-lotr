@@ -19,5 +19,9 @@ interface Game<ObserveSettings> : PlayedGame, FinishedGame {
 
     fun leaveGame(channelId: String)
 
+    fun cancelGame(playerId: String)
+
+    fun concedeGame(playerId: String)
+
     fun finalizeGame()
 }

@@ -25,8 +25,12 @@ server:
     url: /gemp-lotr-server/player-admin/setPlayerRoles
   chat:
     urlPrefix: /gemp-lotr-server/chat
+  deck:
+    urlPrefix: /gemp-lotr-server/deck
   game:
     urlPrefix: /gemp-lotr-server/game
+  format:
+    urlPrefix: /gemp-lotr-server/format
   delivery:
     url: /gemp-lotr-server/delivery
   delivery-notify:
@@ -66,6 +70,9 @@ roles:
 collection:
   filter:
     defaultSort: name
+
+librarian:
+  name: Librarian
 
 games:
   threadCount: 5

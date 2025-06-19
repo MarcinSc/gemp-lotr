@@ -3,42 +3,26 @@ package org.ccgemp.transfer
 import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
-import com.gempukku.server.ApiSystem
+import com.gempukku.server.AuthorizedApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpRequest
 import com.gempukku.server.ServerRequestHandler
 import com.gempukku.server.ServerResponseHeaderProcessor
-import com.gempukku.server.login.LoggedUserInterface
-import com.gempukku.server.login.UserRolesProvider
-import com.gempukku.server.login.getActingAsUser
-import org.ccgemp.common.CollectionContentsSerializer
-import javax.xml.parsers.DocumentBuilderFactory
+import org.ccgemp.transfer.renderer.TransferModelRenderer
 
-class TransferApiSystem : ApiSystem() {
+class TransferApiSystem : AuthorizedApiSystem() {
     @Inject
     private lateinit var transferInterface: TransferInterface
 
     @Inject
-    private lateinit var collectionContentsSerializer: CollectionContentsSerializer
-
-    @Inject
-    private lateinit var loggedUserInterface: LoggedUserInterface
-
-    @Inject
-    private lateinit var userRolesProvider: UserRolesProvider
+    private lateinit var transferModelRenderer: TransferModelRenderer
 
     @InjectValue("server.delivery.url")
     private lateinit var deliveryUrl: String
 
     @InjectValue("server.delivery-notify.url")
     private lateinit var deliveryNotifyUrl: String
-
-    @InjectValue("roles.admin")
-    private lateinit var adminRole: String
-
-    @InjectValue("parameterNames.actAsParameter")
-    private lateinit var actAsParameter: String
 
     override fun registerAPIs(): List<Registration> {
         return listOf(
@@ -58,7 +42,7 @@ class TransferApiSystem : ApiSystem() {
     private fun checkForDelivery() =
         object : ServerResponseHeaderProcessor {
             override fun getExtraHeaders(request: HttpRequest): Map<String, String> {
-                val actAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+                val actAsUser = getActingAsUser(request)
 
                 return if (transferInterface.hasUnnotifiedTransfers(actAsUser.userId)) {
                     mapOf("Delivery-Service-Package" to "true")
@@ -70,28 +54,13 @@ class TransferApiSystem : ApiSystem() {
 
     private fun executeGetDelivery() =
         ServerRequestHandler { request, responseWriter ->
-            val actAsUser = getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+            val actAsUser = getActingAsUser(request)
 
             val transfers = transferInterface.consumeUnnotifiedTransfers(actAsUser.userId)
             if (transfers.isEmpty()) {
                 throw HttpProcessingException(404)
             }
 
-            val documentBuilderFactory = DocumentBuilderFactory.newInstance()
-            val documentBuilder = documentBuilderFactory.newDocumentBuilder()
-
-            val doc = documentBuilder.newDocument()
-
-            val deliveryElem = doc.createElement("delivery")
-
-            transfers.forEach {
-                val collection = collectionContentsSerializer.serializeCollectionToXml(doc, it.value)
-                collection.setAttribute("type", it.key)
-                deliveryElem.appendChild(collection)
-            }
-
-            doc.appendChild(deliveryElem)
-
-            responseWriter.writeXmlResponse(doc)
+            transferModelRenderer.renderGetDelivery(actAsUser.userId, transfers, responseWriter)
         }
 }

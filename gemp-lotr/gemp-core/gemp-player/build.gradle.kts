@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    api(project(":gemp-core:gemp-common"))
     api(project(":gemp-core:gemp-db"))
     api(project(":gempukku:gempukku-server"))
 

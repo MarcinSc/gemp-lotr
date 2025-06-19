@@ -13,4 +13,11 @@ interface Pairing {
         pairingGroups: Map<Int, String>,
         byeGroups: Map<Int, String>,
     ): RoundPairing?
+
+    fun shouldDropLoser(
+        round: Int,
+        player: String,
+        players: List<TournamentParticipant>,
+        matches: List<TournamentMatch>,
+    ): Boolean
 }

@@ -1,7 +1,5 @@
 package org.ccgemp.collection
 
-import org.ccgemp.common.GempCollection
-
 interface CollectionInterface {
     fun getPlayerCollectionTypes(player: String): List<CollectionType>
 
@@ -10,8 +8,6 @@ interface CollectionInterface {
     fun addPlayerCollection(player: String, type: String, collectionChange: CollectionChange): Boolean
 
     fun addToPlayerCollection(player: String, type: String, collectionChange: CollectionChange): Boolean
-
-    fun getPlayerCollection(player: String, type: String): GempCollection?
 
     fun getPlayerCollections(type: String): Map<String, GempCollection>
 

@@ -5,12 +5,16 @@ import com.gempukku.context.initializer.inject.InjectValue
 import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.server.generateUniqueId
 import com.gempukku.server.login.UserRolesProvider
+import org.ccgemp.common.TimeProvider
 import java.security.MessageDigest
 
 @Exposes(PlayerInterface::class, UserRolesProvider::class)
 class PlayerSystem : PlayerInterface, UserRolesProvider {
     @Inject
     private lateinit var playerRepository: PlayerRepository
+
+    @Inject
+    private lateinit var timeProvider: TimeProvider
 
     @Inject(allowsNull = true)
     private var playerManagementCommunication: PlayerManagementCommunication? = null
@@ -50,7 +54,7 @@ class PlayerSystem : PlayerInterface, UserRolesProvider {
     override fun login(login: String, password: String, remoteIp: String): Boolean {
         val player = playerRepository.loginPlayer(login, password)
         return if (player != null) {
-            if ((player.bannedUntil == null) || (player.bannedUntil < System.currentTimeMillis())) {
+            if ((player.bannedUntil == null) || (player.bannedToLocalDateTime()!!.isBefore(timeProvider.now()))) {
                 playerRepository.updateLastIp(player, remoteIp)
                 true
             } else {
@@ -101,10 +105,7 @@ class PlayerSystem : PlayerInterface, UserRolesProvider {
     override fun findPlayerByLogin(login: String): Player? = playerRepository.findPlayerByLogin(login)
 
     override fun getUserRoles(userId: String): Set<String> =
-        findPlayerByLogin(userId)
-            ?.let {
-                it.type.convertToRoleSet()
-            }.orEmpty()
+        findPlayerByLogin(userId)?.type?.convertToRoleSet().orEmpty()
 
     private fun encodePassword(password: String): String {
         val digest = MessageDigest.getInstance("SHA-256")

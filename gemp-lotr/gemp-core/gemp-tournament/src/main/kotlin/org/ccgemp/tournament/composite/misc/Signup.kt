@@ -1,7 +1,7 @@
 package org.ccgemp.tournament.composite.misc
 
-import org.ccgemp.deck.DeckValidator
-import org.ccgemp.deck.GameDeck
+import org.ccgemp.common.DeckValidator
+import org.ccgemp.common.GameDeck
 import org.ccgemp.tournament.FINISHED_STAGE
 import org.ccgemp.tournament.TournamentMatch
 import org.ccgemp.tournament.TournamentParticipant
@@ -30,7 +30,7 @@ class Signup(
         decks: List<GameDeck>,
     ): Boolean {
         return validators.withIndex().all {
-            it.value.isValid(player, decks[it.index])
+            it.value.isValid(decks[it.index])
         }
     }
 

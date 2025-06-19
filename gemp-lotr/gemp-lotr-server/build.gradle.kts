@@ -1,8 +1,6 @@
 dependencies {
     api(project(":gemp-lotr-logic"))
 
-    // https://mvnrepository.com/artifact/org.hjson/hjson
-    implementation("org.hjson:hjson:3.1.0")
     // https://mvnrepository.com/artifact/com.google.guava/guava
     implementation("com.google.guava:guava:33.3.1-jre")
     // https://mvnrepository.com/artifact/org.jsoup/jsoup

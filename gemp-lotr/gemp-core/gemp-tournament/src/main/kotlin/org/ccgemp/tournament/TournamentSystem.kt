@@ -7,8 +7,9 @@ import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.context.update.UpdatedSystem
 import com.gempukku.ostream.ObjectStream
 import com.gempukku.server.HttpProcessingException
+import org.ccgemp.common.TimeProvider
+import org.ccgemp.common.GameDeck
 import org.ccgemp.deck.DeckInterface
-import org.ccgemp.deck.GameDeck
 import org.ccgemp.deck.toDeckParts
 import org.ccgemp.deck.toDeckString
 import org.ccgemp.game.GameContainerInterface
@@ -16,6 +17,7 @@ import org.ccgemp.game.GameParticipant
 import org.ccgemp.game.GameResultListener
 import org.ccgemp.game.GameSettings
 import org.ccgemp.state.ServerStateInterface
+import org.ccgemp.tournament.composite.standing.PlayerStanding
 import java.time.LocalDateTime
 
 const val FINISHED_STAGE = "FINISHED"
@@ -30,6 +32,9 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
 
     @Inject
     private lateinit var gameContainerInterface: GameContainerInterface<Any, Any>
+
+    @Inject
+    private lateinit var timeProvider: TimeProvider
 
     @Inject(allowsNull = true)
     private var serverState: ServerStateInterface? = null
@@ -95,8 +100,13 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
         return loadedTournaments.values.filter { it.status == FINISHED_STAGE }.toList()
     }
 
-    override fun getTournament(tournamentId: String): TournamentClientInfo? {
+    override fun findTournament(tournamentId: String): TournamentClientInfo? {
         return loadedTournaments[tournamentId]
+    }
+
+    override fun getStandings(tournamentId: String): List<PlayerStanding> {
+        val tournament = loadedTournaments[tournamentId] ?: throw HttpProcessingException(404)
+        return tournament.handler.getStandings(tournament)
     }
 
     override fun joinTournament(tournamentId: String, player: String, deckNames: List<String>) {
@@ -206,7 +216,7 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
             if (tournamentInfo.stage != FINISHED_STAGE) {
                 handler.progressTournament(tournamentInfo, DefaultTournamentProgress(tournamentInfo))
             }
-            if (tournamentInfo.stage == FINISHED_STAGE && tournamentInfo.startDate.isBefore(LocalDateTime.now().minusHours(tournamentLingerHours))) {
+            if (tournamentInfo.stage == FINISHED_STAGE && tournamentInfo.startDate.isBefore(timeProvider.now().minusHours(tournamentLingerHours))) {
                 handler.unloadTournament(tournamentInfo)
                 tournamentsToUnload.add(tournamentId)
                 removeTournamentState(tournamentInfo)
@@ -248,7 +258,7 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
     }
 
     private fun initialize() {
-        repository.getUnfinishedOrStartAfter(LocalDateTime.now().minusHours(tournamentLingerHours)).forEach { tournament ->
+        repository.getUnfinishedOrStartAfter(timeProvider.now().minusHours(tournamentLingerHours)).forEach { tournament ->
             val tournamentHandler = findHandler(tournament.type)
 
             addTournamentInternal(tournamentHandler, tournament)

@@ -190,7 +190,7 @@ public class DefaultLotroGame implements LotroGame {
         }
     }
 
-    public void cancelGameRequested() {
+    private void cancelGameRequested() {
         if (!_finished) {
             _cancelled = true;
             statusConsumer.accept("Cancelled");

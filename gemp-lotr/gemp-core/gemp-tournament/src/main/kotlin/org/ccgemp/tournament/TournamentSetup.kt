@@ -7,13 +7,17 @@ import org.ccgemp.tournament.composite.kickoff.TimedKickoffProvider
 import org.ccgemp.tournament.composite.kickoff.TournamentKickoffSystem
 import org.ccgemp.tournament.composite.matches.MatchTournamentProcesses
 import org.ccgemp.tournament.composite.misc.MiscTournamentProcesses
+import org.ccgemp.tournament.composite.pairing.AutomaticPairingProvider
 import org.ccgemp.tournament.composite.pairing.ManualPairingProvider
-import org.ccgemp.tournament.composite.pairing.SwissPairingProvider
 import org.ccgemp.tournament.composite.pairing.TournamentPairingSystem
 import org.ccgemp.tournament.composite.standing.ModifiedMedianStandingsProvider
+import org.ccgemp.tournament.composite.standing.RoundLimitStandingsProvider
+import org.ccgemp.tournament.composite.standing.SurvivorStandingsProvider
 import org.ccgemp.tournament.composite.standing.TournamentStandingsSystem
+import org.ccgemp.tournament.renderer.JsonTournamentModelRenderer
+import org.ccgemp.tournament.renderer.TournamentModelRenderer
 
-fun createTournamentSystems(): List<Any> {
+fun createTournamentSystems(tournamentModelRenderer: TournamentModelRenderer = JsonTournamentModelRenderer()): List<Any> {
     return listOf(
         TournamentSystem(),
         DbTournamentRepository(),
@@ -27,14 +31,17 @@ fun createTournamentSystems(): List<Any> {
         ManualKickoffProvider(),
         // Pairing
         TournamentPairingSystem(),
-        SwissPairingProvider(),
+        AutomaticPairingProvider(),
         ManualPairingProvider(),
         // Standings
         TournamentStandingsSystem(),
         ModifiedMedianStandingsProvider(),
+        SurvivorStandingsProvider(),
+        RoundLimitStandingsProvider(),
         // API
-        TournamentApiSystem(),
+        PublicTournamentApiSystem(),
         PrivateTournamentApiSystem(),
         AdminTournamentApiSystem(),
+        tournamentModelRenderer,
     )
 }

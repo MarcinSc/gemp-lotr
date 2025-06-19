@@ -3,35 +3,20 @@ package org.ccgemp.tournament
 import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
-import com.gempukku.server.ApiSystem
+import com.gempukku.server.AuthorizedApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpRequest
 import com.gempukku.server.ResponseWriter
-import com.gempukku.server.login.LoggedUserInterface
-import com.gempukku.server.login.UserRolesProvider
-import com.gempukku.server.login.getActingAsUser
 import org.ccgemp.common.splitText
 import java.util.regex.Pattern
 
-class PrivateTournamentApiSystem : ApiSystem() {
+class PrivateTournamentApiSystem : AuthorizedApiSystem() {
     @Inject
     private lateinit var tournamentInterface: TournamentInterface
 
-    @Inject
-    private lateinit var loggedUserInterface: LoggedUserInterface
-
-    @Inject
-    private lateinit var userRolesProvider: UserRolesProvider
-
     @InjectValue("server.tournament.urlPrefix")
     private lateinit var urlPrefix: String
-
-    @InjectValue("roles.admin")
-    private lateinit var adminRole: String
-
-    @InjectValue("parameterNames.actAsParameter")
-    private lateinit var actAsParameter: String
 
     override fun registerAPIs(): List<Registration> {
         return listOf(
@@ -61,7 +46,7 @@ class PrivateTournamentApiSystem : ApiSystem() {
             val deckName = request.getParameter("deckName")
 
             val actAsUser =
-                getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+                getActingAsUser(request)
 
             tournamentInterface.joinTournament(tournamentId, actAsUser.userId, deckName?.splitText('\n').orEmpty())
 
@@ -75,7 +60,7 @@ class PrivateTournamentApiSystem : ApiSystem() {
             val tournamentId = matcher.group(1)
 
             val actAsUser =
-                getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+                getActingAsUser(request)
 
             tournamentInterface.leaveTournament(tournamentId, actAsUser.userId)
 
@@ -90,7 +75,7 @@ class PrivateTournamentApiSystem : ApiSystem() {
             val deckName = request.getParameter("deckName") ?: throw HttpProcessingException(400)
 
             val actAsUser =
-                getActingAsUser(loggedUserInterface, userRolesProvider, request, adminRole, actAsParameter)
+                getActingAsUser(request)
 
             tournamentInterface.registerDecks(tournamentId, actAsUser.userId, deckName.splitText('\n'))
 

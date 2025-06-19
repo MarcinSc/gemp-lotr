@@ -5,6 +5,7 @@ plugins {
 dependencies {
     api(project(":gemp-core:gemp-collection"))
     api(project(":gemp-core:gemp-db"))
+    api(project(":gemp-core:gemp-format"))
     api(project(":gemp-core:gemp-game"))
     api(project(":gemp-core:gemp-json"))
     api(project(":gemp-core:gemp-server-state"))

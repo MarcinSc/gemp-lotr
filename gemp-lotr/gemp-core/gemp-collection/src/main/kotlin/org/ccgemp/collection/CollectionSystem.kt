@@ -3,9 +3,6 @@ package org.ccgemp.collection
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectList
 import com.gempukku.context.resolver.expose.Exposes
-import org.ccgemp.common.DefaultGempCollection
-import org.ccgemp.common.GempCollection
-import org.ccgemp.transfer.TransferInterface
 
 @Exposes(CollectionInterface::class)
 class CollectionSystem : CollectionInterface {
@@ -18,8 +15,8 @@ class CollectionSystem : CollectionInterface {
     @InjectList
     private lateinit var collectionTypeProviders: List<CollectionTypeProvider>
 
-    @Inject(allowsNull = true)
-    private var transferInterface: TransferInterface? = null
+    @InjectList
+    private lateinit var transferObservers: List<TransferObserver>
 
     private val collectionCache: MutableMap<CollectionCacheKey, GempCollection> = mutableMapOf()
 
@@ -64,19 +61,6 @@ class CollectionSystem : CollectionInterface {
         return true
     }
 
-    override fun getPlayerCollection(player: String, type: String): GempCollection? {
-        val collectionCacheKey = CollectionCacheKey(player, type)
-        return collectionCache.getOrPut(collectionCacheKey) {
-            val collectionInfo = repository.findPlayerCollection(player, type) ?: return null
-            val entries = repository.getPlayerCollectionEntries(setOf(collectionInfo)).groupBy { it.collection_id }[collectionInfo.id]
-            val result = DefaultGempCollection()
-            entries?.forEach {
-                result.addItem(it.product!!, it.quantity)
-            }
-            result
-        }
-    }
-
     override fun getPlayerCollections(type: String): Map<String, GempCollection> {
         val collectionInfos = repository.findCollectionsByType(type)
         val entries = repository.getPlayerCollectionEntries(collectionInfos.toSet()).groupBy { it.collection_id }
@@ -109,7 +93,7 @@ class CollectionSystem : CollectionInterface {
         val removeCollection = DefaultGempCollection()
         removeCollection.addItem(packId, 1)
 
-        val productBox = productLibrary.getProductBox(packId) ?: return null
+        val productBox = productLibrary.findProductBox(packId) ?: return null
         val openedPack = productBox.openPack()
         if (productLibrary.isSelection(packId)) {
             if (selection == null || openedPack.getItemCount(selection) < 1) {
@@ -137,12 +121,20 @@ class CollectionSystem : CollectionInterface {
 
     private fun internalRemoveFromCollection(collectionInfo: CollectionInfo, collectionChange: CollectionChange) {
         repository.removeFromCollection(collectionInfo, collectionChange)
-        transferInterface?.addTransferFrom(collectionInfo.player!!, collectionChange.reason, collectionInfo.type!!, collectionChange.collection)
+        transferObservers.forEach { it.transferredFrom(collectionInfo.player!!, collectionChange.reason, collectionInfo.type!!, collectionChange.collection) }
     }
 
     private fun internalAddToCollection(collectionInfo: CollectionInfo, collectionChange: CollectionChange) {
         repository.addToCollection(collectionInfo, collectionChange)
-        transferInterface?.addTransferTo(collectionInfo.player!!, collectionChange.reason, collectionChange.notify, collectionInfo.type!!, collectionChange.collection)
+        transferObservers.forEach {
+            it.transferredTo(
+                collectionInfo.player!!,
+                collectionChange.reason,
+                collectionChange.notify,
+                collectionInfo.type!!,
+                collectionChange.collection,
+            )
+        }
     }
 }
 

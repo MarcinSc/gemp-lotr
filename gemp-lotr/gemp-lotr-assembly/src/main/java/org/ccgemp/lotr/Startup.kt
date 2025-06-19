@@ -13,11 +13,31 @@ import com.gempukku.server.chat.createChatSystems
 import com.gempukku.server.login.CookieLoggedUserSystem
 import com.gempukku.server.netty.NettyServerSystem
 import com.gempukku.server.polling.LongPollingSystem
+import org.ccgemp.collection.ExtendedDbCollectionRepository
 import org.ccgemp.collection.createCollectionSystems
 import org.ccgemp.db.DbAccessSystem
 import org.ccgemp.deck.createDeckSystems
+import org.ccgemp.format.createFormatSystems
 import org.ccgemp.game.createGameSystems
 import org.ccgemp.json.createJsonSystems
+import org.ccgemp.lotr.chat.LegacyChatEventSinkProducer
+import org.ccgemp.lotr.chat.LegacyChatNameDisplayFormatter
+import org.ccgemp.lotr.collection.LegacyXmlCollectionModelRenderer
+import org.ccgemp.lotr.collection.LotrProductLibrary
+import org.ccgemp.lotr.deck.LegacyDeckModelRenderer
+import org.ccgemp.lotr.deck.LegacyDeckShareApiSystem
+import org.ccgemp.lotr.deck.LegacyHtmlDeckApiSystem
+import org.ccgemp.lotr.deck.LegacyLibrarianDeckApiSystem
+import org.ccgemp.lotr.deck.LotrDbDeckSerialization
+import org.ccgemp.lotr.deck.LotrDeckDeserializer
+import org.ccgemp.lotr.deck.LotrHtmlDeckSerializer
+import org.ccgemp.lotr.format.LotrFormatModelRenderer
+import org.ccgemp.lotr.format.LotrFormats
+import org.ccgemp.lotr.game.LegacyGameProducer
+import org.ccgemp.lotr.game.LotrGameEventSinkProducer
+import org.ccgemp.lotr.game.LotrGameObserveSettingsExtractor
+import org.ccgemp.lotr.tournament.LegacyTournamentModelRenderer
+import org.ccgemp.lotr.transfer.LegacyXmlTransferModelRenderer
 import org.ccgemp.server.player.createPlayerSystems
 import org.ccgemp.tournament.createTournamentSystems
 import org.ccgemp.transfer.createTransferSystems
@@ -103,18 +123,11 @@ private fun createLotrContext(
             DefaultLegacyObjectProvider(),
             // Legacy chat name display
             LegacyChatNameDisplayFormatter(),
-            // Legacy game running
-            LegacyGameProducer(),
-            LotrGameObserveSettingsExtractor(),
-            LotrGameEventSinkProducer(),
-            // Deck related
-            LotrDeckSerialization(),
-            LotrDeckValidation(),
-            // Tournament related
-            LotrTournamentRenderer(),
-            // Collection related
-            LotrProductLibrary(),
-            LotrCollectionContentsSerializer(),
+            // Legacy deck APIs
+            LegacyDeckShareApiSystem(),
+            LegacyHtmlDeckApiSystem(),
+            LegacyLibrarianDeckApiSystem(),
+            LotrHtmlDeckSerializer(),
         )
 
     val lotrContext =
@@ -122,15 +135,16 @@ private fun createLotrContext(
             parentContext,
             AnnotationSystemResolver(
                 lotrBaseSystems +
-                        createPlayerSystems() +
-                        createJsonSystems() +
-                        createChatSystems() +
-                        createTransferSystems() +
-                        createCollectionSystems() +
-                        createDeckSystems() +
-                        createTournamentSystems() +
-                        createGameSystems() +
-                        lotrSpecificSystems,
+                    createFormatSystems(LotrFormats(), LotrFormatModelRenderer()) +
+                    createPlayerSystems() +
+                    createJsonSystems() +
+                    createChatSystems(LegacyChatEventSinkProducer()) +
+                    createTransferSystems(LegacyXmlTransferModelRenderer()) +
+                    createCollectionSystems(ExtendedDbCollectionRepository(), LegacyXmlCollectionModelRenderer(), LotrProductLibrary()) +
+                    createDeckSystems(LegacyDeckModelRenderer(), LotrDeckDeserializer(), LotrDbDeckSerialization()) +
+                    createTournamentSystems(LegacyTournamentModelRenderer()) +
+                    createGameSystems(LotrGameEventSinkProducer(), LotrGameObserveSettingsExtractor(), LegacyGameProducer()) +
+                    lotrSpecificSystems,
             ),
             AnnotationSystemInitializer(lotrPropertyResolver),
             lotrWorkerThreadExecutorSystem,

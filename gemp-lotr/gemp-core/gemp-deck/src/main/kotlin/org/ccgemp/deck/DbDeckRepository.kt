@@ -53,7 +53,7 @@ class DbDeckRepository : DeckRepository {
             },
         )
 
-    override fun createDeck(
+    override fun upsertDeck(
         player: String,
         name: String,
         notes: String,
@@ -66,9 +66,45 @@ class DbDeckRepository : DeckRepository {
                     """
                     INSERT deck (player, name, notes, target_format, contents)
                     VALUES (:player, :name, :notes, :targetFormat, :contents)
+                    ON DUPLICATE KEY UPDATE notes = :notes, target_format = :targetFormat, contents = :contents;
                     """.trimIndent()
                 connection.createQuery(sql).addParameter("player", player).addParameter("name", name).addParameter("notes", notes).addParameter("targetFormat", targetFormat)
                     .addParameter("contents", contents).executeUpdate()
+            },
+        )
+    }
+
+    override fun renameDeck(player: String, oldDeckName: String, newDeckName: String): Boolean {
+        return dbAccess.openDB().runInTransaction(
+            StatementRunnableWithResult { connection, _ ->
+                val sql =
+                    """
+                    UPDATE deck set name = :newDeckName
+                    WHERE player = :player and name = :oldDeckName
+                    """.trimIndent()
+                connection
+                    .createQuery(sql)
+                    .addParameter("player", player)
+                    .addParameter("oldDeckName", oldDeckName)
+                    .addParameter("newDeckName", newDeckName)
+                    .executeUpdate().result > 0
+            },
+        )
+    }
+
+    override fun deleteDeck(player: String, deckName: String) {
+        dbAccess.openDB().runInTransaction(
+            StatementRunnableWithResult { connection, _ ->
+                val sql =
+                    """
+                    DELETE FROM deck
+                    WHERE player = :player and name = :deckName
+                    """.trimIndent()
+                connection
+                    .createQuery(sql)
+                    .addParameter("player", player)
+                    .addParameter("deckName", deckName)
+                    .executeUpdate()
             },
         )
     }

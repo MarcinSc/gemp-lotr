@@ -2,11 +2,16 @@ package org.ccgemp.transfer
 
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.resolver.expose.Exposes
+import org.ccgemp.common.TimeProvider
+import org.ccgemp.common.toEpochMilli
 import org.ccgemp.db.DbAccessInterface
 import org.sql2o.StatementRunnableWithResult
 
 @Exposes(TransferRepository::class)
 class DbTransferRepository : TransferRepository {
+    @Inject
+    private lateinit var timeProvider: TimeProvider
+
     @Inject
     private lateinit var dbAccess: DbAccessInterface
 
@@ -31,7 +36,7 @@ class DbTransferRepository : TransferRepository {
                 .addParameter("reason", reason)
                 .addParameter("name", collectionType)
                 .addParameter("collection", collectionType)
-                .addParameter("transferDate", System.currentTimeMillis())
+                .addParameter("transferDate", timeProvider.now().toEpochMilli())
                 .addParameter("direction", direction)
                 .executeUpdate()
         }

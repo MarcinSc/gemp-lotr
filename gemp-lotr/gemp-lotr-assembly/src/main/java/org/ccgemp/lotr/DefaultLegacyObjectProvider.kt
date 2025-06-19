@@ -31,4 +31,9 @@ class DefaultLegacyObjectProvider : LegacyObjectsProvider {
             cardLibrary,
             File("gemp-lotr-cards/src/main/resources/product"),
         )
+
+    override val draftLibrary: SoloDraftLibrary =
+        DefaultSoloDraftLibrary(
+            File("gemp-lotr-cards/src/main/resources/draft"),
+        )
 }
