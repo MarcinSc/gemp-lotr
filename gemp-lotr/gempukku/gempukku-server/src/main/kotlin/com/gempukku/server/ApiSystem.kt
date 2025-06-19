@@ -6,7 +6,7 @@ import com.gempukku.context.lifecycle.LifecycleObserver
 import com.gempukku.context.resolver.expose.Exposes
 
 @Exposes(LifecycleObserver::class)
-abstract class ApiSystem: LifecycleObserver {
+abstract class ApiSystem : LifecycleObserver {
     private val deregistration: MutableList<Registration> = mutableListOf()
 
     @Inject

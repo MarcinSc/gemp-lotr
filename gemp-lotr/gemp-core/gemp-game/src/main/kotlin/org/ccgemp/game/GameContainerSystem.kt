@@ -137,7 +137,7 @@ class GameContainerSystem : GameContainerInterface<Any, Any>, LifecycleObserver,
             gameContainer.executorService.execute {
                 joinGameInGameThread(game, playerId, channelId, gameStream)
             }
-            return object:Registration {
+            return object : Registration {
                 override fun deregister() {
                     gameContainer.executorService.execute {
                         leaveGameInGameThread(game, channelId)
@@ -165,7 +165,12 @@ class GameContainerSystem : GameContainerInterface<Any, Any>, LifecycleObserver,
         } ?: false
     }
 
-    override fun produceCardInfo(gameId: String, playerId: String, cardId: String, responseWriter: ResponseWriter) {
+    override fun produceCardInfo(
+        gameId: String,
+        playerId: String,
+        cardId: String,
+        responseWriter: ResponseWriter,
+    ) {
         val gameEntry = games[gameId] ?: throw HttpProcessingException(404)
 
         val container = findGameContainer(gameId)
@@ -195,11 +200,7 @@ class GameContainerSystem : GameContainerInterface<Any, Any>, LifecycleObserver,
         game.processDecision(playerId, decisionId, decisionValue)
     }
 
-    private fun setPlayerObserveSettingsInThread(
-        game: Game<Any>,
-        playerId: String,
-        settings: Any,
-    ) {
+    private fun setPlayerObserveSettingsInThread(game: Game<Any>, playerId: String, settings: Any) {
         game.setPlayerObserveSettings(playerId, settings)
     }
 
@@ -216,7 +217,12 @@ class GameContainerSystem : GameContainerInterface<Any, Any>, LifecycleObserver,
         game.leaveGame(channelId)
     }
 
-    private fun produceCardInfoInGameThread(game: Game<Any>, playerId: String, cardId: String, responseWriter: ResponseWriter) {
+    private fun produceCardInfoInGameThread(
+        game: Game<Any>,
+        playerId: String,
+        cardId: String,
+        responseWriter: ResponseWriter,
+    ) {
         responseWriter.writeHtmlResponse(game.produceCardInfo(playerId, cardId, responseWriter))
     }
 }

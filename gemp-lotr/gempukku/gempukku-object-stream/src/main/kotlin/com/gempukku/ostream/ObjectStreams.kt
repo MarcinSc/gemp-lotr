@@ -4,7 +4,9 @@ fun <ConsumerType, FromType, ToType> ObjectConsumerCustomizer<ConsumerType, From
     return PersistentStateCustomizer(this)
 }
 
-fun <ConsumerType, FromType, ToType> ObjectStreamCustomizer<ConsumerType, FromType, ToType>.visibilityCheck(visibilityCheck: VisibilityCheck<ConsumerType, ToType>): ObjectStreamCustomizer<ConsumerType, FromType, ToType> {
+fun <ConsumerType, FromType, ToType> ObjectStreamCustomizer<ConsumerType, FromType, ToType>.visibilityCheck(
+    visibilityCheck: VisibilityCheck<ConsumerType, ToType>,
+): ObjectStreamCustomizer<ConsumerType, FromType, ToType> {
     return VisibilityCustomizer(this, visibilityCheck)
 }
 

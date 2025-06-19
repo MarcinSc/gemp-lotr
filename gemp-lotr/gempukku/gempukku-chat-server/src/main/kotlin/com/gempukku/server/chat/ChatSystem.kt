@@ -30,7 +30,7 @@ class ChatSystem : ChatInterface {
 
         chatRooms[roomName] = chatRoom
 
-        return object:Registration {
+        return object : Registration {
             override fun deregister() {
                 chatRoom.close()
                 chatRooms.remove(roomName)

@@ -3,12 +3,9 @@ package org.ccgemp.tournament
 import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
-import com.gempukku.context.lifecycle.LifecycleObserver
-import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.server.ApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
-import com.gempukku.server.HttpServer
 import com.gempukku.server.ServerRequestHandler
 import com.gempukku.server.login.LoggedUserInterface
 import com.gempukku.server.login.UserRolesProvider
@@ -73,7 +70,7 @@ class AdminTournamentApiSystem : ApiSystem() {
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$dropSwitchUrlPrefix/([^/]*)$",
-                validateHasRole(executeDropSwitch(), loggedUserInterface,userRolesProvider,  adminRole),
+                validateHasRole(executeDropSwitch(), loggedUserInterface, userRolesProvider, adminRole),
             ),
             server.registerRequestHandler(
                 HttpMethod.POST,
@@ -152,10 +149,11 @@ class AdminTournamentApiSystem : ApiSystem() {
             val startDateStr = request.getParameter("startDate") ?: throw HttpProcessingException(400)
             val parameters = request.getParameter("parameters") ?: throw HttpProcessingException(400)
 
-            val startDate = LocalDateTime.parse(
-                startDateStr,
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"),
-            )
+            val startDate =
+                LocalDateTime.parse(
+                    startDateStr,
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"),
+                )
 
             val result = tournamentInterface.addTournament(tournamentId, type, name, startDate, parameters)
             responseWriter.writeJsonResponse("{\"success\":$result}")

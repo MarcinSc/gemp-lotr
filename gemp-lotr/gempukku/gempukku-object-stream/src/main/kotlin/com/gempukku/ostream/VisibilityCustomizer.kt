@@ -2,8 +2,8 @@ package com.gempukku.ostream
 
 class VisibilityCustomizer<ConsumerType, FromType, ToType>(
     private val delegate: ObjectStreamCustomizer<ConsumerType, FromType, ToType>,
-    private val visibilityCheck: VisibilityCheck<ConsumerType, ToType>
-): ObjectStreamCustomizer<ConsumerType, FromType, ToType> {
+    private val visibilityCheck: VisibilityCheck<ConsumerType, ToType>,
+) : ObjectStreamCustomizer<ConsumerType, FromType, ToType> {
     override fun addConsumer(consumer: ConsumerType, resultStream: ObjectStream<ToType>) {
         delegate.addConsumer(consumer, InterceptingObjectStream(consumer, resultStream))
     }
@@ -27,7 +27,7 @@ class VisibilityCustomizer<ConsumerType, FromType, ToType>(
     private inner class InterceptingObjectStream(
         private val consumer: ConsumerType,
         private val delegate: ObjectStream<ToType>,
-    ): ObjectStream<ToType> {
+    ) : ObjectStream<ToType> {
         private val hasObject: MutableSet<String> = mutableSetOf()
 
         override fun objectCreated(id: String, value: ToType) {

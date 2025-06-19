@@ -2,7 +2,7 @@ package com.gempukku.ostream
 
 class DeduplicateUpdatesCustomizer<ConsumerType, FromType, ToType>(
     private val delegate: ObjectStreamCustomizer<ConsumerType, FromType, ToType>,
-): ObjectStreamCustomizer<ConsumerType, FromType, ToType> {
+) : ObjectStreamCustomizer<ConsumerType, FromType, ToType> {
     override fun addConsumer(consumer: ConsumerType, resultStream: ObjectStream<ToType>) {
         delegate.addConsumer(consumer, InterceptingObjectStream(resultStream))
     }
@@ -25,7 +25,7 @@ class DeduplicateUpdatesCustomizer<ConsumerType, FromType, ToType>(
 
     inner class InterceptingObjectStream<ToType>(
         private val delegate: ObjectStream<ToType>,
-    ): ObjectStream<ToType> {
+    ) : ObjectStream<ToType> {
         private val stateMap = mutableMapOf<String, ToType>()
 
         override fun objectCreated(id: String, value: ToType) {

@@ -36,7 +36,12 @@ class DummyGameContainer<GameEvent, ObserveSettings> : GameContainerInterface<Ga
         TODO("Not yet implemented")
     }
 
-    override fun produceCardInfo(gameId: String, playerId: String, cardId: String, responseWriter: ResponseWriter) {
+    override fun produceCardInfo(
+        gameId: String,
+        playerId: String,
+        cardId: String,
+        responseWriter: ResponseWriter,
+    ) {
         responseWriter.writeHtmlResponse("")
     }
 }

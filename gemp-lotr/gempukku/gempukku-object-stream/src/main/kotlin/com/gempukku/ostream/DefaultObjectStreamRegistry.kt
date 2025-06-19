@@ -11,7 +11,7 @@ class DefaultObjectStreamRegistry<ConsumerType> : ObjectStreamRegistry<ConsumerT
 
         customizer.addConsumer(consumer, stream as ObjectStream<Any>)
 
-        return object:Registration {
+        return object : Registration {
             override fun deregister() {
                 customizer.removeConsumer(consumer)
             }

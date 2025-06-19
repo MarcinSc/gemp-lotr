@@ -3,13 +3,10 @@ package org.ccgemp.server.player.admin
 import com.gempukku.context.Registration
 import com.gempukku.context.initializer.inject.Inject
 import com.gempukku.context.initializer.inject.InjectValue
-import com.gempukku.context.lifecycle.LifecycleObserver
-import com.gempukku.context.resolver.expose.Exposes
 import com.gempukku.server.ApiSystem
 import com.gempukku.server.HttpMethod
 import com.gempukku.server.HttpProcessingException
 import com.gempukku.server.HttpRequest
-import com.gempukku.server.HttpServer
 import com.gempukku.server.ResponseWriter
 import com.gempukku.server.login.LoggedUserInterface
 import com.gempukku.server.login.UserRolesProvider
@@ -22,6 +19,7 @@ class AdminPlayerApiSystem : ApiSystem() {
 
     @Inject
     private lateinit var loggedUserSystem: LoggedUserInterface
+
     @Inject
     private lateinit var userRolesProvider: UserRolesProvider
 
@@ -51,32 +49,32 @@ class AdminPlayerApiSystem : ApiSystem() {
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$banPlayerUrl$",
-                validateHasRole(executeBanPlayer(), loggedUserSystem,userRolesProvider,  adminRole),
+                validateHasRole(executeBanPlayer(), loggedUserSystem, userRolesProvider, adminRole),
             ),
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$banPlayersUrl$",
-                validateHasRole(executeBanPlayers(), loggedUserSystem,userRolesProvider,  adminRole),
+                validateHasRole(executeBanPlayers(), loggedUserSystem, userRolesProvider, adminRole),
             ),
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$banPlayerTemporarilyUrl$",
-                validateHasRole(executeBanPlayerTemporarily(), loggedUserSystem,userRolesProvider,  adminRole),
+                validateHasRole(executeBanPlayerTemporarily(), loggedUserSystem, userRolesProvider, adminRole),
             ),
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$unbanPlayerUrl",
-                validateHasRole(executeUnbanPlayer(), loggedUserSystem,userRolesProvider,  adminRole),
+                validateHasRole(executeUnbanPlayer(), loggedUserSystem, userRolesProvider, adminRole),
             ),
             server.registerRequestHandler(
                 HttpMethod.GET,
                 "^$getPlayerRolesUrl$",
-                validateHasRole(executeGetPlayerRoles(), loggedUserSystem,userRolesProvider,  adminRole),
+                validateHasRole(executeGetPlayerRoles(), loggedUserSystem, userRolesProvider, adminRole),
             ),
             server.registerRequestHandler(
                 HttpMethod.POST,
                 "^$setPlayerRolesUrl",
-                validateHasRole(executeSetPlayerRoles(), loggedUserSystem,userRolesProvider,  adminRole),
+                validateHasRole(executeSetPlayerRoles(), loggedUserSystem, userRolesProvider, adminRole),
             ),
         )
     }

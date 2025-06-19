@@ -107,7 +107,7 @@ class NettyServerSystem :
     override fun registerResponseHeadersProcessor(method: HttpMethod, uriRegex: String, responseHeaderProcessor: ServerResponseHeaderProcessor): Registration {
         val registration = ResponseHeaderProcessorRegistration(method, Regex(uriRegex), responseHeaderProcessor)
         responseHeaderProcessorRegistration.add(registration)
-        return object:Registration {
+        return object : Registration {
             override fun deregister() {
                 responseHeaderProcessorRegistration.remove(registration)
             }
@@ -122,7 +122,7 @@ class NettyServerSystem :
     ): Registration {
         val registration = RequestHandlerRegistration(method, Regex(uriRegex), requestHandler, validateOrigin)
         requestHandlerRegistrations.add(registration)
-        return object:Registration {
+        return object : Registration {
             override fun deregister() {
                 requestHandlerRegistrations.remove(registration)
             }

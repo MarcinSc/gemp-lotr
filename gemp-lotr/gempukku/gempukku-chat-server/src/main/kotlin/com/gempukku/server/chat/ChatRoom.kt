@@ -89,7 +89,7 @@ class ChatRoom(
             chatStream.messageReceived(ChatMessage(Date(), "System", welcomeMessage, false))
         }
 
-        return object:Registration {
+        return object : Registration {
             override fun deregister() {
                 val playerWasInRoom = playerIsInRoom(playerId)
                 openChatStreams.remove(chatStreamConfig)

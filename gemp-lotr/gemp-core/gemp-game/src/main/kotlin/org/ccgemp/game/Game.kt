@@ -2,7 +2,7 @@ package org.ccgemp.game
 
 import com.gempukku.server.ResponseWriter
 
-interface Game<ObserveSettings>: PlayedGame, FinishedGame {
+interface Game<ObserveSettings> : PlayedGame, FinishedGame {
     val gameSettings: GameSettings
     val gameParticipants: Array<GameParticipant>
     val gameResult: GameResult?

@@ -71,10 +71,17 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
         handlerMap[type.lowercase()] = tournamentHandler
     }
 
-    override fun addTournament(tournamentId: String, type: String, name: String, startDate: LocalDateTime, parameters: String): Boolean {
+    override fun addTournament(
+        tournamentId: String,
+        type: String,
+        name: String,
+        startDate: LocalDateTime,
+        parameters: String,
+    ): Boolean {
         val handler = handlerMap[type.lowercase()] ?: return false
-        if (!handler.validateTournament(Tournament(tournamentId, name, startDate, type, parameters)))
+        if (!handler.validateTournament(Tournament(tournamentId, name, startDate, type, parameters))) {
             return false
+        }
         repository.createTournament(tournamentId, type, name, startDate, parameters, "", 0)
         addTournamentInternal(handler, Tournament(tournamentId, name, startDate, type, parameters))
         return true
@@ -248,10 +255,7 @@ class TournamentSystem : TournamentInterface, UpdatedSystem, LifecycleObserver, 
         }
     }
 
-    private fun addTournamentInternal(
-        tournamentHandler: TournamentHandler<Any>,
-        tournament: Tournament,
-    ) {
+    private fun addTournamentInternal(tournamentHandler: TournamentHandler<Any>, tournament: Tournament) {
         val data = tournamentHandler.initializeTournament(tournament)
 
         val tournamentInfo =

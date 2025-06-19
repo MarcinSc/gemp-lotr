@@ -83,7 +83,9 @@ class GameApiSystem<GameEvent, ObserveSettings> : ApiSystem() {
             val gatheringGameStream = GatheringGameStream<GameEvent>()
             val added =
                 gameContainerInterface.joinGame(
-                    gameId, actAsUser.userId, hasRole(loggedUserInterface, userRolesProvider, request, adminRole),
+                    gameId,
+                    actAsUser.userId,
+                    hasRole(loggedUserInterface, userRolesProvider, request, adminRole),
                     gatheringGameStream,
                 )
             if (added == null) {

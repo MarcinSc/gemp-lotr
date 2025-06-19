@@ -76,7 +76,7 @@ class WorkerThreadExecutorSystem(
         unit: TimeUnit,
     ): Registration {
         val scheduleAtFixedRate = executorService.scheduleAtFixedRate(command, initialDelay, period, unit)
-        return object: Registration {
+        return object : Registration {
             override fun deregister() {
                 scheduleAtFixedRate.cancel(false)
             }

@@ -8,7 +8,7 @@ import com.gempukku.ostream.ObjectStreamCustomizer
 import kotlin.reflect.KClass
 
 @Exposes(ServerStateInterface::class)
-class ServerStateSystem: ServerStateInterface {
+class ServerStateSystem : ServerStateInterface {
     private val registry = DefaultObjectStreamRegistry<String>()
 
     override fun <ToType> registerConsumer(type: String, player: String, stream: ObjectStream<ToType>): Registration {
