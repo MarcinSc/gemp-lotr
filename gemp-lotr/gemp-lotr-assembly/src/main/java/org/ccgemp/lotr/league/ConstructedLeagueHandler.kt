@@ -27,10 +27,11 @@ class ConstructedLeagueHandler(
     private val formatLibrary: LotroFormatLibrary,
     private val leaguePrizes: LeaguePrizes,
     private val prizeCollectionType: String,
-): LeagueHandler<ConstructedLeagueHandler.ConstructedLeagueData> {
+) : LeagueHandler<ConstructedLeagueHandler.ConstructedLeagueData> {
     override fun initializeLeague(league: League): ConstructedLeagueHandler.ConstructedLeagueData {
-        val parsedParams: LeagueParams = JsonUtils.Convert(league.parameters, LeagueParams::class.java)
-            ?: throw RuntimeException("Unable to parse raw parameters for Constructed league: ${league.parameters}")
+        val parsedParams: LeagueParams =
+            JsonUtils.Convert(league.parameters, LeagueParams::class.java)
+                ?: throw RuntimeException("Unable to parse raw parameters for Constructed league: ${league.parameters}")
         return ConstructedLeagueData(parsedParams)
     }
 
@@ -49,13 +50,14 @@ class ConstructedLeagueHandler(
                         maxGamesPlayed += sery.matches
                     }
 
-                    val leagueStandings = BestOfOneStandingsProducer.produceStandings(
-                        league.players,
-                        league.matches.map { LegacyCompetitiveMatchResult(it.winner!!, it.loser!!) },
-                        2,
-                        1,
-                        emptyMap<String, Int>()
-                    )
+                    val leagueStandings =
+                        BestOfOneStandingsProducer.produceStandings(
+                            league.players,
+                            league.matches.map { LegacyCompetitiveMatchResult(it.winner!!, it.loser!!) },
+                            2,
+                            1,
+                            emptyMap<String, Int>(),
+                        )
 
                     for (leagueStanding in leagueStandings) {
                         val leaguePrize = leaguePrizes.getPrizeForLeague(leagueStanding.standing, leagueStandings.size, leagueStanding.gamesPlayed, maxGamesPlayed)
@@ -64,9 +66,10 @@ class ConstructedLeagueHandler(
                             leaguePrize.all.forEach { item ->
                                 prize.addItem(item.blueprintId, item.count)
                             }
-                            collectionInterface.addToPlayerCollection(leagueStanding.playerName,
+                            collectionInterface.addToPlayerCollection(
+                                leagueStanding.playerName,
                                 prizeCollectionType,
-                                CollectionChange(true, "End of league prizes", prize)
+                                CollectionChange(true, "End of league prizes", prize),
                             )
                         }
 
@@ -76,9 +79,11 @@ class ConstructedLeagueHandler(
                             leagueTrophies.all.forEach { item ->
                                 prize.addItem(item.blueprintId, item.count)
                             }
-                            collectionInterface.addToPlayerCollection(leagueStanding.playerName,
+                            collectionInterface.addToPlayerCollection(
+                                leagueStanding.playerName,
                                 prizeCollectionType,
-                                CollectionChange(true, "End of league trophies", prize))
+                                CollectionChange(true, "End of league trophies", prize),
+                            )
                         }
                     }
 
@@ -105,7 +110,8 @@ class ConstructedLeagueHandler(
                         "Serie $count",
                         serieStart,
                         serieStart.plusDays(serie.duration.toLong()),
-                        serie.matches, formatLibrary.getFormat(serie.format),
+                        serie.matches,
+                        formatLibrary.getFormat(serie.format),
                     ),
                 )
 
@@ -126,7 +132,7 @@ class ConstructedLeagueHandler(
     inner class LegacyCompetitiveMatchResult(
         private val winner: String,
         private val loser: String,
-    ): CompetitiveMatchResult {
+    ) : CompetitiveMatchResult {
         override fun getLoser(): String {
             return loser
         }

@@ -16,6 +16,7 @@ data class Player(
     val lastIp: String?,
 ) {
     fun hasRole(role: String): Boolean = type.contains(role, true)
+
     fun bannedToLocalDateTime(): LocalDateTime? {
         return bannedUntil?.let {
             Instant.ofEpochMilli(it).atZone(UTC).toLocalDateTime()

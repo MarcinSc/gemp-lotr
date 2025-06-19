@@ -1,4 +1,3 @@
 package org.ccgemp.league
 
-interface LeagueClientInfo {
-}
+interface LeagueClientInfo

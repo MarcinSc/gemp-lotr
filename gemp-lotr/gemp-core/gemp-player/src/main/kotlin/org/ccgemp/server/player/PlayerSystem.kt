@@ -104,8 +104,7 @@ class PlayerSystem : PlayerInterface, UserRolesProvider {
 
     override fun findPlayerByLogin(login: String): Player? = playerRepository.findPlayerByLogin(login)
 
-    override fun getUserRoles(userId: String): Set<String> =
-        findPlayerByLogin(userId)?.type?.convertToRoleSet().orEmpty()
+    override fun getUserRoles(userId: String): Set<String> = findPlayerByLogin(userId)?.type?.convertToRoleSet().orEmpty()
 
     private fun encodePassword(password: String): String {
         val digest = MessageDigest.getInstance("SHA-256")

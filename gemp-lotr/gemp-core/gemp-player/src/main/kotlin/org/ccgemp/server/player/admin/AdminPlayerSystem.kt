@@ -12,6 +12,7 @@ val DAY_IN_MILIS: Long = 1000 * 60 * 60 * 24
 class AdminPlayerSystem : AdminPlayerInterface {
     @Inject
     private lateinit var playerRepository: PlayerRepository
+
     @Inject
     private lateinit var timeProvider: TimeProvider
 

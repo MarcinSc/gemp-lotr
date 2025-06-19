@@ -1,4 +1,3 @@
 package org.ccgemp.league
 
-interface LeagueRepository {
-}
+interface LeagueRepository

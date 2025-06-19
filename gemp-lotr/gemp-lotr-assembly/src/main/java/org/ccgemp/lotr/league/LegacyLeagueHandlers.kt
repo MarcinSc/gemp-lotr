@@ -11,7 +11,7 @@ import org.ccgemp.league.LeagueInterface
 import org.ccgemp.lotr.LegacyObjectsProvider
 
 @Exposes(LifecycleObserver::class)
-class LegacyLeagueHandlers: LifecycleObserver {
+class LegacyLeagueHandlers : LifecycleObserver {
     @Inject
     private lateinit var timeProvider: TimeProvider
 
@@ -25,13 +25,15 @@ class LegacyLeagueHandlers: LifecycleObserver {
     private lateinit var legacyObjectsProvider: LegacyObjectsProvider
 
     override fun afterContextStartup() {
-        leagueInterface.registerLeagueHandler("constructed",
+        leagueInterface.registerLeagueHandler(
+            "constructed",
             ConstructedLeagueHandler(
                 timeProvider,
                 collectionInterface,
                 legacyObjectsProvider.formatLibrary,
                 FixedLeaguePrizes(legacyObjectsProvider.productLibrary),
-                "permanent"
-            ) as LeagueHandler<Any>)
+                "permanent",
+            ) as LeagueHandler<Any>,
+        )
     }
 }
